@@ -1,8 +1,28 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class GameHUD : MonoBehaviour
 {
+    private void Update()
+    {
+        if (Keyboard.current == null)
+        {
+            return;
+        }
+
+        if (Keyboard.current.rKey.wasPressedThisFrame)
+        {
+            RestartLevel();
+            return;
+        }
+
+        if (Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            ReturnToMainMenu();
+        }
+    }
+
     private void OnGUI()
     {
         GUIStyle titleStyle = new GUIStyle(GUI.skin.label);
@@ -17,6 +37,9 @@ public class GameHUD : MonoBehaviour
         GUIStyle deathStyle = new GUIStyle(bodyStyle);
         deathStyle.alignment = TextAnchor.MiddleRight;
 
+        GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
+        buttonStyle.fontSize = 16;
+
         string levelName =
             SceneManager.GetActiveScene().name;
 
@@ -28,12 +51,11 @@ public class GameHUD : MonoBehaviour
 
         GUI.Label(
             new Rect(20, 50, 600, 30),
-            "Move: A / D     Jump: Space     Restart: R",
+            "Move: A / D     Jump: Space",
             bodyStyle
         );
 
-        if (levelName == "Level02" ||
-            levelName == "Level03")
+        if (levelName != "Level01")
         {
             GUI.Label(
                 new Rect(20, 78, 600, 30),
@@ -47,5 +69,42 @@ public class GameHUD : MonoBehaviour
             "Deaths: " + PlayerRespawn.DeathCount,
             deathStyle
         );
+
+        if (GUI.Button(
+            new Rect(Screen.width - 170, 55, 150, 40),
+            "MAIN MENU",
+            buttonStyle))
+        {
+            ReturnToMainMenu();
+        }
+
+        GUI.Label(
+            new Rect(20, Screen.height - 70, 300, 30),
+            "R: Restart Level",
+            bodyStyle
+        );
+
+        GUI.Label(
+            new Rect(20, Screen.height - 42, 300, 30),
+            "Esc: Main Menu",
+            bodyStyle
+        );
+    }
+
+    private void RestartLevel()
+    {
+        Time.timeScale = 1f;
+
+        Scene currentScene =
+            SceneManager.GetActiveScene();
+
+        SceneManager.LoadScene(currentScene.name);
+    }
+
+    private void ReturnToMainMenu()
+    {
+        Time.timeScale = 1f;
+        PlayerRespawn.ResetDeathCount();
+        SceneManager.LoadScene("MainMenu");
     }
 }
