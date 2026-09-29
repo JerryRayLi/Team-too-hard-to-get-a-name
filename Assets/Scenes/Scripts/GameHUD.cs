@@ -11,12 +11,6 @@ public class GameHUD : MonoBehaviour
             return;
         }
 
-        if (Keyboard.current.rKey.wasPressedThisFrame)
-        {
-            RestartLevel();
-            return;
-        }
-
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             ReturnToMainMenu();
@@ -90,22 +84,10 @@ public class GameHUD : MonoBehaviour
         );
     }
 
-    private void RestartLevel()
-    {
-        Time.timeScale = 1f;
-
-        Scene currentScene =
-            SceneManager.GetActiveScene();
-
-        SceneManager.LoadScene(currentScene.name);
-    }
-
     private void ReturnToMainMenu()
     {
         Time.timeScale = 1f;
         PlayerRespawn.ResetDeathCount();
         SceneManager.LoadScene("MainMenu");
     }
-}
-
 }
