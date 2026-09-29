@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private bool isGrounded;
+    private MovingPlatform currentPlatform;
 
     private void Awake()
     {
@@ -30,8 +31,12 @@ public class PlayerController : MonoBehaviour
             direction = 1f;
         }
 
+        float platformSpeed = currentPlatform != null
+            ? currentPlatform.Velocity.x
+            : 0f;
+
         rb.linearVelocity = new Vector2(
-            direction * moveSpeed,
+            direction * moveSpeed + platformSpeed,
             rb.linearVelocity.y
         );
 
@@ -53,6 +58,7 @@ public class PlayerController : MonoBehaviour
             if (contact.normal.y > 0.5f)
             {
                 isGrounded = true;
+                currentPlatform = collision.gameObject.GetComponent<MovingPlatform>();
                 return;
             }
         }
@@ -61,5 +67,10 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionExit2D(Collision2D collision)
     {
         isGrounded = false;
+
+        if (collision.gameObject.GetComponent<MovingPlatform>() == currentPlatform)
+        {
+            currentPlatform = null;
+        }
     }
 }

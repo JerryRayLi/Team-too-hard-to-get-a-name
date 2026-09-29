@@ -6,15 +6,6 @@ public class PlayerRespawn : MonoBehaviour
 {
     public static int DeathCount { get; private set; }
 
-    private Vector3 spawnPosition;
-    private Rigidbody2D rb;
-
-    private void Awake()
-    {
-        spawnPosition = transform.position;
-        rb = GetComponent<Rigidbody2D>();
-    }
-
     private void Update()
     {
         if (Keyboard.current != null &&
@@ -28,9 +19,7 @@ public class PlayerRespawn : MonoBehaviour
     public void Respawn()
     {
         DeathCount++;
-
-        transform.position = spawnPosition;
-        rb.linearVelocity = Vector2.zero;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().path);
     }
 
     public static void ResetDeathCount()

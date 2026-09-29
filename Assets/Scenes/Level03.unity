@@ -279,7 +279,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.18903513, g: 0.4779658, b: 0.74213827, a: 1}
+  m_Color: {r: 0.24705882, g: 0.39607844, b: 0.4392157, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -315,7 +315,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24ecb0e4221f3d442a55e211d9ef40bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovingPlatform
-  moveOffset: {x: 0, y: 2.5}
+  direction: 0
+  distance: 2.5
   speed: 1.5
 --- !u!50 &372798178
 Rigidbody2D:
@@ -458,7 +459,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.8238993, g: 0.22540632, b: 0.22540632, a: 1}
+  m_Color: {r: 0.5411765, g: 0.3137255, b: 0.2901961, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -781,7 +782,7 @@ GameObject:
   - component: {fileID: 658757954}
   - component: {fileID: 658757953}
   - component: {fileID: 658757952}
-  - component: {fileID: 658757955}
+  - component: {fileID: 658757956}
   m_Layer: 0
   m_Name: RedPlatform1
   m_TagString: Untagged
@@ -885,7 +886,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.8238993, g: 0.22540632, b: 0.22540632, a: 1}
+  m_Color: {r: 0.5411765, g: 0.3137255, b: 0.2901961, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -909,7 +910,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &658757955
+--- !u!114 &658757956
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -918,11 +919,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 658757951}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e10696c724358a4d986f5699c6c3d07, type: 3}
+  m_Script: {fileID: 11500000, guid: 4a7591e5e1f64c478e7c7af76bca4d1e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CollapsePlatform
-  collapseDelay: 0.4
-  returnDelay: 1.5
+  m_EditorClassIdentifier: Assembly-CSharp::FlashingPlatform
+  warningDuration: 2
+  startingFlashInterval: 0.35
+  fastestFlashInterval: 0.06
+  collapseAtEnd: 1
 --- !u!1 &733642247
 GameObject:
   m_ObjectHideFlags: 0
@@ -1431,7 +1434,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.70980394, g: 0.65882355, b: 0.65882355, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1569,7 +1572,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.70980394, g: 0.65882355, b: 0.65882355, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
