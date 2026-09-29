@@ -24,7 +24,7 @@ public class MainMenuController : MonoBehaviour
 
         GUI.Label(
         new Rect(0, Screen.height * 0.06f, Screen.width, 80),
-            "LAYERED LIES",
+            "Color Blind Troll",
             titleStyle
         );
 
