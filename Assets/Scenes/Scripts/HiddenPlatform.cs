@@ -28,8 +28,13 @@ public class HiddenPlatform : MonoBehaviour
 
     private void TryReveal(Collision2D collision)
     {
-        if (revealed ||
-            collision.gameObject.GetComponent<PlayerController>() == null)
+        if (revealed)
+        {
+            return;
+        }
+
+        PlayerController player = collision.gameObject.GetComponent<PlayerController>();
+        if (player == null)
         {
             return;
         }
@@ -41,6 +46,13 @@ public class HiddenPlatform : MonoBehaviour
             {
                 revealed = true;
                 spriteRenderer.enabled = true;
+
+                if (gameObject.name.Contains("change_direction"))
+                {
+                    // Toggle controls once per tile; revealed prevents repeat triggers.
+                    player.moveSpeed = -player.moveSpeed;
+                }
+
                 return;
             }
         }
