@@ -244,41 +244,32 @@ MonoBehaviour:
   worlds:
   - worldName: Demo
     levels:
-    - displayName: Level01
+    - levelName: Level 1
       sceneName: Level01
-      sceneAsset: {fileID: 102900000, guid: b51b5545e1084c54c951b853c4568ad9, type: 3}
-    - displayName: Level02
+    - levelName: Level 2
       sceneName: Level02
-      sceneAsset: {fileID: 102900000, guid: 42ee26bee0d5d7146bbccdee0a8fa7f0, type: 3}
-    - displayName: Level03
+    - levelName: Level 3
       sceneName: Level03
-      sceneAsset: {fileID: 102900000, guid: 4db45c6bcab414ee185aebb838d38623, type: 3}
-    - displayName: Level04
+    - levelName: Level 4
       sceneName: Level04
-      sceneAsset: {fileID: 102900000, guid: 5847b7fd5d9844756bac605d3ab46c9c, type: 3}
   - worldName: Death Loop
     levels:
-    - displayName: Death Loop 1
+    - levelName: Death Loop 1
       sceneName: level_j1
-      sceneAsset: {fileID: 102900000, guid: 18a066e652e72f1468bb47315c889c00, type: 3}
-    - displayName: Death Loop 2
+    - levelName: Death Loop 2
       sceneName: level_j2
-      sceneAsset: {fileID: 102900000, guid: 6747bf44dfd82e44baf804810f055ae4, type: 3}
   - worldName: Running Door
     levels:
-    - displayName: Running Door 1
+    - levelName: Running Door 1
       sceneName: Level_Running_Door_1
-      sceneAsset: {fileID: 102900000, guid: 2a526a3a083d4b94399a01e5704c5c99, type: 3}
   - worldName: Gravity Trap
     levels:
-    - displayName: Gravity Trap 1
+    - levelName: Gravity Trap 1
       sceneName: Level_Haoyu
-      sceneAsset: {fileID: 102900000, guid: 8f3efb9c921846fda7d2c7ad9e6f8201, type: 3}
   - worldName: Spikes
     levels:
-    - displayName: Spikes 1
+    - levelName: Spikes 1
       sceneName: Level_TIanyu1
-      sceneAsset: {fileID: 102900000, guid: 7b2e61d5a84f4de781c0f1a9c6b3e427, type: 3}
   - worldName: New World
     levels: []
 --- !u!4 &1510783457
