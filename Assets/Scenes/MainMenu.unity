@@ -277,7 +277,7 @@ MonoBehaviour:
   - worldName: Spikes
     levels:
     - displayName: Spikes 1
-      sceneName: Level05
+      sceneName: Level_TIanyu1
       sceneAsset: {fileID: 102900000, guid: 7b2e61d5a84f4de781c0f1a9c6b3e427, type: 3}
   - worldName: New World
     levels: []
