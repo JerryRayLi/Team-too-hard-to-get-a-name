@@ -7,7 +7,7 @@ public class ColorLayerManager : MonoBehaviour
     public GameObject[] blueObjects = new GameObject[0];
 
     private bool redLayerActive = true;
-
+    public bool IsBlueActive => !redLayerActive;
     private void Start()
     {
         ApplyLayer();
