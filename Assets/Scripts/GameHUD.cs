@@ -52,7 +52,7 @@ public class GameHUD : MonoBehaviour
         {
             GUI.Label(
                 new Rect(20, 78, 600, 30),
-                "Switch color: Q / E",
+                "Switch color: Q",
                 bodyStyle
             );
         }

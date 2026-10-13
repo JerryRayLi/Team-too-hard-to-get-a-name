@@ -431,6 +431,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4753755515358983782, guid: ad58ba4cad69f5946a45b182f914ca7f, type: 3}
+      propertyPath: m_Color.b
+      value: 0.4392157
+      objectReference: {fileID: 0}
+    - target: {fileID: 4753755515358983782, guid: ad58ba4cad69f5946a45b182f914ca7f, type: 3}
+      propertyPath: m_Color.g
+      value: 0.39607844
+      objectReference: {fileID: 0}
+    - target: {fileID: 4753755515358983782, guid: ad58ba4cad69f5946a45b182f914ca7f, type: 3}
+      propertyPath: m_Color.r
+      value: 0.24705882
+      objectReference: {fileID: 0}
     - target: {fileID: 5425190927142078764, guid: ad58ba4cad69f5946a45b182f914ca7f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 7
@@ -606,6 +618,10 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 733642253}
+    - target: {fileID: 2996512208688256271, guid: c369e8a88af924043821282d80133729, type: 3}
+      propertyPath: escapeX
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 2996512208688256271, guid: c369e8a88af924043821282d80133729, type: 3}
       propertyPath: blueBarrier
       value: 

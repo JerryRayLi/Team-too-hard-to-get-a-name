@@ -20,8 +20,7 @@ public class ColorLayerManager : MonoBehaviour
             return;
         }
 
-        if (Keyboard.current.qKey.wasPressedThisFrame ||
-            Keyboard.current.eKey.wasPressedThisFrame)
+        if (Keyboard.current.qKey.wasPressedThisFrame)
         {
             redLayerActive = !redLayerActive;
             ApplyLayer();

@@ -12,6 +12,9 @@ public class FleeingExit : MonoBehaviour
     public float fleeSpeed = 7.5f;
     public float escapeX = 10f;
 
+    [Tooltip("Count the escape as a player death and respawn automatically.")]
+    public bool respawnPlayerOnEscape;
+
     private BoxCollider2D exitTrigger;
     private bool fleeing;
     private bool caught;
@@ -79,17 +82,20 @@ public class FleeingExit : MonoBehaviour
 
         SetX(nextX);
 
-        // 门逃走了，重新开始这一关。
+        // 门逃走后保持失败状态；玩家可以按 R 手动重开。
         if (nextX >= escapeX)
         {
             escaped = true;
 
-            PlayerRespawn respawn =
-                player.GetComponent<PlayerRespawn>();
-
-            if (respawn != null)
+            if (respawnPlayerOnEscape)
             {
-                respawn.Respawn();
+                PlayerRespawn respawn =
+                    player.GetComponent<PlayerRespawn>();
+
+                if (respawn != null)
+                {
+                    respawn.Respawn();
+                }
             }
         }
     }
