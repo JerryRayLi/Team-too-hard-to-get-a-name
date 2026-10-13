@@ -39,6 +39,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Running_Door/Level_Running_Door_1.unity
     guid: 2a526a3a083d4b94399a01e5704c5c99
   - enabled: 1
+    path: Assets/Scenes/Level_Yulin/Level_Yulin_v1.1.unity
+    guid: 8593dad1949994f6782ccb10e7244a04
+  - enabled: 1
     path: Assets/Scenes/WinScene.unity
     guid: 69a33bfaa1e91134c9e0b058f8baa3df
   m_configObjects:
