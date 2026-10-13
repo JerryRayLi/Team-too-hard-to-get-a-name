@@ -3,7 +3,7 @@
 using UnityEngine;
 using UnityEditor;
 
-[CustomPropertyDrawer(typeof(MenuLevelData))]
+[CustomPropertyDrawer(typeof(LevelData))]
 public class MenuLevelDataDrawer : PropertyDrawer
 {
     public override float GetPropertyHeight(
@@ -27,7 +27,7 @@ public class MenuLevelDataDrawer : PropertyDrawer
             property.FindPropertyRelative("sceneName");
 
         SerializedProperty displayName =
-            property.FindPropertyRelative("displayName");
+            property.FindPropertyRelative("levelName");
 
         float lineHeight =
             EditorGUIUtility.singleLineHeight;

@@ -7,6 +7,10 @@ public class LevelData
 {
     public string levelName = "Level 1";
     public string sceneName;
+
+#if UNITY_EDITOR
+    public UnityEditor.SceneAsset sceneAsset;
+#endif
 }
 
 [System.Serializable]
