@@ -1,21 +1,54 @@
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[System.Serializable]
+public class LevelData
+{
+    public string levelName = "Level 1";
+    public string sceneName;
+
+#if UNITY_EDITOR
+    public UnityEditor.SceneAsset sceneAsset;
+#endif
+}
+
+[System.Serializable]
+public class WorldData
+{
+    public string worldName = "New World";
+    public LevelData[] levels;
+}
+
 public class MainMenuController : MonoBehaviour
 {
-    private bool showLevelSelect;
-    private Vector2 levelSelectScroll;
+    [Header("Game Settings")]
+    public string gameTitle = "Platformer Prototype";
+
+    [Header("World Settings")]
+    public WorldData[] worlds = new WorldData[6];
+
+    private enum MenuPage
+    {
+        Main,
+        WorldSelect,
+        LevelSelect
+    }
+
+    private MenuPage currentPage = MenuPage.Main;
+    private int selectedWorld = -1;
 
     private GUIStyle titleStyle;
-    private GUIStyle buttonStyle;
     private GUIStyle subtitleStyle;
-    private GUIStyle categoryStyle;
+    private GUIStyle buttonStyle;
+    private GUIStyle labelStyle;
 
     private void Start()
     {
         if (Camera.main != null)
         {
-            Camera.main.backgroundColor = new Color(0.08f, 0.10f, 0.16f);
+            Camera.main.backgroundColor =
+                new Color(0.08f, 0.10f, 0.16f);
         }
     }
 
@@ -24,25 +57,32 @@ public class MainMenuController : MonoBehaviour
         CreateStyles();
 
         GUI.Label(
-            new Rect(0, Screen.height * 0.05f, Screen.width, 70),
-            "Color Blind Troll",
+            new Rect(0, Screen.height * 0.06f,
+                Screen.width, 80),
+            gameTitle,
             titleStyle
         );
 
-        if (showLevelSelect)
+        switch (currentPage)
         {
-            DrawLevelSelect();
-        }
-        else
-        {
-            DrawMainButtons();
+            case MenuPage.Main:
+                DrawMainButtons();
+                break;
+
+            case MenuPage.WorldSelect:
+                DrawWorldSelect();
+                break;
+
+            case MenuPage.LevelSelect:
+                DrawLevelSelect();
+                break;
         }
     }
 
     private void CreateStyles()
     {
         titleStyle = new GUIStyle(GUI.skin.label);
-        titleStyle.fontSize = Mathf.Clamp(Screen.width / 26, 34, 48);
+        titleStyle.fontSize = 48;
         titleStyle.fontStyle = FontStyle.Bold;
         titleStyle.alignment = TextAnchor.MiddleCenter;
         titleStyle.normal.textColor = Color.white;
@@ -53,117 +93,226 @@ public class MainMenuController : MonoBehaviour
         subtitleStyle.alignment = TextAnchor.MiddleCenter;
         subtitleStyle.normal.textColor = Color.white;
 
-        categoryStyle = new GUIStyle(GUI.skin.label);
-        categoryStyle.fontSize = 20;
-        categoryStyle.fontStyle = FontStyle.Bold;
-        categoryStyle.alignment = TextAnchor.MiddleCenter;
-        categoryStyle.normal.textColor = new Color(0.82f, 0.84f, 0.90f);
-
         buttonStyle = new GUIStyle(GUI.skin.button);
         buttonStyle.fontSize = 20;
+
+        labelStyle = new GUIStyle(GUI.skin.label);
+        labelStyle.fontSize = 18;
+        labelStyle.alignment = TextAnchor.MiddleCenter;
+        labelStyle.normal.textColor = Color.gray;
     }
 
+    // Main menu
     private void DrawMainButtons()
     {
         float x = Screen.width / 2f - 110;
         float y = Screen.height / 2f - 80;
 
-        if (GUI.Button(new Rect(x, y, 220, 55), "START", buttonStyle))
+        if (GUI.Button(
+            new Rect(x, y, 220, 55),
+            "START",
+            buttonStyle))
         {
-            LoadLevel("Level01");
+            currentPage = MenuPage.WorldSelect;
         }
 
-        if (GUI.Button(new Rect(x, y + 75, 220, 55), "LEVEL SELECT", buttonStyle))
+        if (GUI.Button(
+            new Rect(x, y + 75, 220, 55),
+            "LEVEL SELECT",
+            buttonStyle))
         {
-            showLevelSelect = true;
+            currentPage = MenuPage.WorldSelect;
         }
 
-        if (GUI.Button(new Rect(x, y + 150, 220, 55), "QUIT", buttonStyle))
+        if (GUI.Button(
+            new Rect(x, y + 150, 220, 55),
+            "QUIT",
+            buttonStyle))
         {
             QuitGame();
         }
     }
 
-    private void DrawLevelSelect()
+    // World selection: 3 columns x 2 rows
+    private void DrawWorldSelect()
     {
-        const float margin = 24f;
-        float viewTop = Mathf.Max(115f, Screen.height * 0.17f);
-        float viewHeight = Screen.height - viewTop - 75f;
-        float contentWidth = Mathf.Min(940f, Screen.width - margin * 2f);
-        float contentX = (Screen.width - contentWidth) / 2f;
-        float contentHeight = 475f;
+        GUI.Label(
+            new Rect(0, Screen.height * 0.22f,
+                Screen.width, 50),
+            "SELECT WORLD",
+            subtitleStyle
+        );
 
-        Rect viewport = new Rect(contentX, viewTop, contentWidth, viewHeight);
-        Rect content = new Rect(0, 0, contentWidth - 18f, contentHeight);
-        levelSelectScroll = GUI.BeginScrollView(viewport, levelSelectScroll, content);
+        float buttonWidth = 200;
+        float buttonHeight = 65;
+        float gapX = 25;
+        float gapY = 25;
 
-        GUI.Label(new Rect(0, 0, content.width, 42), "SELECT LEVEL", subtitleStyle);
+        int columns = 3;
 
-        float tutorialGap = 14f;
-        float tutorialButtonWidth = (content.width - tutorialGap * 3f) / 4f;
-        float tutorialY = 58f;
+        float totalWidth =
+            columns * buttonWidth + (columns - 1) * gapX;
 
-        DrawLevelButton(new Rect(0, tutorialY, tutorialButtonWidth, 52), "LEVEL 1", "Level01");
-        DrawLevelButton(new Rect((tutorialButtonWidth + tutorialGap), tutorialY, tutorialButtonWidth, 52), "LEVEL 2", "Level02");
-        DrawLevelButton(new Rect((tutorialButtonWidth + tutorialGap) * 2f, tutorialY, tutorialButtonWidth, 52), "LEVEL 3", "Level03");
-        DrawLevelButton(new Rect((tutorialButtonWidth + tutorialGap) * 3f, tutorialY, tutorialButtonWidth, 52), "LEVEL 4", "Level04");
+        float startX =
+            Screen.width / 2f - totalWidth / 2f;
 
-        float categoryY = 145f;
-        float categoryGap = 14f;
-        float categoryWidth = (content.width - categoryGap * 3f) / 4f;
-        float categoryHeight = 210f;
+        float startY = Screen.height * 0.38f;
 
-        DrawCategory(new Rect(0, categoryY, categoryWidth, categoryHeight), "SPIKES",
-            new[] { "LEVEL 1" }, new[] { "Level05" });
+        if (worlds != null)
+        {
+            for (int i = 0; i < worlds.Length; i++)
+            {
+                WorldData world = worlds[i];
 
-        DrawCategory(new Rect(categoryWidth + categoryGap, categoryY, categoryWidth, categoryHeight), "CORPSE",
-            new[] { "LEVEL 1", "LEVEL 2" }, new[] { "level_j1", "level_j2" });
+                int row = i / columns;
+                int col = i % columns;
 
-        DrawCategory(new Rect((categoryWidth + categoryGap) * 2f, categoryY, categoryWidth, categoryHeight), "SLOW",
-            new[] { "LEVEL 1" }, new[] { "Level_Haoyu" });
+                float x = startX + col * (buttonWidth + gapX);
+                float y = startY + row * (buttonHeight + gapY);
 
-        DrawCategory(new Rect((categoryWidth + categoryGap) * 3f, categoryY, categoryWidth, categoryHeight), "DOOR",
-            new[] { "LEVEL 1" }, new[] { "Level_Running_Door_1" });
+                bool available =
+                    world != null &&
+                    world.levels != null &&
+                    world.levels.Length > 0;
 
-        GUI.EndScrollView();
+                string worldName =
+                    world != null &&
+                    !string.IsNullOrWhiteSpace(world.worldName)
+                    ? world.worldName
+                    : "World " + (i + 1);
+
+                string displayName = available
+                    ? worldName
+                    : worldName + "\nCOMING SOON";
+
+                GUI.enabled = available;
+
+                if (GUI.Button(
+                    new Rect(x, y, buttonWidth, buttonHeight),
+                    displayName,
+                    buttonStyle))
+                {
+                    selectedWorld = i;
+                    currentPage = MenuPage.LevelSelect;
+                }
+
+                GUI.enabled = true;
+            }
+        }
+
+        int rows = Mathf.CeilToInt(
+            (worlds != null ? worlds.Length : 0) /
+            (float)columns
+        );
+
+        float backY = startY +
+            rows * (buttonHeight + gapY) + 15;
 
         if (GUI.Button(
-            new Rect(Screen.width / 2f - 80f, Screen.height - 60f, 160f, 45f),
+            new Rect(Screen.width / 2f - 80,
+                backY, 160, 50),
             "BACK",
             buttonStyle))
         {
-            showLevelSelect = false;
+            currentPage = MenuPage.Main;
         }
     }
 
-    private void DrawCategory(Rect rect, string title, string[] labels, string[] sceneNames)
+    // Level selection inside a world
+    private void DrawLevelSelect()
     {
-        GUI.Box(rect, GUIContent.none);
-        GUI.Label(new Rect(rect.x, rect.y + 10f, rect.width, 35f), title, categoryStyle);
-
-        for (int i = 0; i < labels.Length; i++)
+        if (worlds == null ||
+            selectedWorld < 0 ||
+            selectedWorld >= worlds.Length ||
+            worlds[selectedWorld] == null)
         {
-            DrawLevelButton(
-                new Rect(rect.x + 12f, rect.y + 55f + i * 62f, rect.width - 24f, 48f),
-                labels[i],
-                sceneNames[i]
-            );
+            currentPage = MenuPage.WorldSelect;
+            return;
+        }
+
+        WorldData world = worlds[selectedWorld];
+
+        GUI.Label(
+            new Rect(0, Screen.height * 0.22f,
+                Screen.width, 50),
+            world.worldName,
+            subtitleStyle
+        );
+
+        if (world.levels == null)
+            return;
+
+        float buttonWidth = 180;
+        float buttonHeight = 55;
+        float gapX = 20;
+        float gapY = 20;
+
+        int columns = 3;
+
+        float totalWidth =
+            columns * buttonWidth + (columns - 1) * gapX;
+
+        float startX =
+            Screen.width / 2f - totalWidth / 2f;
+
+        float startY = Screen.height * 0.38f;
+
+        for (int i = 0; i < world.levels.Length; i++)
+        {
+            LevelData level = world.levels[i];
+
+            int row = i / columns;
+            int col = i % columns;
+
+            float x = startX + col * (buttonWidth + gapX);
+            float y = startY + row * (buttonHeight + gapY);
+
+            bool available =
+                level != null &&
+                !string.IsNullOrWhiteSpace(level.sceneName);
+
+            string levelName =
+                level != null &&
+                !string.IsNullOrWhiteSpace(level.levelName)
+                ? level.levelName
+                : "Level " + (i + 1);
+
+            GUI.enabled = available;
+
+            if (GUI.Button(
+                new Rect(x, y, buttonWidth, buttonHeight),
+                available ? levelName : "COMING SOON",
+                buttonStyle))
+            {
+                LoadLevel(level.sceneName);
+            }
+
+            GUI.enabled = true;
+        }
+
+        int rows = Mathf.CeilToInt(
+            world.levels.Length / (float)columns
+        );
+
+        float backY = startY +
+            rows * (buttonHeight + gapY) + 15;
+
+        if (GUI.Button(
+            new Rect(Screen.width / 2f - 80,
+                backY, 160, 50),
+            "BACK",
+            buttonStyle))
+        {
+            currentPage = MenuPage.WorldSelect;
         }
     }
 
-    private void DrawLevelButton(Rect rect, string label, string sceneName)
-    {
-        if (GUI.Button(rect, label, buttonStyle))
-        {
-            LoadLevel(sceneName);
-        }
-    }
-
-    private void LoadLevel(string levelName)
+    private void LoadLevel(string sceneName)
     {
         PlayerRespawn.ResetDeathCount();
         PlayerRespawnJ.ResetDeathCount();
-        SceneManager.LoadScene(levelName);
+
+        SceneManager.LoadScene(sceneName);
     }
 
     private void QuitGame()
