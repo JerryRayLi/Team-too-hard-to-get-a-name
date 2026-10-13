@@ -24,8 +24,23 @@ EditorBuildSettings:
     path: Assets/Scenes/Level04.unity
     guid: 5847b7fd5d9844756bac605d3ab46c9c
   - enabled: 1
+<<<<<<< Updated upstream
+=======
+    path: Assets/Scenes/Running_Door/Level_Running_Door_1.unity
+    guid: 2a526a3a083d4b94399a01e5704c5c99
+  - enabled: 1
+>>>>>>> Stashed changes
     path: Assets/Scenes/WinScene.unity
     guid: 69a33bfaa1e91134c9e0b058f8baa3df
+  - enabled: 1
+    path: Assets/Scenes/Level_Haoyu/Level_Haoyu.unity
+    guid: 8f3efb9c921846fda7d2c7ad9e6f8201
+  - enabled: 1
+    path: Assets/Scenes/Level_jerry/level_j1.unity
+    guid: 18a066e652e72f1468bb47315c889c00
+  - enabled: 1
+    path: Assets/Scenes/Level_jerry/level_j2.unity
+    guid: 6747bf44dfd82e44baf804810f055ae4
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
