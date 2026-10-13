@@ -367,6 +367,7 @@ GameObject:
   - component: {fileID: 4000014}
   - component: {fileID: 4000015}
   - component: {fileID: 7000034}
+  - component: {fileID: 8200000000000000001}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1420,7 +1421,7 @@ GameObject:
   - component: {fileID: 4000049}
   - component: {fileID: 4000050}
   - component: {fileID: 4000051}
-  - component: {fileID: 4000052}
+  - component: {fileID: 8200000000000000002}
   m_Layer: 0
   m_Name: Goal
   m_TagString: Untagged
@@ -1548,18 +1549,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &4000052
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4000048}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86aec242fb6341f089d1467cc34b996b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FinalGoal
 --- !u!1 &4000053
 GameObject:
   m_ObjectHideFlags: 0
@@ -13941,3 +13930,29 @@ SceneRoots:
   - {fileID: 5000001}
   - {fileID: 7000002}
   - {fileID: 9000001}
+--- !u!114 &8200000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4000010}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 937c3fa8a92650d4e812610458034f64, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  moveSpeed: 6
+  jumpForce: 12
+--- !u!114 &8200000000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4000048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97a64b281ee30ae4486305a567f17c3f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::LevelExit
