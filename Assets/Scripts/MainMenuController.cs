@@ -156,9 +156,21 @@ public class MainMenuController : MonoBehaviour
         }
 
         if (GUI.Button(
+    new Rect(
+        Screen.width / 2f - buttonWidth / 2f,
+        startY + 2 * (buttonHeight + gap),
+        buttonWidth,
+        buttonHeight),
+    "LEVEL 5",
+    buttonStyle))
+        {
+            LoadLevel("Level05");
+        }
+
+        if (GUI.Button(
             new Rect(
                 Screen.width / 2f - 80,
-                startY + 2 * (buttonHeight + gap),
+                startY + 3 * (buttonHeight + gap),
                 160,
                 50),
             "BACK",
