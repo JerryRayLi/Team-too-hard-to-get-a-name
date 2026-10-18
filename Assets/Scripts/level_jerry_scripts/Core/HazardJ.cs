@@ -9,7 +9,7 @@ public class HazardJ : MonoBehaviour
     {
         PlayerRespawnJ player = other.GetComponent<PlayerRespawnJ>();
 
-        if (player == null)
+        if (player == null || player.IsRespawning)
             return;
 
         
