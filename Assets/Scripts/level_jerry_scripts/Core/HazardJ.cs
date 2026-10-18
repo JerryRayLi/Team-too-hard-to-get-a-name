@@ -9,17 +9,9 @@ public class HazardJ : MonoBehaviour
     {
         PlayerRespawnJ player = other.GetComponent<PlayerRespawnJ>();
 
-        if (player == null || player.IsRespawning)
+        if (player == null)
             return;
 
-        
-        Instantiate(
-            corpsePrefab,
-            player.transform.position,
-            Quaternion.Euler(0f, 0f, 90f)
-        );
-
-        
-        player.Respawn();
+        player.TryRespawn(corpsePrefab);
     }
 }

@@ -531,6 +531,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerRespawnJ
   respawnPoint: {fileID: 43576169}
+  deathParticles: {fileID: 0}
+  respawnParticles: {fileID: 0}
 --- !u!1001 &679864049
 PrefabInstance:
   m_ObjectHideFlags: 0

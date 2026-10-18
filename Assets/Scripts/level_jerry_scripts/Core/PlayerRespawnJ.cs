@@ -23,6 +23,7 @@ public class PlayerRespawnJ : MonoBehaviour
     private bool abilityWasEnabled;
     private Vector3 initialPosition;
     private bool isRespawning;
+    private double lastDeathPhysicsTime = double.NegativeInfinity;
 
     public bool IsRespawning => isRespawning;
     public bool IsDying { get; private set; }
@@ -81,13 +82,35 @@ public class PlayerRespawnJ : MonoBehaviour
 
     public void Respawn()
     {
-        if (isRespawning)
-            return;
+        TryRespawn();
+    }
+
+    public bool TryRespawn(GameObject corpsePrefab = null)
+    {
+        // Multiple spikes (or player colliders) can report the same death.
+        // Also reject queued callbacks when a particle-free respawn completes
+        // immediately and clears isRespawning within this physics step.
+        if (isRespawning || (Time.inFixedTimeStep &&
+            lastDeathPhysicsTime == Time.fixedTimeAsDouble))
+            return false;
+
+        if (Time.inFixedTimeStep)
+            lastDeathPhysicsTime = Time.fixedTimeAsDouble;
 
         BeginRespawn();
         IsDying = true;
         DeathCount++;
+
+        // Claim the death before instantiating so only the accepted hazard
+        // creates a corpse at the death position, before teleporting.
+        if (corpsePrefab != null)
+        {
+            Instantiate(corpsePrefab, transform.position,
+                Quaternion.Euler(0f, 0f, 90f));
+        }
+
         StartCoroutine(PlayDeathEffectAndRespawn());
+        return true;
     }
 
     private IEnumerator PlayDeathEffectAndRespawn()
