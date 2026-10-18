@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 108192163}
   - component: {fileID: 108192162}
   - component: {fileID: 108192161}
+  - component: {fileID: 108192164}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -211,6 +212,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &108192164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 108192160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!1 &1510783455
 GameObject:
   m_ObjectHideFlags: 0
@@ -240,38 +285,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6488784f9bfb2e5499fa199431aace40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenuController
-  gameTitle: Platformer Prototype
+  gameTitle: Color Blind Troll
   worlds:
-  - worldName: Demo
+  - worldName: DEMO
     levels:
-    - levelName: Level 1
+    - levelName: LEVEL 1
       sceneName: Level01
-    - levelName: Level 2
+      sceneAsset: {fileID: 102900000, guid: b51b5545e1084c54c951b853c4568ad9, type: 3}
+    - levelName: LEVEL 2
       sceneName: Level02
-    - levelName: Level 3
+      sceneAsset: {fileID: 102900000, guid: 42ee26bee0d5d7146bbccdee0a8fa7f0, type: 3}
+    - levelName: LEVEL 3
       sceneName: Level03
-    - levelName: Level 4
+      sceneAsset: {fileID: 102900000, guid: 4db45c6bcab414ee185aebb838d38623, type: 3}
+    - levelName: LEVEL 4
       sceneName: Level04
-  - worldName: Death Loop
+      sceneAsset: {fileID: 102900000, guid: 5847b7fd5d9844756bac605d3ab46c9c, type: 3}
+  - worldName: CORPSE
     levels:
-    - levelName: Death Loop 1
+    - levelName: LEVEL 1
       sceneName: level_j1
-    - levelName: Death Loop 2
+      sceneAsset: {fileID: 102900000, guid: 18a066e652e72f1468bb47315c889c00, type: 3}
+    - levelName: LEVEL 2
       sceneName: level_j2
-  - worldName: Running Door
+      sceneAsset: {fileID: 102900000, guid: 6747bf44dfd82e44baf804810f055ae4, type: 3}
+  - worldName: SPIKES
     levels:
-    - levelName: Running Door 1
-      sceneName: Level_Running_Door_1
-  - worldName: Gravity Trap
-    levels:
-    - levelName: Gravity Trap 1
-      sceneName: Level_Haoyu
-  - worldName: Spikes
-    levels:
-    - levelName: Spikes 1
+    - levelName: LEVEL 1
       sceneName: Level_TIanyu1
-  - worldName: New World
-    levels: []
+      sceneAsset: {fileID: 102900000, guid: 7b2e61d5a84f4de781c0f1a9c6b3e427, type: 3}
+  - worldName: SLOW
+    levels:
+    - levelName: LEVEL 1
+      sceneName: Level_Haoyu
+      sceneAsset: {fileID: 102900000, guid: 8f3efb9c921846fda7d2c7ad9e6f8201, type: 3}
+  - worldName: DOOR
+    levels:
+    - levelName: LEVEL 1
+      sceneName: Level_Running_Door_1
+      sceneAsset: {fileID: 102900000, guid: 2a526a3a083d4b94399a01e5704c5c99, type: 3}
+  - worldName: REVERSE
+    levels:
+    - levelName: LEVEL 1
+      sceneName: Level_Yulin_v1.1
+      sceneAsset: {fileID: 102900000, guid: 8593dad1949994f6782ccb10e7244a04, type: 3}
 --- !u!4 &1510783457
 Transform:
   m_ObjectHideFlags: 0

@@ -6,185 +6,282 @@ using UnityEngine.SceneManagement;
 public class LevelData
 {
     public string levelName = "Level 1";
-    public string sceneName = "";
+    public string sceneName;
+
+#if UNITY_EDITOR
+    public UnityEditor.SceneAsset sceneAsset;
+#endif
 }
 
 [System.Serializable]
 public class WorldData
 {
     public string worldName = "New World";
-    public LevelData[] levels = new LevelData[0];
+    public LevelData[] levels;
 }
 
 public class MainMenuController : MonoBehaviour
 {
+    [Header("Game Settings")]
     public string gameTitle = "Platformer Prototype";
+
+    [Header("World Settings")]
     public WorldData[] worlds = new WorldData[6];
 
-    private int menuPage = 0;
-    private int selectedWorld = 0;
+    private enum MenuPage
+    {
+        Main,
+        WorldSelect,
+        LevelSelect
+    }
+
+    private MenuPage currentPage = MenuPage.Main;
+    private int selectedWorld = -1;
 
     private GUIStyle titleStyle;
+    private GUIStyle subtitleStyle;
     private GUIStyle buttonStyle;
+    private GUIStyle labelStyle;
+
+    private void Start()
+    {
+        if (Camera.main != null)
+        {
+            Camera.main.backgroundColor =
+                new Color(0.08f, 0.10f, 0.16f);
+        }
+    }
 
     private void OnGUI()
     {
-        titleStyle = new GUIStyle(GUI.skin.label);
-        titleStyle.fontSize = 42;
-        titleStyle.fontStyle = FontStyle.Bold;
-        titleStyle.alignment = TextAnchor.MiddleCenter;
-        titleStyle.normal.textColor = Color.white;
-
-        buttonStyle = new GUIStyle(GUI.skin.button);
-        buttonStyle.fontSize = 20;
+        CreateStyles();
 
         GUI.Label(
-            new Rect(0, 40, Screen.width, 70),
+            new Rect(0, Screen.height * 0.06f,
+                Screen.width, 80),
             gameTitle,
             titleStyle
         );
 
-        if (menuPage == 0)
-            DrawMainMenu();
-        else if (menuPage == 1)
-            DrawWorldSelect();
-        else
-            DrawLevelSelect();
+        switch (currentPage)
+        {
+            case MenuPage.Main:
+                DrawMainButtons();
+                break;
+
+            case MenuPage.WorldSelect:
+                DrawWorldSelect();
+                break;
+
+            case MenuPage.LevelSelect:
+                DrawLevelSelect();
+                break;
+        }
     }
 
-    private void DrawMainMenu()
+    private void CreateStyles()
+    {
+        titleStyle = new GUIStyle(GUI.skin.label);
+        titleStyle.fontSize = 48;
+        titleStyle.fontStyle = FontStyle.Bold;
+        titleStyle.alignment = TextAnchor.MiddleCenter;
+        titleStyle.normal.textColor = Color.white;
+
+        subtitleStyle = new GUIStyle(GUI.skin.label);
+        subtitleStyle.fontSize = 28;
+        subtitleStyle.fontStyle = FontStyle.Bold;
+        subtitleStyle.alignment = TextAnchor.MiddleCenter;
+        subtitleStyle.normal.textColor = Color.white;
+
+        buttonStyle = new GUIStyle(GUI.skin.button);
+        buttonStyle.fontSize = 20;
+
+        labelStyle = new GUIStyle(GUI.skin.label);
+        labelStyle.fontSize = 18;
+        labelStyle.alignment = TextAnchor.MiddleCenter;
+        labelStyle.normal.textColor = Color.gray;
+    }
+
+    // Main menu
+    private void DrawMainButtons()
     {
         float x = Screen.width / 2f - 110;
-        float y = Screen.height / 2f - 70;
+        float y = Screen.height / 2f - 80;
 
         if (GUI.Button(
             new Rect(x, y, 220, 55),
-            "START", buttonStyle))
+            "START",
+            buttonStyle))
         {
-            if (worlds.Length > 0 &&
-                worlds[0] != null &&
-                worlds[0].levels != null &&
-                worlds[0].levels.Length > 0 &&
-                worlds[0].levels[0] != null)
-            {
-                LoadLevel(worlds[0].levels[0].sceneName);
-            }
+            currentPage = MenuPage.WorldSelect;
         }
 
         if (GUI.Button(
             new Rect(x, y + 75, 220, 55),
-            "LEVEL SELECT", buttonStyle))
+            "LEVEL SELECT",
+            buttonStyle))
         {
-            menuPage = 1;
+            currentPage = MenuPage.WorldSelect;
         }
 
         if (GUI.Button(
             new Rect(x, y + 150, 220, 55),
-            "QUIT", buttonStyle))
+            "QUIT",
+            buttonStyle))
         {
             QuitGame();
         }
     }
 
+    // World selection: 3 columns x 2 rows
     private void DrawWorldSelect()
     {
-        float width = 200;
-        float height = 60;
-        float gap = 20;
+        GUI.Label(
+            new Rect(0, Screen.height * 0.22f,
+                Screen.width, 50),
+            "SELECT WORLD",
+            subtitleStyle
+        );
 
-        float startX = Screen.width / 2f - 320;
-        float startY = Screen.height * 0.35f;
+        float buttonWidth = 200;
+        float buttonHeight = 65;
+        float gapX = 25;
+        float gapY = 25;
 
-        for (int i = 0; i < worlds.Length; i++)
+        int columns = 3;
+
+        float totalWidth =
+            columns * buttonWidth + (columns - 1) * gapX;
+
+        float startX =
+            Screen.width / 2f - totalWidth / 2f;
+
+        float startY = Screen.height * 0.38f;
+
+        if (worlds != null)
         {
-            WorldData world = worlds[i];
-
-            int col = i % 3;
-            int row = i / 3;
-
-            float x = startX + col * (width + gap);
-            float y = startY + row * (height + gap);
-
-            bool available = world != null &&
-                world.levels != null &&
-                world.levels.Length > 0;
-
-            string name = world != null
-                ? world.worldName
-                : "World " + (i + 1);
-
-            GUI.enabled = available;
-
-            if (GUI.Button(
-                new Rect(x, y, width, height),
-                available ? name : "COMING SOON",
-                buttonStyle))
+            for (int i = 0; i < worlds.Length; i++)
             {
-                selectedWorld = i;
-                menuPage = 2;
-            }
+                WorldData world = worlds[i];
 
-            GUI.enabled = true;
+                int row = i / columns;
+                int col = i % columns;
+
+                float x = startX + col * (buttonWidth + gapX);
+                float y = startY + row * (buttonHeight + gapY);
+
+                bool available =
+                    world != null &&
+                    world.levels != null &&
+                    world.levels.Length > 0;
+
+                string worldName =
+                    world != null &&
+                    !string.IsNullOrWhiteSpace(world.worldName)
+                    ? world.worldName
+                    : "World " + (i + 1);
+
+                string displayName = available
+                    ? worldName
+                    : worldName + "\nCOMING SOON";
+
+                GUI.enabled = available;
+
+                if (GUI.Button(
+                    new Rect(x, y, buttonWidth, buttonHeight),
+                    displayName,
+                    buttonStyle))
+                {
+                    selectedWorld = i;
+                    currentPage = MenuPage.LevelSelect;
+                }
+
+                GUI.enabled = true;
+            }
         }
+
+        int rows = Mathf.CeilToInt(
+            (worlds != null ? worlds.Length : 0) /
+            (float)columns
+        );
+
+        float backY = startY +
+            rows * (buttonHeight + gapY) + 15;
 
         if (GUI.Button(
             new Rect(Screen.width / 2f - 80,
-                startY + 190, 160, 50),
-            "BACK", buttonStyle))
+                backY, 160, 50),
+            "BACK",
+            buttonStyle))
         {
-            menuPage = 0;
+            currentPage = MenuPage.Main;
         }
     }
 
+    // Level selection inside a world
     private void DrawLevelSelect()
     {
-        if (selectedWorld < 0 ||
+        if (worlds == null ||
+            selectedWorld < 0 ||
             selectedWorld >= worlds.Length ||
             worlds[selectedWorld] == null)
         {
-            menuPage = 1;
+            currentPage = MenuPage.WorldSelect;
             return;
         }
 
         WorldData world = worlds[selectedWorld];
 
         GUI.Label(
-            new Rect(0, 130, Screen.width, 50),
+            new Rect(0, Screen.height * 0.22f,
+                Screen.width, 50),
             world.worldName,
-            titleStyle
+            subtitleStyle
         );
 
-        float width = 180;
-        float height = 55;
-        float gap = 20;
+        if (world.levels == null)
+            return;
 
-        float startX = Screen.width / 2f - 290;
-        float startY = Screen.height * 0.35f;
+        float buttonWidth = 180;
+        float buttonHeight = 55;
+        float gapX = 20;
+        float gapY = 20;
 
-        int count = world.levels != null
-            ? world.levels.Length : 0;
+        int columns = 3;
 
-        for (int i = 0; i < count; i++)
+        float totalWidth =
+            columns * buttonWidth + (columns - 1) * gapX;
+
+        float startX =
+            Screen.width / 2f - totalWidth / 2f;
+
+        float startY = Screen.height * 0.38f;
+
+        for (int i = 0; i < world.levels.Length; i++)
         {
             LevelData level = world.levels[i];
 
-            int col = i % 3;
-            int row = i / 3;
+            int row = i / columns;
+            int col = i % columns;
 
-            float x = startX + col * (width + gap);
-            float y = startY + row * (height + gap);
-
-            if (level == null)
-                continue;
+            float x = startX + col * (buttonWidth + gapX);
+            float y = startY + row * (buttonHeight + gapY);
 
             bool available =
+                level != null &&
                 !string.IsNullOrWhiteSpace(level.sceneName);
+
+            string levelName =
+                level != null &&
+                !string.IsNullOrWhiteSpace(level.levelName)
+                ? level.levelName
+                : "Level " + (i + 1);
 
             GUI.enabled = available;
 
             if (GUI.Button(
-                new Rect(x, y, width, height),
-                level.levelName,
+                new Rect(x, y, buttonWidth, buttonHeight),
+                available ? levelName : "COMING SOON",
                 buttonStyle))
             {
                 LoadLevel(level.sceneName);
@@ -193,23 +290,28 @@ public class MainMenuController : MonoBehaviour
             GUI.enabled = true;
         }
 
-        int rows = Mathf.CeilToInt(count / 3f);
+        int rows = Mathf.CeilToInt(
+            world.levels.Length / (float)columns
+        );
+
+        float backY = startY +
+            rows * (buttonHeight + gapY) + 15;
 
         if (GUI.Button(
             new Rect(Screen.width / 2f - 80,
-                startY + rows * 75 + 20, 160, 50),
-            "BACK", buttonStyle))
+                backY, 160, 50),
+            "BACK",
+            buttonStyle))
         {
-            menuPage = 1;
+            currentPage = MenuPage.WorldSelect;
         }
     }
 
     private void LoadLevel(string sceneName)
     {
-        if (string.IsNullOrWhiteSpace(sceneName))
-            return;
-
         PlayerRespawn.ResetDeathCount();
+        PlayerRespawnJ.ResetDeathCount();
+
         SceneManager.LoadScene(sceneName);
     }
 
