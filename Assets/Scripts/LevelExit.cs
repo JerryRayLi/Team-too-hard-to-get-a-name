@@ -4,6 +4,10 @@ using UnityEngine.SceneManagement;
 
 public class LevelExit : MonoBehaviour
 {
+    [Header("Completion Screen")]
+    [SerializeField]
+    private bool showCompletionScreen = false;
+
     private bool completed;
     private float completionTime;
     private int nextScene;
@@ -24,6 +28,12 @@ public class LevelExit : MonoBehaviour
         PlaySessionStats.MarkCurrentLevelCompleted();
 
         nextScene = SceneManager.GetActiveScene().buildIndex + 1;
+
+        if (!showCompletionScreen)
+        {
+            Continue();
+            return;
+        }
 
         player.enabled = false;
 
@@ -47,7 +57,7 @@ public class LevelExit : MonoBehaviour
 
     private void Update()
     {
-        if (!completed || Keyboard.current == null)
+        if (!showCompletionScreen || !completed || Keyboard.current == null)
             return;
 
         if (Keyboard.current.enterKey.wasPressedThisFrame)
@@ -56,7 +66,7 @@ public class LevelExit : MonoBehaviour
 
     private void OnGUI()
     {
-        if (!completed)
+        if (!showCompletionScreen || !completed)
             return;
 
         Matrix4x4 previousMatrix = GUI.matrix;

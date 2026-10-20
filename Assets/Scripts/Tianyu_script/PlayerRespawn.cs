@@ -5,6 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class PlayerRespawn : MonoBehaviour
 {
+    private const string ReverseSceneName = "Level_Yulin_v1.1";
+    private const string FallbackEffectsResource = "JerryRespawnEffects";
+
     public static int DeathCount { get; private set; }
 
     [Header("Optional Respawn Effects")]
@@ -36,6 +39,12 @@ public class PlayerRespawn : MonoBehaviour
         if (respawnParticles == null)
         {
             respawnParticles = FindChildParticleSystem("RespawnParticle");
+        }
+
+        if (SceneManager.GetActiveScene().name == ReverseSceneName &&
+            (deathParticles == null || respawnParticles == null))
+        {
+            AddFallbackRespawnEffects();
         }
     }
 
@@ -138,6 +147,41 @@ public class PlayerRespawn : MonoBehaviour
         }
 
         return null;
+    }
+
+    private void AddFallbackRespawnEffects()
+    {
+        GameObject effectsPrefab =
+            Resources.Load<GameObject>(FallbackEffectsResource);
+
+        if (effectsPrefab == null)
+        {
+            Debug.LogWarning(
+                $"PlayerRespawn could not load {FallbackEffectsResource} " +
+                $"for {ReverseSceneName}."
+            );
+            return;
+        }
+
+        GameObject effects = Instantiate(effectsPrefab, transform, false);
+        foreach (ParticleSystem effect in
+                 effects.GetComponentsInChildren<ParticleSystem>(true))
+        {
+            if (effect.name == "DeathParticle" && deathParticles == null)
+            {
+                deathParticles = effect;
+            }
+            else if (effect.name == "RespawnParticle" &&
+                     respawnParticles == null)
+            {
+                respawnParticles = effect;
+            }
+
+            effect.Stop(
+                true,
+                ParticleSystemStopBehavior.StopEmittingAndClear
+            );
+        }
     }
 
     private static float GetParticleEffectDuration(ParticleSystem particleSystem)

@@ -44,6 +44,15 @@ public static class PlaySessionStats
     public static int TotalDeaths { get; private set; }
     public static int CurrentLevelDeaths => currentLevelDeaths;
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetForNewGameRun()
+    {
+        // Enter Play Mode has Domain Reload disabled in this project, so static
+        // fields survive after stopping the Editor unless explicitly reset.
+        SceneManager.sceneLoaded -= HandleSceneLoaded;
+        ResetSession();
+    }
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Initialize()
     {

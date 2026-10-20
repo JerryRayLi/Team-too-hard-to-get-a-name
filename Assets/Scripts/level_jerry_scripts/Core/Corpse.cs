@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Corpse : MonoBehaviour
 {
-    [Range(0f, 1f)] public float surfaceFriction = 0.9f;
+    [Range(0f, 1f)] public float surfaceFriction = 0f;
 
     private Rigidbody2D rb;
     private PhysicsMaterial2D gripMaterial;
@@ -13,13 +13,13 @@ public class Corpse : MonoBehaviour
         rb.bodyType = RigidbodyType2D.Static;
         rb.constraints |= RigidbodyConstraints2D.FreezeRotation;
 
-        // The player uses a zero-friction material. Give corpses their own
-        // grip without changing the shared material or the player's movement.
+        // Keep corpse sides frictionless so the player cannot stick to them.
+        // The corpse is static until Release(), so it remains a stable platform.
         gripMaterial = new PhysicsMaterial2D("Corpse Grip")
         {
             friction = surfaceFriction,
             bounciness = 0f,
-            frictionCombine = PhysicsMaterialCombine2D.Maximum,
+            frictionCombine = PhysicsMaterialCombine2D.Minimum,
             bounceCombine = PhysicsMaterialCombine2D.Minimum
         };
         foreach (Collider2D corpseCollider in GetComponentsInChildren<Collider2D>(true))

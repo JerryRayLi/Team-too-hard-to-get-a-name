@@ -10,12 +10,12 @@ public class GameComplete : MonoBehaviour
         "Level02",
         "Level03",
         "Level04",
-        "Level_TIanyu1",
+        "Level_Running_Door_1",
         "level_j1",
         "level_j2",
         "Level_Haoyu",
-        "Level_Running_Door_1",
-        "Level_Yulin_v1.1"
+        "Level_Yulin_v1.1",
+        "Level_TIanyu1"
     };
 
     private static readonly string[] DisplayNames =
@@ -24,12 +24,12 @@ public class GameComplete : MonoBehaviour
         "LEVEL02",
         "LEVEL03",
         "LEVEL04",
-        "SPIKES",
+        "DOOR",
         "CORPSE01",
         "CORPSE02",
         "SLOW",
-        "DOOR",
-        "REVERSE"
+        "REVERSE",
+        "SPIKES"
     };
 
     private void Start()
@@ -54,13 +54,13 @@ public class GameComplete : MonoBehaviour
     private void OnGUI()
     {
         GUIStyle titleStyle = new GUIStyle(GUI.skin.label);
-        titleStyle.fontSize = Mathf.Clamp(Screen.height / 12, 38, 54);
+        titleStyle.fontSize = Mathf.Clamp(Screen.height / 11, 44, 72);
         titleStyle.fontStyle = FontStyle.Bold;
         titleStyle.alignment = TextAnchor.MiddleCenter;
         titleStyle.normal.textColor = Color.white;
 
         GUIStyle bodyStyle = new GUIStyle(GUI.skin.label);
-        bodyStyle.fontSize = Mathf.Clamp(Screen.height / 24, 20, 28);
+        bodyStyle.fontSize = Mathf.Clamp(Screen.height / 22, 24, 38);
         bodyStyle.alignment = TextAnchor.MiddleCenter;
         bodyStyle.normal.textColor = Color.white;
 
@@ -68,14 +68,14 @@ public class GameComplete : MonoBehaviour
         headerStyle.fontStyle = FontStyle.Bold;
 
         GUIStyle rowStyle = new GUIStyle(bodyStyle);
-        rowStyle.fontSize = Mathf.Clamp(Screen.height / 28, 18, 24);
+        rowStyle.fontSize = Mathf.Clamp(Screen.height / 30, 22, 32);
 
         float panelWidth = Mathf.Min(760f, Screen.width - 40f);
         float panelX = (Screen.width - panelWidth) * 0.5f;
         float titleY = 12f;
         float summaryY = 67f;
         float tableY = 105f;
-        float rowHeight = Mathf.Clamp((Screen.height - 190f) / 11f, 24f, 33f);
+        float rowHeight = Mathf.Clamp((Screen.height - 210f) / 11f, 30f, 42f);
         float panelHeight = rowHeight * 11f + 20f;
 
         GUI.Box(new Rect(panelX, tableY - 10f, panelWidth, panelHeight), "");

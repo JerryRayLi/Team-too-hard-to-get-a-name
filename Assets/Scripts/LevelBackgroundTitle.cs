@@ -21,6 +21,13 @@ public static class LevelBackgroundTitle
         { "Level_Yulin_v1.1", "REVERSE" }
     };
 
+    public static string GetDisplayTitle(string sceneName)
+    {
+        return Titles.TryGetValue(sceneName, out string title)
+            ? title
+            : sceneName;
+    }
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Initialize()
     {

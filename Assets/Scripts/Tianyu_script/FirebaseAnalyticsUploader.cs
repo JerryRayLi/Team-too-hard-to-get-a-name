@@ -9,11 +9,20 @@ public sealed class FirebaseAnalyticsUploader : MonoBehaviour
     private const string ApiKey = "AIzaSyDeQFw3oqQXOZNg49jAeePkECT-7SldcxM";
     private const string ProjectId = "color-blink-troll";
     private const string DatabaseUrl = "https://color-blink-troll-default-rtdb.firebaseio.com";
+    private const string PendingEventsPlayerPrefsKey = "firebase_analytics_pending_events_v1";
+    private const float InitialRetryDelaySeconds = 2f;
+    private const float MaximumRetryDelaySeconds = 60f;
 
     [Serializable]
     private sealed class AnonymousAuthResponse
     {
         public string idToken;
+    }
+
+    [Serializable]
+    private sealed class PendingEventStore
+    {
+        public List<AnalyticsEvent> events = new();
     }
 
     [Serializable]
@@ -39,6 +48,14 @@ public sealed class FirebaseAnalyticsUploader : MonoBehaviour
     private string idToken;
     private bool authenticationStarted;
     private bool uploadInProgress;
+    private int retryAttempt;
+    private Coroutine retryCoroutine;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStaticState()
+    {
+        instance = null;
+    }
 
     public static void RecordLevelCompleted(
         string levelName,
@@ -104,21 +121,38 @@ public sealed class FirebaseAnalyticsUploader : MonoBehaviour
 
         instance = this;
         DontDestroyOnLoad(gameObject);
+        RestorePendingEvents();
+
+        if (pendingEvents.Count > 0)
+        {
+            BeginAuthentication();
+        }
     }
 
     private void Enqueue(AnalyticsEvent analyticsEvent)
     {
         pendingEvents.Enqueue(analyticsEvent);
+        SavePendingEvents();
 
-        if (!authenticationStarted)
+        if (string.IsNullOrEmpty(idToken))
         {
-            authenticationStarted = true;
-            StartCoroutine(SignInAnonymously());
+            BeginAuthentication();
         }
         else
         {
             TryUploadNext();
         }
+    }
+
+    private void BeginAuthentication()
+    {
+        if (authenticationStarted || pendingEvents.Count == 0)
+        {
+            return;
+        }
+
+        authenticationStarted = true;
+        StartCoroutine(SignInAnonymously());
     }
 
     private IEnumerator SignInAnonymously()
@@ -135,11 +169,13 @@ public sealed class FirebaseAnalyticsUploader : MonoBehaviour
 
         if (request.result != UnityWebRequest.Result.Success)
         {
+            authenticationStarted = false;
             Debug.LogWarning(
                 $"Firebase analytics sign-in failed ({request.responseCode}). " +
                 "Enable Anonymous Authentication in Firebase Console. " +
-                request.error
+                GetSafeErrorMessage(request)
             );
+            ScheduleRetry();
             yield break;
         }
 
@@ -149,10 +185,13 @@ public sealed class FirebaseAnalyticsUploader : MonoBehaviour
 
         if (string.IsNullOrEmpty(idToken))
         {
+            authenticationStarted = false;
             Debug.LogWarning("Firebase analytics sign-in returned no ID token.");
+            ScheduleRetry();
             yield break;
         }
 
+        retryAttempt = 0;
         TryUploadNext();
     }
 
@@ -183,6 +222,8 @@ public sealed class FirebaseAnalyticsUploader : MonoBehaviour
         if (request.result == UnityWebRequest.Result.Success)
         {
             pendingEvents.Dequeue();
+            SavePendingEvents();
+            retryAttempt = 0;
             Debug.Log(
                 $"FIREBASE_ANALYTICS uploaded level={analyticsEvent.level_name} " +
                 $"result={analyticsEvent.result} project={ProjectId}"
@@ -194,8 +235,105 @@ public sealed class FirebaseAnalyticsUploader : MonoBehaviour
         }
 
         Debug.LogWarning(
-            $"Firebase analytics upload failed ({request.responseCode}): {request.error}"
+            $"Firebase analytics upload failed ({request.responseCode}): " +
+            GetSafeErrorMessage(request)
         );
         uploadInProgress = false;
+
+        if (request.responseCode == 401)
+        {
+            idToken = null;
+            authenticationStarted = false;
+        }
+
+        ScheduleRetry();
+    }
+
+    private void ScheduleRetry()
+    {
+        if (retryCoroutine != null || pendingEvents.Count == 0)
+        {
+            return;
+        }
+
+        float delay = Mathf.Min(
+            InitialRetryDelaySeconds * Mathf.Pow(2f, retryAttempt),
+            MaximumRetryDelaySeconds
+        );
+        retryAttempt++;
+        retryCoroutine = StartCoroutine(RetryAfterDelay(delay));
+    }
+
+    private IEnumerator RetryAfterDelay(float delay)
+    {
+        yield return new WaitForSecondsRealtime(delay);
+        retryCoroutine = null;
+
+        if (string.IsNullOrEmpty(idToken))
+        {
+            BeginAuthentication();
+        }
+        else
+        {
+            TryUploadNext();
+        }
+    }
+
+    private void RestorePendingEvents()
+    {
+        string json = PlayerPrefs.GetString(PendingEventsPlayerPrefsKey, string.Empty);
+        if (string.IsNullOrEmpty(json))
+        {
+            return;
+        }
+
+        try
+        {
+            PendingEventStore store = JsonUtility.FromJson<PendingEventStore>(json);
+            if (store?.events == null)
+            {
+                return;
+            }
+
+            foreach (AnalyticsEvent analyticsEvent in store.events)
+            {
+                if (analyticsEvent != null)
+                {
+                    pendingEvents.Enqueue(analyticsEvent);
+                }
+            }
+        }
+        catch (Exception exception)
+        {
+            Debug.LogWarning($"Could not restore pending Firebase analytics: {exception.Message}");
+            PlayerPrefs.DeleteKey(PendingEventsPlayerPrefsKey);
+        }
+    }
+
+    private void SavePendingEvents()
+    {
+        if (pendingEvents.Count == 0)
+        {
+            PlayerPrefs.DeleteKey(PendingEventsPlayerPrefsKey);
+            PlayerPrefs.Save();
+            return;
+        }
+
+        PendingEventStore store = new PendingEventStore
+        {
+            events = new List<AnalyticsEvent>(pendingEvents)
+        };
+        PlayerPrefs.SetString(PendingEventsPlayerPrefsKey, JsonUtility.ToJson(store));
+        PlayerPrefs.Save();
+    }
+
+    private static string GetSafeErrorMessage(UnityWebRequest request)
+    {
+        if (request.downloadHandler != null && !string.IsNullOrWhiteSpace(request.downloadHandler.text))
+        {
+            return request.downloadHandler.text;
+        }
+
+        return request.error;
     }
 }

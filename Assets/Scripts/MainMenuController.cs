@@ -18,6 +18,7 @@ public class WorldData
 {
     public string worldName = "New World";
     public LevelData[] levels;
+    public bool isChallenge;
 }
 
 public class MainMenuController : MonoBehaviour
@@ -95,6 +96,7 @@ public class MainMenuController : MonoBehaviour
 
         buttonStyle = new GUIStyle(GUI.skin.button);
         buttonStyle.fontSize = 24;
+        buttonStyle.richText = true;
 
         labelStyle = new GUIStyle(GUI.skin.label);
         labelStyle.fontSize = 22;
@@ -184,6 +186,13 @@ public class MainMenuController : MonoBehaviour
                 string displayName = available
                     ? worldName
                     : worldName + "\nCOMING SOON";
+
+                if (available && world.isChallenge)
+                {
+                    displayName =
+                        worldName +
+                        "\n<color=#E85D5D><b>CHALLENGE</b></color>";
+                }
 
                 GUI.enabled = available;
 

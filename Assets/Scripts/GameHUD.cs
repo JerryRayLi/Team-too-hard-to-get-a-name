@@ -40,12 +40,12 @@ public class GameHUD : MonoBehaviour
     private void OnGUI()
     {
         GUIStyle titleStyle = new GUIStyle(GUI.skin.label);
-        titleStyle.fontSize = 28;
+        titleStyle.fontSize = 36;
         titleStyle.fontStyle = FontStyle.Bold;
         titleStyle.normal.textColor = Color.white;
 
         GUIStyle bodyStyle = new GUIStyle(GUI.skin.label);
-        bodyStyle.fontSize = 32;
+        bodyStyle.fontSize = 40;
         bodyStyle.richText = true;
         bodyStyle.normal.textColor = Color.white;
 
@@ -53,18 +53,18 @@ public class GameHUD : MonoBehaviour
         deathStyle.alignment = TextAnchor.MiddleRight;
 
         GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
-        buttonStyle.fontSize = 20;
+        buttonStyle.fontSize = 26;
 
         string levelName = SceneManager.GetActiveScene().name;
 
         GUI.Label(
-            new Rect(20, 15, 400, 35),
-            levelName,
+            new Rect(20, 15, 500, 48),
+            LevelBackgroundTitle.GetDisplayTitle(levelName),
             titleStyle
         );
 
         GUI.Label(
-            new Rect(20, 50, 760, 40),
+            new Rect(20, 60, 940, 52),
             "Move: <b>A / D</b>     Jump: <b>Space</b>     Restart: <b>R</b>",
             bodyStyle
         );
@@ -72,20 +72,20 @@ public class GameHUD : MonoBehaviour
         if (levelName != "Level01")
         {
             GUI.Label(
-                new Rect(20, 90, 600, 40),
-                "Switch color: <b>Q</b>",
+                new Rect(20, 108, 760, 52),
+                "Switch color: <b>Shift</b>",
                 bodyStyle
             );
         }
 
         GUI.Label(
-            new Rect(Screen.width - 220, 15, 200, 30),
+            new Rect(Screen.width - 300, 15, 280, 48),
             "Deaths: " + PlaySessionStats.TotalDeaths,
             deathStyle
         );
 
         if (GUI.Button(
-            new Rect(Screen.width - 170, 55, 150, 40),
+            new Rect(Screen.width - 200, 68, 180, 48),
             "MAIN MENU",
             buttonStyle))
         {
@@ -93,13 +93,13 @@ public class GameHUD : MonoBehaviour
         }
 
         GUI.Label(
-            new Rect(20, Screen.height - 90, 400, 40),
+            new Rect(20, Screen.height - 112, 520, 52),
             "<b>R</b>: Restart Level",
             bodyStyle
         );
 
         GUI.Label(
-            new Rect(20, Screen.height - 50, 400, 40),
+            new Rect(20, Screen.height - 60, 520, 52),
             "<b>Esc</b>: Main Menu",
             bodyStyle
         );
@@ -127,22 +127,22 @@ public class GameHUD : MonoBehaviour
         float guiY = Screen.height - screenPoint.y;
 
         GUIStyle hintStyle = new GUIStyle(GUI.skin.label);
-        hintStyle.fontSize = 32;
+        hintStyle.fontSize = 40;
         hintStyle.fontStyle = FontStyle.Bold;
         hintStyle.alignment = TextAnchor.MiddleCenter;
         hintStyle.normal.textColor = new Color(1f, 1f, 1f, 0.85f);
 
         GUIStyle arrowStyle = new GUIStyle(hintStyle);
-        arrowStyle.fontSize = 50;
+        arrowStyle.fontSize = 60;
 
         GUI.Label(
-            new Rect(screenPoint.x - 260f, guiY - 142f, 520f, 42f),
+            new Rect(screenPoint.x - 320f, guiY - 160f, 640f, 52f),
             "Maybe try observe here first",
             hintStyle
         );
 
         GUI.Label(
-            new Rect(screenPoint.x - 40f, guiY - 106f, 80f, 58f),
+            new Rect(screenPoint.x - 45f, guiY - 112f, 90f, 68f),
             "▼",
             arrowStyle
         );

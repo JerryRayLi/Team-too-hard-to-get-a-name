@@ -87,15 +87,16 @@ public sealed class FinalLevelManager : MonoBehaviour
     void OnGUI()
     {
         // Tianyu GameHUD layout, with this level's controls and completion flow.
-        var titleStyle = new GUIStyle(GUI.skin.label) { fontSize = 28, fontStyle = FontStyle.Bold };
+        var titleStyle = new GUIStyle(GUI.skin.label) { fontSize = 36, fontStyle = FontStyle.Bold };
         titleStyle.normal.textColor = Color.white;
-        var bodyStyle = new GUIStyle(GUI.skin.label) { fontSize = 32, richText = true };
+        var bodyStyle = new GUIStyle(GUI.skin.label) { fontSize = 40, richText = true };
         bodyStyle.normal.textColor = Color.white;
         var deathStyle = new GUIStyle(bodyStyle) { alignment = TextAnchor.MiddleRight };
-        GUI.Label(new Rect(20, 15, 400, 35), UnityEngine.SceneManagement.SceneManager.GetActiveScene().name, titleStyle);
-        GUI.Label(new Rect(20, 50, 760, 40), "Move: <b>A / D</b>     Jump: <b>Space</b>     Restart: <b>R</b>", bodyStyle);
-        GUI.Label(new Rect(Screen.width - 220, 15, 200, 30), "Deaths: " + PlaySessionStats.TotalDeaths, deathStyle);
-        GUI.Label(new Rect(20, Screen.height - 50, 400, 40), "<b>R</b>: Restart Level", bodyStyle);
+        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        GUI.Label(new Rect(20, 15, 500, 48), LevelBackgroundTitle.GetDisplayTitle(sceneName), titleStyle);
+        GUI.Label(new Rect(20, 60, 940, 52), "Move: <b>A / D</b>     Jump: <b>Space</b>     Restart: <b>R</b>", bodyStyle);
+        GUI.Label(new Rect(Screen.width - 300, 15, 280, 48), "Deaths: " + PlaySessionStats.TotalDeaths, deathStyle);
+        GUI.Label(new Rect(20, Screen.height - 60, 520, 52), "<b>R</b>: Restart Level", bodyStyle);
     }
     void OnDestroy() { if (Instance == this) Instance = null; }
 }

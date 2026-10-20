@@ -301,6 +301,13 @@ MonoBehaviour:
     - levelName: LEVEL 4
       sceneName: Level04
       sceneAsset: {fileID: 102900000, guid: 5847b7fd5d9844756bac605d3ab46c9c, type: 3}
+    isChallenge: 0
+  - worldName: DOOR
+    levels:
+    - levelName: LEVEL 1
+      sceneName: Level_Running_Door_1
+      sceneAsset: {fileID: 102900000, guid: 2a526a3a083d4b94399a01e5704c5c99, type: 3}
+    isChallenge: 0
   - worldName: CORPSE
     levels:
     - levelName: LEVEL 1
@@ -309,26 +316,25 @@ MonoBehaviour:
     - levelName: LEVEL 2
       sceneName: level_j2
       sceneAsset: {fileID: 102900000, guid: 6747bf44dfd82e44baf804810f055ae4, type: 3}
-  - worldName: SPIKES
-    levels:
-    - levelName: LEVEL 1
-      sceneName: Level_TIanyu1
-      sceneAsset: {fileID: 102900000, guid: 7b2e61d5a84f4de781c0f1a9c6b3e427, type: 3}
+    isChallenge: 0
   - worldName: SLOW
     levels:
     - levelName: LEVEL 1
       sceneName: Level_Haoyu
       sceneAsset: {fileID: 102900000, guid: 8f3efb9c921846fda7d2c7ad9e6f8201, type: 3}
-  - worldName: DOOR
-    levels:
-    - levelName: LEVEL 1
-      sceneName: Level_Running_Door_1
-      sceneAsset: {fileID: 102900000, guid: 2a526a3a083d4b94399a01e5704c5c99, type: 3}
+    isChallenge: 0
   - worldName: REVERSE
     levels:
     - levelName: LEVEL 1
       sceneName: Level_Yulin_v1.1
       sceneAsset: {fileID: 102900000, guid: 8593dad1949994f6782ccb10e7244a04, type: 3}
+    isChallenge: 0
+  - worldName: SPIKES
+    levels:
+    - levelName: LEVEL 1
+      sceneName: Level_TIanyu1
+      sceneAsset: {fileID: 102900000, guid: 7b2e61d5a84f4de781c0f1a9c6b3e427, type: 3}
+    isChallenge: 1
 --- !u!4 &1510783457
 Transform:
   m_ObjectHideFlags: 0
