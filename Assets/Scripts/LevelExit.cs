@@ -24,7 +24,6 @@ public class LevelExit : MonoBehaviour
 
         nextScene = SceneManager.GetActiveScene().buildIndex + 1;
 
-
         player.enabled = false;
 
         PlayerRespawn respawn = player.GetComponent<PlayerRespawn>();
