@@ -77,6 +77,7 @@ public static class PlaySessionStats
             stats.WasSkipped = true;
         }
 
+        FirebaseAnalyticsUploader.RecordLevelSkipped(currentLevel, stats.Visits);
         currentResultRecorded = true;
         Debug.Log($"LEVEL_STATS level={currentLevel} deaths=N/A duration=N/A result=skipped");
     }
@@ -104,6 +105,13 @@ public static class PlaySessionStats
             stats.WasSkipped = false;
         }
 
+        FirebaseAnalyticsUploader.RecordLevelCompleted(
+            currentLevel,
+            currentLevelDeaths,
+            duration,
+            stats.Visits,
+            isBetter
+        );
         currentResultRecorded = true;
         Debug.Log(
             $"LEVEL_STATS level={currentLevel} deaths={currentLevelDeaths} " +
