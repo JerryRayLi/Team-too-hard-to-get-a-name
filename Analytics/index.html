@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Playtest Analytics</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="analytics.js" defer></script>
+  <script src="sample-data.js" defer></script>
+  <script src="firebase-reader.js" defer></script>
+  <script src="dashboard.js" defer></script>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="heading"><h1>Level analytics</h1><span id="source" class="source">No data</span></div>
+      <div class="toolbar">
+        <button id="database" type="button">Load database</button>
+        <label class="button primary" for="file">Import JSON</label>
+        <input id="file" class="file-input" type="file" accept=".json,application/json">
+        <button id="example" type="button">Sample data</button>
+        <button id="votes" type="button">Import votes</button>
+        <input id="votes-file" class="file-input" type="file" accept=".json,application/json">
+        <button id="clear" type="button" class="quiet">Clear</button>
+      </div>
+      <p id="message" role="status" aria-live="polite">Load or import data.</p>
+    </header>
+
+    <section class="filters" aria-label="Report filters">
+      <label>Version<select id="version" aria-label="Game version"><option value="">No versions</option></select></label>
+      <label>Samples<select id="sample"><option value="first">First completion per session</option><option value="all">All completions</option></select></label>
+      <label>Deaths<select id="death-mode"><option value="total">Total</option><option value="mean">Average</option></select></label>
+    </section>
+    <section class="stats" aria-label="Dataset summary">
+      <div><span>RESULTS</span><strong id="events">0</strong></div>
+      <div><span>SESSIONS</span><strong id="sessions">0</strong></div>
+      <div><span>COMPLETIONS</span><strong id="completed">0</strong></div>
+      <div><span>SKIPPED</span><strong id="skipped">0</strong></div>
+    </section>
+
+    <section class="charts" aria-label="Four playtest charts">
+      <article class="chart-panel"><div class="chart-title"><span class="number">01</span><h2>Deaths</h2></div><p id="death-description">Total · completed visits</p><div id="death-chart" class="chart"></div></article>
+      <article class="chart-panel"><div class="chart-title"><span class="number">02</span><h2>Completion time</h2></div><p>Average · seconds</p><div id="time-chart" class="chart"></div></article>
+      <article class="chart-panel"><div class="chart-title"><span class="number">03</span><h2>Least liked (top 3)</h2></div><p>Votes</p><div id="dislike-chart" class="chart"></div></article>
+      <article class="chart-panel"><div class="chart-title"><span class="number">04</span><h2>Most liked</h2></div><p>Votes</p><div id="favorite-chart" class="chart"></div></article>
+    </section>
+
+    <section class="details">
+      <h2>Level summary</h2>
+      <div class="table-scroll"><table><caption class="sr-only">Per-level counts and chart samples</caption><thead><tr><th scope="col">Level</th><th scope="col">Results</th><th scope="col">Completed</th><th scope="col">Skipped</th><th scope="col">Other</th><th scope="col">Death samples</th><th scope="col">Time samples</th><th scope="col">Deaths</th><th scope="col">Avg. time (s)</th></tr></thead><tbody id="rows"></tbody></table></div>
+      <details class="data-notes"><summary>Data notes</summary>
+        <p id="method">Completed visits only.</p>
+        <p>Sessions count play sessions, which may include repeat players. Completion time uses the duration reported by the game.</p>
+      </details>
+    </section>
+    <footer>Team-too-hard-to-get-a-name</footer>
+  </main>
+</body>
+</html>
