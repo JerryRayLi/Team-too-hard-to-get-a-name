@@ -16,10 +16,11 @@ public class ColorLayerManager : MonoBehaviour
     private void Update()
     {
         if (Keyboard.current == null)
+        {
             return;
+        }
 
-        if (Keyboard.current.leftShiftKey.wasPressedThisFrame ||
-            Keyboard.current.rightShiftKey.wasPressedThisFrame)
+        if (Keyboard.current.qKey.wasPressedThisFrame)
         {
             redLayerActive = !redLayerActive;
             ApplyLayer();

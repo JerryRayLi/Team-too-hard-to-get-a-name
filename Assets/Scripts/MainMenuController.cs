@@ -1,13 +1,47 @@
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[System.Serializable]
+public class LevelData
+{
+    public string levelName = "Level 1";
+    public string sceneName;
+
+#if UNITY_EDITOR
+    public UnityEditor.SceneAsset sceneAsset;
+#endif
+}
+
+[System.Serializable]
+public class WorldData
+{
+    public string worldName = "New World";
+    public LevelData[] levels;
+}
+
 public class MainMenuController : MonoBehaviour
 {
-    private bool showLevelSelect;
+    [Header("Game Settings")]
+    public string gameTitle = "Platformer Prototype";
+
+    [Header("World Settings")]
+    public WorldData[] worlds = new WorldData[6];
+
+    private enum MenuPage
+    {
+        Main,
+        WorldSelect,
+        LevelSelect
+    }
+
+    private MenuPage currentPage = MenuPage.Main;
+    private int selectedWorld = -1;
 
     private GUIStyle titleStyle;
-    private GUIStyle buttonStyle;
     private GUIStyle subtitleStyle;
+    private GUIStyle buttonStyle;
+    private GUIStyle labelStyle;
 
     private void Start()
     {
@@ -23,18 +57,25 @@ public class MainMenuController : MonoBehaviour
         CreateStyles();
 
         GUI.Label(
-        new Rect(0, Screen.height * 0.06f, Screen.width, 80),
-            "Color Blind Troll",
+            new Rect(0, Screen.height * 0.06f,
+                Screen.width, 80),
+            gameTitle,
             titleStyle
         );
 
-        if (showLevelSelect)
+        switch (currentPage)
         {
-            DrawLevelSelect();
-        }
-        else
-        {
-            DrawMainButtons();
+            case MenuPage.Main:
+                DrawMainButtons();
+                break;
+
+            case MenuPage.WorldSelect:
+                DrawWorldSelect();
+                break;
+
+            case MenuPage.LevelSelect:
+                DrawLevelSelect();
+                break;
         }
     }
 
@@ -53,9 +94,15 @@ public class MainMenuController : MonoBehaviour
         subtitleStyle.normal.textColor = Color.white;
 
         buttonStyle = new GUIStyle(GUI.skin.button);
-        buttonStyle.fontSize = 22;
+        buttonStyle.fontSize = 20;
+
+        labelStyle = new GUIStyle(GUI.skin.label);
+        labelStyle.fontSize = 18;
+        labelStyle.alignment = TextAnchor.MiddleCenter;
+        labelStyle.normal.textColor = Color.gray;
     }
 
+    // Main menu
     private void DrawMainButtons()
     {
         float x = Screen.width / 2f - 110;
@@ -66,7 +113,7 @@ public class MainMenuController : MonoBehaviour
             "START",
             buttonStyle))
         {
-            LoadLevel("Level01");
+            currentPage = MenuPage.WorldSelect;
         }
 
         if (GUI.Button(
@@ -74,7 +121,7 @@ public class MainMenuController : MonoBehaviour
             "LEVEL SELECT",
             buttonStyle))
         {
-            showLevelSelect = true;
+            currentPage = MenuPage.WorldSelect;
         }
 
         if (GUI.Button(
@@ -86,104 +133,186 @@ public class MainMenuController : MonoBehaviour
         }
     }
 
-    private void DrawLevelSelect()
+    // World selection: 3 columns x 2 rows
+    private void DrawWorldSelect()
     {
         GUI.Label(
-            new Rect(
-            0,
-            Screen.height * 0.24f,
-            Screen.width,
-            50
-        ),
-            "SELECT LEVEL",
+            new Rect(0, Screen.height * 0.22f,
+                Screen.width, 50),
+            "SELECT WORLD",
             subtitleStyle
         );
 
-        float buttonWidth = 150;
-        float buttonHeight = 55;
-        float gap = 20;
+        float buttonWidth = 200;
+        float buttonHeight = 65;
+        float gapX = 25;
+        float gapY = 25;
+
+        int columns = 3;
 
         float totalWidth =
-            buttonWidth * 2 + gap;
+            columns * buttonWidth + (columns - 1) * gapX;
 
         float startX =
             Screen.width / 2f - totalWidth / 2f;
 
-        float startY =Screen.height * 0.38f;
+        float startY = Screen.height * 0.38f;
 
-        if (GUI.Button(
-            new Rect(startX, startY, buttonWidth, buttonHeight),
-            "LEVEL 1",
-            buttonStyle))
+        if (worlds != null)
         {
-            LoadLevel("Level01");
+            for (int i = 0; i < worlds.Length; i++)
+            {
+                WorldData world = worlds[i];
+
+                int row = i / columns;
+                int col = i % columns;
+
+                float x = startX + col * (buttonWidth + gapX);
+                float y = startY + row * (buttonHeight + gapY);
+
+                bool available =
+                    world != null &&
+                    world.levels != null &&
+                    world.levels.Length > 0;
+
+                string worldName =
+                    world != null &&
+                    !string.IsNullOrWhiteSpace(world.worldName)
+                    ? world.worldName
+                    : "World " + (i + 1);
+
+                string displayName = available
+                    ? worldName
+                    : worldName + "\nCOMING SOON";
+
+                GUI.enabled = available;
+
+                if (GUI.Button(
+                    new Rect(x, y, buttonWidth, buttonHeight),
+                    displayName,
+                    buttonStyle))
+                {
+                    selectedWorld = i;
+                    currentPage = MenuPage.LevelSelect;
+                }
+
+                GUI.enabled = true;
+            }
         }
 
-        if (GUI.Button(
-            new Rect(
-                startX + buttonWidth + gap,
-                startY,
-                buttonWidth,
-                buttonHeight),
-            "LEVEL 2",
-            buttonStyle))
-        {
-            LoadLevel("Level02");
-        }
+        int rows = Mathf.CeilToInt(
+            (worlds != null ? worlds.Length : 0) /
+            (float)columns
+        );
+
+        float backY = startY +
+            rows * (buttonHeight + gapY) + 15;
 
         if (GUI.Button(
-            new Rect(
-                startX,
-                startY + buttonHeight + gap,
-                buttonWidth,
-                buttonHeight),
-            "LEVEL 3",
-            buttonStyle))
-        {
-            LoadLevel("Level03");
-        }
-
-        if (GUI.Button(
-            new Rect(
-                startX + buttonWidth + gap,
-                startY + buttonHeight + gap,
-                buttonWidth,
-                buttonHeight),
-            "LEVEL 4",
-            buttonStyle))
-        {
-            LoadLevel("Level04");
-        }
-
-        if (GUI.Button(
-    new Rect(
-        Screen.width / 2f - buttonWidth / 2f,
-        startY + 2 * (buttonHeight + gap),
-        buttonWidth,
-        buttonHeight),
-    "LEVEL 5",
-    buttonStyle))
-        {
-            LoadLevel("Level05");
-        }
-
-        if (GUI.Button(
-            new Rect(
-                Screen.width / 2f - 80,
-                startY + 3 * (buttonHeight + gap),
-                160,
-                50),
+            new Rect(Screen.width / 2f - 80,
+                backY, 160, 50),
             "BACK",
             buttonStyle))
         {
-            showLevelSelect = false;
+            currentPage = MenuPage.Main;
         }
     }
 
-    private void LoadLevel(string levelName)
+    // Level selection inside a world
+    private void DrawLevelSelect()
+    {
+        if (worlds == null ||
+            selectedWorld < 0 ||
+            selectedWorld >= worlds.Length ||
+            worlds[selectedWorld] == null)
+        {
+            currentPage = MenuPage.WorldSelect;
+            return;
+        }
+
+        WorldData world = worlds[selectedWorld];
+
+        GUI.Label(
+            new Rect(0, Screen.height * 0.22f,
+                Screen.width, 50),
+            world.worldName,
+            subtitleStyle
+        );
+
+        if (world.levels == null)
+            return;
+
+        float buttonWidth = 180;
+        float buttonHeight = 55;
+        float gapX = 20;
+        float gapY = 20;
+
+        int columns = 3;
+
+        float totalWidth =
+            columns * buttonWidth + (columns - 1) * gapX;
+
+        float startX =
+            Screen.width / 2f - totalWidth / 2f;
+
+        float startY = Screen.height * 0.38f;
+
+        for (int i = 0; i < world.levels.Length; i++)
+        {
+            LevelData level = world.levels[i];
+
+            int row = i / columns;
+            int col = i % columns;
+
+            float x = startX + col * (buttonWidth + gapX);
+            float y = startY + row * (buttonHeight + gapY);
+
+            bool available =
+                level != null &&
+                !string.IsNullOrWhiteSpace(level.sceneName);
+
+            string levelName =
+                level != null &&
+                !string.IsNullOrWhiteSpace(level.levelName)
+                ? level.levelName
+                : "Level " + (i + 1);
+
+            GUI.enabled = available;
+
+            if (GUI.Button(
+                new Rect(x, y, buttonWidth, buttonHeight),
+                available ? levelName : "COMING SOON",
+                buttonStyle))
+            {
+                LoadLevel(level.sceneName);
+            }
+
+            GUI.enabled = true;
+        }
+
+        int rows = Mathf.CeilToInt(
+            world.levels.Length / (float)columns
+        );
+
+        float backY = startY +
+            rows * (buttonHeight + gapY) + 15;
+
+        if (GUI.Button(
+            new Rect(Screen.width / 2f - 80,
+                backY, 160, 50),
+            "BACK",
+            buttonStyle))
+        {
+            currentPage = MenuPage.WorldSelect;
+        }
+    }
+
+    private void LoadLevel(string sceneName)
     {
         PlayerRespawn.ResetDeathCount();
-        SceneManager.LoadScene(levelName);
+        PlayerRespawnJ.ResetDeathCount();
+
+        SceneManager.LoadScene(sceneName);
     }
 
     private void QuitGame()
@@ -194,4 +323,4 @@ public class MainMenuController : MonoBehaviour
         Application.Quit();
 #endif
     }
-}   
+}

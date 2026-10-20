@@ -47,11 +47,11 @@ public class GameHUDJ : MonoBehaviour
         // Level 2 has the corpse release ability
         if (levelName == "level_j2")
         {
-            controls += "     Release Corpse: E";
+            controls += "     Release Corpse: E     Switch Color: Q";
         }
 
         GUI.Label(
-            new Rect(20, 50, 800, 30),
+            new Rect(20, 50, 1000, 30),
             controls,
             bodyStyle
         );
