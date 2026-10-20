@@ -18,19 +18,20 @@ public class GameHUDJ : MonoBehaviour
     private void OnGUI()
     {
         GUIStyle titleStyle = new GUIStyle(GUI.skin.label);
-        titleStyle.fontSize = 24;
+        titleStyle.fontSize = 28;
         titleStyle.fontStyle = FontStyle.Bold;
         titleStyle.normal.textColor = Color.white;
 
         GUIStyle bodyStyle = new GUIStyle(GUI.skin.label);
-        bodyStyle.fontSize = 18;
+        bodyStyle.fontSize = 32;
+        bodyStyle.richText = true;
         bodyStyle.normal.textColor = Color.white;
 
         GUIStyle deathStyle = new GUIStyle(bodyStyle);
         deathStyle.alignment = TextAnchor.MiddleRight;
 
         GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
-        buttonStyle.fontSize = 16;
+        buttonStyle.fontSize = 20;
 
         string levelName = SceneManager.GetActiveScene().name;
 
@@ -42,24 +43,28 @@ public class GameHUDJ : MonoBehaviour
         );
 
         // Basic controls
-        string controls = "Move: A / D     Jump: Space     Restart: R";
-
-        // Level 2 has the corpse release ability
-        if (levelName == "level_j2")
-        {
-            controls += "     Release Corpse: E";
-        }
+        string controls = "Move: <b>A / D</b>     Jump: <b>Space</b>     Restart: <b>R</b>";
 
         GUI.Label(
-            new Rect(20, 50, 800, 30),
+            new Rect(20, 50, 760, 40),
             controls,
             bodyStyle
         );
 
+        // Level 2 has the corpse release ability.
+        if (levelName == "level_j2")
+        {
+            GUI.Label(
+                new Rect(20, 90, 600, 40),
+                "Release Corpse: <b>E</b>",
+                bodyStyle
+            );
+        }
+
         // Death count
         GUI.Label(
             new Rect(Screen.width - 220, 15, 200, 30),
-            "Deaths: " + PlayerRespawnJ.DeathCount,
+            "Deaths: " + PlaySessionStats.TotalDeaths,
             deathStyle
         );
 
@@ -74,8 +79,8 @@ public class GameHUDJ : MonoBehaviour
 
         // Bottom instructions
         GUI.Label(
-            new Rect(20, Screen.height - 42, 300, 30),
-            "Esc: Main Menu",
+            new Rect(20, Screen.height - 50, 400, 40),
+            "<b>Esc</b>: Main Menu",
             bodyStyle
         );
     }

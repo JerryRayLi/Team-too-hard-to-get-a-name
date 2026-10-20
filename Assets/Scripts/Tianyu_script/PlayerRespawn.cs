@@ -65,6 +65,7 @@ public class PlayerRespawn : MonoBehaviour
         }
 
         DeathCount++;
+        PlaySessionStats.RecordDeath();
         StartCoroutine(PlayDeathEffectAndReload());
     }
 

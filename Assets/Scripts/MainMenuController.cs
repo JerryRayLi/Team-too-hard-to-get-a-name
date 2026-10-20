@@ -88,16 +88,16 @@ public class MainMenuController : MonoBehaviour
         titleStyle.normal.textColor = Color.white;
 
         subtitleStyle = new GUIStyle(GUI.skin.label);
-        subtitleStyle.fontSize = 28;
+        subtitleStyle.fontSize = 32;
         subtitleStyle.fontStyle = FontStyle.Bold;
         subtitleStyle.alignment = TextAnchor.MiddleCenter;
         subtitleStyle.normal.textColor = Color.white;
 
         buttonStyle = new GUIStyle(GUI.skin.button);
-        buttonStyle.fontSize = 20;
+        buttonStyle.fontSize = 24;
 
         labelStyle = new GUIStyle(GUI.skin.label);
-        labelStyle.fontSize = 18;
+        labelStyle.fontSize = 22;
         labelStyle.alignment = TextAnchor.MiddleCenter;
         labelStyle.normal.textColor = Color.gray;
     }

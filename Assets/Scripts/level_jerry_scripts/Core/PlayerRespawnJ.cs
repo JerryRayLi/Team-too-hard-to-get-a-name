@@ -39,6 +39,7 @@ public class PlayerRespawnJ : MonoBehaviour
         isRespawning = true;
 
         DeathCount++;
+        PlaySessionStats.RecordDeath();
 
         if (rb != null)
         {
@@ -53,6 +54,9 @@ public class PlayerRespawnJ : MonoBehaviour
 
     private void RestartLevel()
     {
+        DeathCount++;
+        PlaySessionStats.RecordDeath();
+
         SceneManager.LoadScene(
             SceneManager.GetActiveScene().path
         );

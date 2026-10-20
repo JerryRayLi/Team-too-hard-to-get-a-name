@@ -28,9 +28,9 @@ public sealed class LevelSkipButton : MonoBehaviour
         }
 
         GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
-        buttonStyle.fontSize = 16;
+        buttonStyle.fontSize = 20;
 
-        if (GUI.Button(new Rect(20f, 108f, 145f, 40f), "SKIP LEVEL", buttonStyle))
+        if (GUI.Button(new Rect(20f, 140f, 145f, 40f), "SKIP LEVEL", buttonStyle))
         {
             LoadNextLevel(activeScene.buildIndex);
         }
@@ -38,6 +38,8 @@ public sealed class LevelSkipButton : MonoBehaviour
 
     private static void LoadNextLevel(int currentBuildIndex)
     {
+        PlaySessionStats.MarkCurrentLevelSkipped();
+
         int nextBuildIndex = currentBuildIndex + 1;
         if (nextBuildIndex >= SceneManager.sceneCountInBuildSettings)
         {

@@ -20,6 +20,7 @@ public class LevelExit : MonoBehaviour
         }
 
         isLoading = true;
+        PlaySessionStats.MarkCurrentLevelCompleted();
 
         int nextScene =
             SceneManager.GetActiveScene().buildIndex + 1;
