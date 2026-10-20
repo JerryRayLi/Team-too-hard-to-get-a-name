@@ -981,7 +981,7 @@ MonoBehaviour:
   dashCount: 48
   dashFraction: 0.55
   lineWidth: 0.04
-  hintDuration: 4
+  hintDuration: 0
   hintOffset: 0.4
   hintText: Releasing Range(Press 'E')
 --- !u!1001 &1052571048
