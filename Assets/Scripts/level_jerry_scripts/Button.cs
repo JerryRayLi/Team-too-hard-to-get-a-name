@@ -11,11 +11,21 @@ public class Button : MonoBehaviour
 
     [Min(0f)] public float contactTolerance = 0.02f;
 
+    [Header("Optional Corpse Color Hint")]
+    public bool showCorpseColorHint;
+    public string corpseColorHintText =
+        "A corpse can only trigger a switch in the right color!";
+    public Vector2 hintWorldOffset = new Vector2(0f, -1.7f);
+    [Tooltip("Set to 0 to keep the hint visible until the level ends.")]
+    [Min(0f)] public float hintDuration;
+
     private readonly List<Collider2D> nearbyColliders = new List<Collider2D>();
     private Collider2D buttonCollider;
     private SpriteRenderer buttonRenderer;
     private ContactFilter2D contactFilter;
     private bool isPressed;
+    private bool corpseHintTriggered;
+    private float corpseHintEndsAt;
 
     private void Awake()
     {
@@ -31,7 +41,7 @@ public class Button : MonoBehaviour
 
     private void LateUpdate()
     {
-        // Read after ColorLayerManager.Update so Q also re-evaluates objects
+        // Read after ColorLayerManager.Update so Shift also re-evaluates objects
         // already resting on the button, without requiring another collision.
         bool isBlue = colorManager != null && colorManager.IsBlueActive;
         if (useColorRules && buttonRenderer != null)
@@ -63,12 +73,15 @@ public class Button : MonoBehaviour
             if (!separation.isValid || separation.distance > contactTolerance)
                 continue;
 
-            if (!useColorRules || isBlue)
+            Corpse corpse = other.GetComponentInParent<Corpse>();
+            if (corpse != null)
             {
-                if (other.GetComponentInParent<Corpse>() != null)
+                ShowCorpseColorHint();
+
+                if (!useColorRules || isBlue)
                     return true;
             }
-            else
+            else if (useColorRules && !isBlue)
             {
                 PlayerRespawnJ player = other.GetComponentInParent<PlayerRespawnJ>();
                 if (player != null && !player.IsRespawning &&
@@ -79,6 +92,54 @@ public class Button : MonoBehaviour
         }
 
         return false;
+    }
+
+    private void ShowCorpseColorHint()
+    {
+        if (!showCorpseColorHint || corpseHintTriggered)
+            return;
+
+        corpseHintTriggered = true;
+        corpseHintEndsAt = hintDuration > 0f
+            ? Time.unscaledTime + hintDuration
+            : float.PositiveInfinity;
+    }
+
+    private void OnGUI()
+    {
+        if (!showCorpseColorHint || !corpseHintTriggered ||
+            Time.unscaledTime > corpseHintEndsAt || Camera.main == null)
+            return;
+
+        Vector3 screenPoint = Camera.main.WorldToScreenPoint(
+            transform.position + (Vector3)hintWorldOffset
+        );
+        if (screenPoint.z <= 0f)
+            return;
+
+        const float width = 720f;
+        const float height = 82f;
+        Rect hintRect = new Rect(
+            screenPoint.x - width * 0.5f,
+            Screen.height - screenPoint.y - height * 0.5f,
+            width,
+            height
+        );
+
+        Color previousColor = GUI.color;
+        GUI.color = new Color(0f, 0f, 0f, 0.62f);
+        GUI.DrawTexture(hintRect, Texture2D.whiteTexture);
+        GUI.color = previousColor;
+
+        GUIStyle hintStyle = new GUIStyle(GUI.skin.label)
+        {
+            fontSize = 32,
+            fontStyle = FontStyle.Bold,
+            alignment = TextAnchor.MiddleCenter,
+            wordWrap = true
+        };
+        hintStyle.normal.textColor = Color.white;
+        GUI.Label(hintRect, corpseColorHintText, hintStyle);
     }
 
     private void SetPressed(bool pressed)

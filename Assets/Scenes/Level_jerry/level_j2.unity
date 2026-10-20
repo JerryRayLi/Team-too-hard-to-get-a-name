@@ -737,6 +737,10 @@ MonoBehaviour:
   redColor: {r: 0.5411765, g: 0.3137255, b: 0.2901961, a: 1}
   blueColor: {r: 0.24705882, g: 0.39607844, b: 0.4392157, a: 1}
   contactTolerance: 0.02
+  showCorpseColorHint: 1
+  corpseColorHintText: A corpse can only trigger a switch in the right color!
+  hintWorldOffset: {x: 0, y: -1.7}
+  hintDuration: 0
 --- !u!61 &760117248
 BoxCollider2D:
   m_ObjectHideFlags: 0

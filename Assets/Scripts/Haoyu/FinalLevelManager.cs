@@ -41,7 +41,10 @@ public sealed class FinalLevelManager : MonoBehaviour
     void Start() { ResetRun(); }
     void Update()
     {
-        if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame) ResetRun();
+        if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
+        {
+            if (!Completed) Die("restart");
+        }
         if (CanMove) RunSeconds = Time.time - startedAt;
     }
     public void Weighted() { if (weightedAt < 0) weightedAt = Time.time; }
@@ -49,7 +52,7 @@ public sealed class FinalLevelManager : MonoBehaviour
     public void Die(string reason)
     {
         if (!AcceptContact) return;
-        Deaths++; LastDeathReason = reason;
+        Deaths++; PlaySessionStats.RecordDeath(); LastDeathReason = reason;
         LastWeightedCatchSeconds = reason == "chaser" && weightedAt >= 0 ? Time.time - weightedAt : -1;
         Debug.Log($"FINAL_EVENT death reason={reason} run={RunNumber} seconds={RunSeconds:F3} weightedCatch={LastWeightedCatchSeconds:F3} x={player.transform.position.x:F3}");
         if (effects) effects.Respawn(); else ResetRun();
@@ -77,32 +80,23 @@ public sealed class FinalLevelManager : MonoBehaviour
     {
         if (!AcceptContact) return;
         RunSeconds = Time.time - startedAt; Completed = true;
+        PlaySessionStats.MarkCurrentLevelCompleted();
         player.Body.linearVelocity = Vector2.zero;
         Debug.Log($"FINAL_EVENT complete run={RunNumber} seconds={RunSeconds:F3}");
     }
     void OnGUI()
     {
         // Tianyu GameHUD layout, with this level's controls and completion flow.
-        var titleStyle = new GUIStyle(GUI.skin.label) { fontSize = 24, fontStyle = FontStyle.Bold };
+        var titleStyle = new GUIStyle(GUI.skin.label) { fontSize = 36, fontStyle = FontStyle.Bold };
         titleStyle.normal.textColor = Color.white;
-        var bodyStyle = new GUIStyle(GUI.skin.label) { fontSize = 18 };
+        var bodyStyle = new GUIStyle(GUI.skin.label) { fontSize = 40, richText = true };
         bodyStyle.normal.textColor = Color.white;
         var deathStyle = new GUIStyle(bodyStyle) { alignment = TextAnchor.MiddleRight };
-        GUI.Label(new Rect(20, 15, 400, 35), UnityEngine.SceneManagement.SceneManager.GetActiveScene().name, titleStyle);
-        GUI.Label(new Rect(20, 50, 600, 30), "Move: A / D     Jump: Space     Restart: R", bodyStyle);
-        GUI.Label(new Rect(Screen.width - 220, 15, 200, 30), "Deaths: " + Deaths, deathStyle);
-        GUI.Label(new Rect(20, Screen.height - 42, 300, 30), "R: Restart Level", bodyStyle);
-        var style = new GUIStyle(bodyStyle) { alignment = TextAnchor.UpperCenter };
-        style.normal.textColor = Color.white;
-        if (Completed)
-        {
-            var box = new Rect(Screen.width * .3f, Screen.height * .25f, Screen.width * .4f, Screen.height * .2f);
-            GUI.Box(box, "");
-            style.fontSize = Mathf.Max(24, Screen.height / 24);
-            GUI.Label(new Rect(box.x, box.y + 15, box.width, 60), $"LEVEL COMPLETE   {RunSeconds:F2}s", style);
-            style.fontSize = Mathf.Max(18, Screen.height / 36);
-            GUI.Label(new Rect(box.x, box.y + 72, box.width, 40), "Press R to play again", style);
-        }
+        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        GUI.Label(new Rect(20, 15, 500, 48), LevelBackgroundTitle.GetDisplayTitle(sceneName), titleStyle);
+        GUI.Label(new Rect(20, 60, 940, 52), "Move: <b>A / D</b>     Jump: <b>Space</b>     Restart: <b>R</b>", bodyStyle);
+        GUI.Label(new Rect(Screen.width - 300, 15, 280, 48), "Deaths: " + PlaySessionStats.TotalDeaths, deathStyle);
+        GUI.Label(new Rect(20, Screen.height - 60, 520, 52), "<b>R</b>: Restart Level", bodyStyle);
     }
     void OnDestroy() { if (Instance == this) Instance = null; }
 }

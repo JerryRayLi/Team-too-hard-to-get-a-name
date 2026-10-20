@@ -100,6 +100,7 @@ public class PlayerRespawnJ : MonoBehaviour
         BeginRespawn();
         IsDying = true;
         DeathCount++;
+        PlaySessionStats.RecordDeath();
 
         // Claim the death before instantiating so only the accepted hazard
         // creates a corpse at the death position, before teleporting.
@@ -251,7 +252,12 @@ public class PlayerRespawnJ : MonoBehaviour
 
     private void RestartLevel()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().path);
+        DeathCount++;
+        PlaySessionStats.RecordDeath();
+
+        SceneManager.LoadScene(
+            SceneManager.GetActiveScene().path
+        );
     }
 
     public static void ResetDeathCount()

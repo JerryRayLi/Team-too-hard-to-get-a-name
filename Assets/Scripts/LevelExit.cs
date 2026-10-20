@@ -4,6 +4,10 @@ using UnityEngine.SceneManagement;
 
 public class LevelExit : MonoBehaviour
 {
+    [Header("Completion Screen")]
+    [SerializeField]
+    private bool showCompletionScreen = false;
+
     private bool completed;
     private float completionTime;
     private int nextScene;
@@ -21,8 +25,15 @@ public class LevelExit : MonoBehaviour
 
         completed = true;
         completionTime = Time.timeSinceLevelLoad;
+        PlaySessionStats.MarkCurrentLevelCompleted();
 
         nextScene = SceneManager.GetActiveScene().buildIndex + 1;
+
+        if (!showCompletionScreen)
+        {
+            Continue();
+            return;
+        }
 
         player.enabled = false;
 
@@ -46,7 +57,7 @@ public class LevelExit : MonoBehaviour
 
     private void Update()
     {
-        if (!completed || Keyboard.current == null)
+        if (!showCompletionScreen || !completed || Keyboard.current == null)
             return;
 
         if (Keyboard.current.enterKey.wasPressedThisFrame)
@@ -55,7 +66,7 @@ public class LevelExit : MonoBehaviour
 
     private void OnGUI()
     {
-        if (!completed)
+        if (!showCompletionScreen || !completed)
             return;
 
         Matrix4x4 previousMatrix = GUI.matrix;
@@ -116,7 +127,7 @@ public class LevelExit : MonoBehaviour
 
         GUI.Label(new Rect(80, 230, 800, 40),
                   $"Time: {minutes:00}:{seconds:00}    " +
-                  $"Total deaths: {PlayerRespawn.DeathCount}",
+                  $"Total deaths: {PlaySessionStats.TotalDeaths}",
                   text);
 
         if (GUI.Button(new Rect(350, 295, 260, 55),
@@ -125,7 +136,10 @@ public class LevelExit : MonoBehaviour
 
         if (GUI.Button(new Rect(350, 365, 125, 50),
                        "RETRY", button))
+        {
+            PlaySessionStats.RestartCurrentLevelAttempt();
             LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
 
         if (GUI.Button(new Rect(485, 365, 125, 50),
                        "MENU", button))
