@@ -136,6 +136,19 @@ public static class PlaySessionStats
         return StatsByLevel;
     }
 
+    public static void RestartCurrentLevelAttempt()
+    {
+        if (string.IsNullOrEmpty(currentLevel))
+        {
+            return;
+        }
+
+        currentLevelStartedAt = Time.realtimeSinceStartupAsDouble;
+        currentLevelDeaths = 0;
+        currentResultRecorded = false;
+        GetOrCreate(currentLevel).Visits++;
+    }
+
     public static void ResetSession()
     {
         TotalDeaths = 0;

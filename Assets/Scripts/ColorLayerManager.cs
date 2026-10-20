@@ -16,11 +16,10 @@ public class ColorLayerManager : MonoBehaviour
     private void Update()
     {
         if (Keyboard.current == null)
-        {
             return;
-        }
 
-        if (Keyboard.current.qKey.wasPressedThisFrame)
+        if (Keyboard.current.leftShiftKey.wasPressedThisFrame ||
+            Keyboard.current.rightShiftKey.wasPressedThisFrame)
         {
             redLayerActive = !redLayerActive;
             ApplyLayer();
@@ -46,4 +45,4 @@ public class ColorLayerManager : MonoBehaviour
                 : new Color(138f / 255f, 80f / 255f, 74f / 255f);  // #8A504A
         }
     }
-}   
+}

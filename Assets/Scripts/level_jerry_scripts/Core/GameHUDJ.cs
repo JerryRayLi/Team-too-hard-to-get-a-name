@@ -56,7 +56,7 @@ public class GameHUDJ : MonoBehaviour
         {
             GUI.Label(
                 new Rect(20, 90, 600, 40),
-                "Release Corpse: <b>E</b>",
+                "Release Corpse: <b>E</b>     Switch Color: <b>Q</b>",
                 bodyStyle
             );
         }
