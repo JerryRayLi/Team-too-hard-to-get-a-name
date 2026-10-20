@@ -8,6 +8,7 @@ public class CorpseReleaseRangeIndicator : MonoBehaviour
     [Min(8)] public int dashCount = 48;
     [Range(0.1f, 0.9f)] public float dashFraction = 0.55f;
     [Min(0.01f)] public float lineWidth = 0.04f;
+    [Tooltip("Set to 0 to keep the hint visible for the entire level.")]
     [Min(0f)] public float hintDuration = 4f;
     [Min(0f)] public float hintOffset = 0.4f;
     public string hintText = "Releasing Range";
@@ -113,8 +114,12 @@ public class CorpseReleaseRangeIndicator : MonoBehaviour
 
     private void OnGUI()
     {
-        float remaining = hintDuration - (Time.unscaledTime - hintStartTime);
-        if (!IsVisible || remaining <= 0f || Camera.main == null)
+        bool permanent = hintDuration <= 0f;
+        float remaining = permanent
+            ? float.PositiveInfinity
+            : hintDuration - (Time.unscaledTime - hintStartTime);
+
+        if (!IsVisible || (!permanent && remaining <= 0f) || Camera.main == null)
             return;
 
         Vector3 anchor = Camera.main.WorldToScreenPoint(
@@ -129,14 +134,23 @@ public class CorpseReleaseRangeIndicator : MonoBehaviour
         hintStyle.fontSize = Mathf.Clamp(Mathf.RoundToInt(Screen.height / 45f), 16, 24);
         hintStyle.normal.textColor = Color.white;
 
-        Rect labelRect = new Rect(anchor.x - 140f, Screen.height - anchor.y - 16f, 280f, 32f);
+        GUIContent content = new GUIContent(hintText);
+        Vector2 textSize = hintStyle.CalcSize(content);
+        float labelWidth = Mathf.Max(280f, textSize.x + 32f);
+        float labelHeight = Mathf.Max(40f, textSize.y + 12f);
+        Rect labelRect = new Rect(
+            anchor.x - labelWidth * 0.5f,
+            Screen.height - anchor.y - labelHeight * 0.5f,
+            labelWidth,
+            labelHeight
+        );
         Color previousColor = GUI.color;
-        float opacity = Mathf.Clamp01(remaining);
+        float opacity = permanent ? 1f : Mathf.Clamp01(remaining);
         GUI.color = new Color(0f, 0f, 0f, opacity * 0.8f);
         GUI.Label(new Rect(labelRect.x + 1f, labelRect.y + 1f, labelRect.width, labelRect.height),
-            hintText, hintStyle);
+            content, hintStyle);
         GUI.color = new Color(1f, 1f, 1f, opacity);
-        GUI.Label(labelRect, hintText, hintStyle);
+        GUI.Label(labelRect, content, hintStyle);
         GUI.color = previousColor;
     }
 
