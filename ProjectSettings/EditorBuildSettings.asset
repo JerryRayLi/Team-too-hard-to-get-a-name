@@ -27,6 +27,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Running_Door/Level_Running_Door_1.unity
     guid: 2a526a3a083d4b94399a01e5704c5c99
   - enabled: 1
+    path: Assets/Scenes/Running_Door/Level_Running_Door_2.unity
+    guid: 9fd000b31cc2c704eafecf632d12e7bf
+  - enabled: 1
     path: Assets/Scenes/Level_jerry/level_j1.unity
     guid: 18a066e652e72f1468bb47315c889c00
   - enabled: 1
