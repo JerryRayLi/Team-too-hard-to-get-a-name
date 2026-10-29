@@ -66,3 +66,28 @@ test('preferences are separate, sorted, validated totals; no votes are inferred 
   assert.throws(() => metrics.normalizeVotes(sample), /favorites and dislikes/);
   assert.throws(() => metrics.normalizeVotes({ favorites: [{ level_name: 'A', votes: -1 }], dislikes: [] }), /non-negative integer/);
 });
+test('box-plot statistics use linear-interpolation quartiles and 1.5 × IQR outliers', () => {
+  const stats = metrics.describe([600, 45, 40, 50, 42, 47]);
+  assert.deepEqual(stats.values, [40, 42, 45, 47, 50, 600]);
+  assert.equal(stats.q1, 42.75); assert.equal(stats.median, 46); assert.equal(stats.q3, 49.25);
+  assert.equal(stats.whiskerLow, 40); assert.equal(stats.whiskerHigh, 50); assert.deepEqual(stats.outliers, [600]);
+  assert.equal(metrics.describe([]), null);
+  const single = metrics.describe([7]);
+  assert.equal(single.median, 7); assert.equal(single.q1, 7); assert.deepEqual(single.outliers, []);
+});
+test('median resists a stuck player that drags the mean; skipped -1 never enters the distribution', () => {
+  const seconds = [40, 42, 45, 47, 50, 600];
+  const rows = Object.fromEntries(seconds.map((value, index) => [`r${index}`, event({ session_id: `s${index}`, duration_seconds: value, deaths: index === 5 ? 30 : 1 })]));
+  rows.skip = event({ session_id: 'skip', result: 'skipped', deaths: -1, duration_seconds: -1 });
+  const row = report(rows).levels[0];
+  assert.equal(row.durationMedian, 46); assert.ok(row.durationMean > 130);
+  assert.equal(row.deathMedian, 1); assert.deepEqual(row.deathStats.outliers, [30]);
+  assert.equal(row.durationStats.n, 6); assert.ok(!row.durationValues.includes(-1));
+});
+test('distributions follow the sample mode and have no stats when there are no valid samples', () => {
+  const rows = { a: event({ deaths: 8 }), b: event({ visit_number: 2, deaths: 2 }) };
+  assert.deepEqual(report(rows).levels[0].deathValues, [8]);
+  assert.deepEqual(report(rows, { sample: 'all' }).levels[0].deathValues, [2, 8]);
+  const none = report({ a: event({ result: 'skipped', deaths: -1, duration_seconds: -1 }) }).levels[0];
+  assert.equal(none.deathStats, null); assert.equal(none.durationMedian, null);
+});
