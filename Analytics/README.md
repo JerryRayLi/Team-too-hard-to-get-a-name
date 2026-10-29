@@ -2,10 +2,10 @@
 
 Open `index.html` in a browser. No installation, build, or server is required.
 
-The dashboard reads the team's `analytics_events` format and provides four bar charts:
+The dashboard reads the team's `analytics_events` format and provides four charts:
 
-1. Deaths by level, with total and average views.
-2. Average completion time by level, in seconds.
+1. Deaths per completion by level, as a box plot, with a total-deaths bar view.
+2. Completion time by level, in seconds, as a box plot.
 3. The three least-liked levels, from imported vote totals.
 4. Favorite levels, from imported vote totals.
 
@@ -43,14 +43,16 @@ Votes must be nonnegative integers. Duplicate level names are combined; the leas
 - By default, each session, level, and version contributes its first completion, ordered by visit number and then timestamp. **All completions** includes repeat completions.
 - Versions are separate by default. Select **All versions** to combine them explicitly.
 - Deaths must be nonnegative integers; durations must be nonnegative finite numbers. Zero is valid. The two metrics have separate sample counts.
+- Deaths and completion time use medians and box plots rather than means, so one stuck player does not distort a level. The box spans Q1–Q3 (linear interpolation, as in Excel `QUARTILE.INC`), the line and label show the median, and whiskers reach the furthest values within 1.5 × IQR. Values beyond the whiskers are red outliers; they are kept, not removed.
+- Every sample is drawn as a point. Levels with fewer than 5 samples show points and the median only, because quartiles of so few values are not meaningful. The axis is scaled to the whiskers; outliers above it are pinned to the top edge with their value.
 - No valid samples are shown as **No sample**, rather than zero. Sessions may include repeat players. Duration uses the value reported by the game.
 - Personal-best flags do not filter the dataset. Replacing a snapshot does not add its counts again. Duplicate events with different IDs still require upstream deduplication.
 - Missing preference data is shown as an empty state. No player data or votes are invented.
 
 ## Files and checks
 
-- `analytics.js`: parsing, filters, aggregation, and preference totals.
-- `dashboard.js`: SVG charts, imports, controls, and `PlaytestDashboard` API.
+- `analytics.js`: parsing, filters, aggregation, box-plot statistics (`describe`), and preference totals.
+- `dashboard.js`: SVG box plots and bar charts, imports, controls, and `PlaytestDashboard` API.
 - `firebase-reader.js`: explicit Firebase GET reader.
 - `sample-data.js`: the team's two example records.
 - `index.html`, `styles.css`: page and responsive layout.
