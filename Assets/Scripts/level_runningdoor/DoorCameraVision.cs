@@ -41,9 +41,7 @@ public class DoorCameraVision : MonoBehaviour
             ? (Vector2)playerCollider.bounds.center
             : (Vector2)player.position;
 
-        // 摄像头朝左，只能看到左侧的玩家。
-        if (target.x >= origin.x)
-            return false;
+
 
         if (Vector2.Distance(origin, target) > viewDistance)
             return false;
