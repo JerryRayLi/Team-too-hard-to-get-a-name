@@ -316,6 +316,9 @@ MonoBehaviour:
     - levelName: LEVEL 2
       sceneName: level_j2
       sceneAsset: {fileID: 102900000, guid: 6747bf44dfd82e44baf804810f055ae4, type: 3}
+    - levelName: LEVEL 3
+      sceneName: level_j3
+      sceneAsset: {fileID: 102900000, guid: 5e39b6cf39b74b5438228ebb4aad3209, type: 3}
     isChallenge: 0
   - worldName: SLOW
     levels:
