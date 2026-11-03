@@ -20,10 +20,10 @@ public class GameComplete : MonoBehaviour
 
     private static readonly string[] DisplayNames =
     {
-        "LEVEL01",
-        "LEVEL02",
-        "LEVEL03",
-        "LEVEL04",
+        "INITIATION01",
+        "INITIATION02",
+        "INITIATION03",
+        "INITIATION04",
         "DOOR",
         "CORPSE01",
         "CORPSE02",
