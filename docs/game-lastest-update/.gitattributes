@@ -1,0 +1,2 @@
+TemplateData/*.png -filter -diff -merge binary
+TemplateData/*.ico -filter -diff -merge binary
