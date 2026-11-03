@@ -514,6 +514,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97a64b281ee30ae4486305a567f17c3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelExit
+  showCompletionScreen: 0
 --- !u!61 &546201967
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -923,6 +924,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FlashingPlatform
   warningDuration: 2
+  firstWarningExtraDelay: 0.4
   startingFlashInterval: 0.35
   fastestFlashInterval: 0.06
   collapseAtEnd: 1
@@ -959,6 +961,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5070b6079b02b0e4eba764957c7059a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerRespawn
+  deathParticles: {fileID: 0}
+  respawnParticles: {fileID: 0}
 --- !u!114 &733642249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1682,22 +1686,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1660057539 &9223372036854775807
-SceneRoots:
-  m_ObjectHideFlags: 0
-  m_Roots:
-  - {fileID: 1779463628}
-  - {fileID: 922732379}
-  - {fileID: 519825036}
-  - {fileID: 733642253}
-  - {fileID: 302634842}
-  - {fileID: 1285330453}
-  - {fileID: 1924721043}
-  - {fileID: 658757954}
-  - {fileID: 1955945419}
-  - {fileID: 646120257}
-  - {fileID: 372798176}
-  - {fileID: 546201969}
 --- !u!1 &8100000000000000301
 GameObject:
   m_ObjectHideFlags: 0
@@ -11486,3 +11474,19 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!1660057539 &9223372036854775807
+SceneRoots:
+  m_ObjectHideFlags: 0
+  m_Roots:
+  - {fileID: 1779463628}
+  - {fileID: 922732379}
+  - {fileID: 519825036}
+  - {fileID: 733642253}
+  - {fileID: 302634842}
+  - {fileID: 1285330453}
+  - {fileID: 1924721043}
+  - {fileID: 658757954}
+  - {fileID: 1955945419}
+  - {fileID: 646120257}
+  - {fileID: 372798176}
+  - {fileID: 546201969}

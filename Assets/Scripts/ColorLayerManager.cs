@@ -16,11 +16,16 @@ public class ColorLayerManager : MonoBehaviour
     private void Update()
     {
         if (Keyboard.current == null)
-        {
             return;
-        }
 
-        if (Keyboard.current.qKey.wasPressedThisFrame)
+        bool keyboardSwitch =
+            Keyboard.current.leftShiftKey.wasPressedThisFrame ||
+            Keyboard.current.rightShiftKey.wasPressedThisFrame ||
+            Keyboard.current.kKey.wasPressedThisFrame;
+        bool mouseSwitch = Mouse.current != null &&
+            Mouse.current.rightButton.wasPressedThisFrame;
+
+        if (keyboardSwitch || mouseSwitch)
         {
             redLayerActive = !redLayerActive;
             ApplyLayer();
@@ -46,4 +51,4 @@ public class ColorLayerManager : MonoBehaviour
                 : new Color(138f / 255f, 80f / 255f, 74f / 255f);  // #8A504A
         }
     }
-}   
+}

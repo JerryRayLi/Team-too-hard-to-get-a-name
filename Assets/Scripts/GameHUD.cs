@@ -20,51 +20,52 @@ public class GameHUD : MonoBehaviour
     private void OnGUI()
     {
         GUIStyle titleStyle = new GUIStyle(GUI.skin.label);
-        titleStyle.fontSize = 24;
+        titleStyle.fontSize = 36;
         titleStyle.fontStyle = FontStyle.Bold;
         titleStyle.normal.textColor = Color.white;
 
         GUIStyle bodyStyle = new GUIStyle(GUI.skin.label);
-        bodyStyle.fontSize = 18;
+        bodyStyle.fontSize = 40;
+        bodyStyle.richText = true;
         bodyStyle.normal.textColor = Color.white;
 
         GUIStyle deathStyle = new GUIStyle(bodyStyle);
         deathStyle.alignment = TextAnchor.MiddleRight;
 
         GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
-        buttonStyle.fontSize = 16;
+        buttonStyle.fontSize = 26;
 
         string levelName = SceneManager.GetActiveScene().name;
 
         GUI.Label(
-            new Rect(20, 15, 400, 35),
-            levelName,
+            new Rect(20, 15, 500, 48),
+            LevelBackgroundTitle.GetDisplayTitle(levelName),
             titleStyle
         );
 
         GUI.Label(
-            new Rect(20, 50, 600, 30),
-            "Move: A / D     Jump: Space     Restart: R",
+            new Rect(20, 60, 940, 52),
+            "Move: <b>A / D</b>     Jump: <b>Space</b>     Restart: <b>R</b>",
             bodyStyle
         );
 
         if (levelName != "Level01")
         {
             GUI.Label(
-                new Rect(20, 78, 600, 30),
-                "Switch color: Q",
+                new Rect(20, 108, 760, 52),
+                "Switch color: <b>Shift / K / Right Click</b>",
                 bodyStyle
             );
         }
 
         GUI.Label(
-            new Rect(Screen.width - 220, 15, 200, 30),
-            "Deaths: " + PlayerRespawn.DeathCount,
+            new Rect(Screen.width - 300, 15, 280, 48),
+            "Deaths: " + PlaySessionStats.TotalDeaths,
             deathStyle
         );
 
         if (GUI.Button(
-            new Rect(Screen.width - 170, 55, 150, 40),
+            new Rect(Screen.width - 200, 68, 180, 48),
             "MAIN MENU",
             buttonStyle))
         {
@@ -72,16 +73,30 @@ public class GameHUD : MonoBehaviour
         }
 
         GUI.Label(
-            new Rect(20, Screen.height - 70, 300, 30),
-            "R: Restart Level",
+            new Rect(20, Screen.height - 112, 520, 52),
+            "<b>R</b>: Restart Level",
             bodyStyle
         );
 
         GUI.Label(
-            new Rect(20, Screen.height - 42, 300, 30),
-            "Esc: Main Menu",
+            new Rect(20, Screen.height - 60, 520, 52),
+            "<b>Esc</b>: Main Menu",
             bodyStyle
         );
+
+        if (levelName == "Level01")
+        {
+            GUIStyle initiationStyle = new GUIStyle(bodyStyle);
+            initiationStyle.alignment = TextAnchor.MiddleCenter;
+            initiationStyle.fontSize = 32;
+            initiationStyle.normal.textColor = new Color(1f, 1f, 1f, 0.82f);
+            GUI.Label(
+                new Rect(Screen.width * 0.2f, Screen.height - 125f,
+                    Screen.width * 0.6f, 54f),
+                "This game teaches through failure. Observe, die, adapt.",
+                initiationStyle
+            );
+        }
     }
 
     private void ReturnToMainMenu()
