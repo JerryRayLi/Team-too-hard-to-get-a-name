@@ -46,6 +46,25 @@
     return [...timestamps].sort((a, b) => b[1] - a[1] || collator.compare(b[0], a[0])).map(([version]) => version);
   }
 
+  // Linear-interpolation quantile (same as Excel QUARTILE.INC / NumPy default) on sorted values.
+  function quantile(sorted, p) {
+    const position = (sorted.length - 1) * p, low = Math.floor(position), high = Math.ceil(position);
+    return sorted[low] + (sorted[high] - sorted[low]) * (position - low);
+  }
+  // Box-plot statistics. Whiskers reach the furthest values within 1.5 × IQR of the box (Tukey).
+  function describe(values) {
+    if (!values.length) return null;
+    const sorted = [...values].sort((a, b) => a - b);
+    const q1 = quantile(sorted, .25), median = quantile(sorted, .5), q3 = quantile(sorted, .75);
+    const iqr = q3 - q1, lowFence = q1 - 1.5 * iqr, highFence = q3 + 1.5 * iqr;
+    const inside = sorted.filter(value => value >= lowFence && value <= highFence);
+    return {
+      n: sorted.length, min: sorted[0], q1, median, q3, max: sorted[sorted.length - 1],
+      whiskerLow: inside[0], whiskerHigh: inside[inside.length - 1],
+      outliers: sorted.filter(value => value < lowFence || value > highFence), values: sorted
+    };
+  }
+
   function summarize(normalized, options = {}) {
     const events = normalized.events.filter(row => !options.version || row.version === options.version);
     const selected = events.filter(row => row.result === 'completed');
@@ -60,7 +79,7 @@
     for (const row of events) {
       if (!byLevel.has(row.level)) byLevel.set(row.level, {
         level: row.level, visits: 0, completedVisits: 0, skipped: 0, other: 0,
-        samples: 0, deathSamples: 0, timeSamples: 0, deathTotal: 0, secondsTotal: 0
+        samples: 0, deathSamples: 0, timeSamples: 0, deathTotal: 0, secondsTotal: 0, deathValues: [], durationValues: []
       });
       const item = byLevel.get(row.level);
       item.visits++;
@@ -71,15 +90,21 @@
     for (const row of completed) {
       const item = byLevel.get(row.level);
       item.samples++;
-      if (row.deaths !== null) { item.deathTotal += row.deaths; item.deathSamples++; }
-      if (row.seconds !== null) { item.secondsTotal += row.seconds; item.timeSamples++; }
+      if (row.deaths !== null) { item.deathTotal += row.deaths; item.deathSamples++; item.deathValues.push(row.deaths); }
+      if (row.seconds !== null) { item.secondsTotal += row.seconds; item.timeSamples++; item.durationValues.push(row.seconds); }
     }
     return {
-      levels: [...byLevel.values()].sort((a, b) => collator.compare(a.level, b.level)).map(item => ({
-        ...item,
-        deathMean: item.deathSamples ? item.deathTotal / item.deathSamples : null,
-        durationMean: item.timeSamples ? item.secondsTotal / item.timeSamples : null
-      })),
+      levels: [...byLevel.values()].sort((a, b) => collator.compare(a.level, b.level)).map(item => {
+        const deathStats = describe(item.deathValues), durationStats = describe(item.durationValues);
+        return {
+          ...item,
+          deathValues: deathStats ? deathStats.values : [], durationValues: durationStats ? durationStats.values : [],
+          deathMean: item.deathSamples ? item.deathTotal / item.deathSamples : null,
+          durationMean: item.timeSamples ? item.secondsTotal / item.timeSamples : null,
+          deathMedian: deathStats ? deathStats.median : null, durationMedian: durationStats ? durationStats.median : null,
+          deathStats, durationStats
+        };
+      }),
       events: events.length, sessions: new Set(events.map(row => row.session)).size,
       completed: completed.length, skipped: events.filter(row => row.result === 'skipped').length,
       excludedCompletions: selected.length - completed.length,
@@ -106,5 +131,5 @@
     }
     return { favorites: group(payload.favorites), dislikes: group(payload.dislikes), version: text(payload.game_version) ? payload.game_version : null };
   }
-  return { normalize, summarize, versions, normalizeVotes };
+  return { normalize, summarize, versions, normalizeVotes, describe };
 });

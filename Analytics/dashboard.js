@@ -29,47 +29,102 @@
     if (text !== undefined) element.textContent = text;
     return element;
   }
-  function draw(id, entries, title, unit) {
-    if (!entries.length) { empty(id, 'No data', 'Load or import data.'); return; }
+  // Shared axis, gridlines and level labels. Returns the scale used by the marks.
+  function frame(entries, title, max, integer = false) {
     const width = Math.max(470, entries.length * 82 + 72);
     const left = 54, right = 18, top = 28, bottom = 182;
     const plot = width - left - right;
-    const max = Math.max(1, ...entries.map(item => item.value === null ? 0 : item.value));
+    max = Math.max(1, max);
     const power = 10 ** Math.floor(Math.log10(max / 4));
     const rough = max / 4 / power;
-    const step = (rough <= 1 ? 1 : rough <= 2 ? 2 : rough <= 5 ? 5 : 10) * power;
+    const nice = (rough <= 1 ? 1 : rough <= 2 ? 2 : rough <= 5 ? 5 : 10) * power;
+    const step = integer ? Math.max(1, nice) : nice;
     const limit = Math.ceil(max / step) * step;
     const svg = svgElement('svg', { viewBox: `0 0 ${width} 260`, role: 'img', 'aria-label': title });
     svg.style.minWidth = `${width}px`;
     svg.append(svgElement('title', {}, title));
+    const y = value => bottom - value / limit * (bottom - top);
     const ticks = Math.round(limit / step);
     for (let index = 0; index <= ticks; index++) {
       const tick = index * step;
-      const y = bottom - tick / limit * (bottom - top);
-      svg.append(svgElement('line', { x1: left, y1: y, x2: width - right, y2: y, class: index === 0 ? 'baseline' : 'gridline' }));
-      svg.append(svgElement('text', { x: left - 10, y: y + 4, 'text-anchor': 'end', class: 'tick' }, format(tick)));
+      svg.append(svgElement('line', { x1: left, y1: y(tick), x2: width - right, y2: y(tick), class: index === 0 ? 'baseline' : 'gridline' }));
+      svg.append(svgElement('text', { x: left - 10, y: y(tick) + 4, 'text-anchor': 'end', class: 'tick' }, format(tick)));
     }
+    const slot = plot / entries.length;
+    const center = index => left + slot * (index + .5);
     entries.forEach((item, index) => {
-      const slot = plot / entries.length;
-      const center = left + slot * (index + .5);
-      const barWidth = Math.min(48, slot * .56);
-      const missing = item.value === null;
-      const description = `${item.level}: ${missing ? 'no valid sample' : format(item.value) + ' ' + unit}${item.n === undefined ? '' : ', ' + item.n + ' samples'}`;
-      if (!missing) {
-        const height = item.value / limit * (bottom - top);
-        const mark = item.value === 0
-          ? svgElement('circle', { cx: center, cy: bottom, r: 3, class: 'bar', tabindex: 0, 'aria-label': description })
-          : svgElement('rect', { x: center - barWidth / 2, y: bottom - height, width: barWidth, height, rx: 3, class: 'bar', tabindex: 0, 'aria-label': description });
-        mark.append(svgElement('title', {}, description));
-        svg.append(mark);
-        svg.append(svgElement('text', { x: center, y: bottom - height - 10, 'text-anchor': 'middle', class: 'value-label' }, format(item.value)));
-      } else {
-        svg.append(svgElement('text', { x: center, y: bottom - 12, 'text-anchor': 'middle', class: 'sample-label' }, 'No sample'));
-      }
-      const label = svgElement('text', { x: center, y: 208, 'text-anchor': 'middle', class: 'level-label' }, item.level.length > 16 ? item.level.slice(0, 14) + '…' : item.level);
+      const label = svgElement('text', { x: center(index), y: 208, 'text-anchor': 'middle', class: 'level-label' }, item.level.length > 16 ? item.level.slice(0, 14) + '…' : item.level);
       label.append(svgElement('title', {}, item.level));
       svg.append(label);
-      if (item.n !== undefined) svg.append(svgElement('text', { x: center, y: 228, 'text-anchor': 'middle', class: 'sample-label' }, `n=${item.n}`));
+      if (item.n !== undefined) svg.append(svgElement('text', { x: center(index), y: 228, 'text-anchor': 'middle', class: 'sample-label' }, `n=${item.n}`));
+    });
+    return { svg, y, top, bottom, limit, slot, center };
+  }
+  function mark(svg, tag, attributes, description) {
+    const element = svgElement(tag, { ...attributes, tabindex: 0, 'aria-label': description });
+    element.append(svgElement('title', {}, description));
+    svg.append(element);
+  }
+  function noSample(svg, x, bottom) {
+    svg.append(svgElement('text', { x, y: bottom - 12, 'text-anchor': 'middle', class: 'sample-label' }, 'No sample'));
+  }
+  function draw(id, entries, title, unit) {
+    if (!entries.length) { empty(id, 'No data', 'Load or import data.'); return; }
+    const { svg, y, bottom, slot, center } = frame(entries, title, Math.max(...entries.map(item => item.value === null ? 0 : item.value)));
+    const barWidth = Math.min(48, slot * .56);
+    entries.forEach((item, index) => {
+      const x = center(index);
+      if (item.value === null) { noSample(svg, x, bottom); return; }
+      const description = `${item.level}: ${format(item.value)} ${unit}${item.n === undefined ? '' : ', ' + item.n + ' samples'}`;
+      if (item.value === 0) mark(svg, 'circle', { cx: x, cy: bottom, r: 3, class: 'bar' }, description);
+      else mark(svg, 'rect', { x: x - barWidth / 2, y: y(item.value), width: barWidth, height: bottom - y(item.value), rx: 3, class: 'bar' }, description);
+      svg.append(svgElement('text', { x, y: y(item.value) - 10, 'text-anchor': 'middle', class: 'value-label' }, format(item.value)));
+    });
+    $(id).replaceChildren(svg);
+  }
+  // Box plot with every sample drawn as a point. Below MIN_BOX samples quartiles are not meaningful,
+  // so only the points and the median are shown. The axis is scaled to the whiskers so one extreme
+  // value cannot flatten every box; outliers above the axis are pinned to the top edge and labeled.
+  const MIN_BOX = 5;
+  function drawBoxes(id, entries, title, unit, integer = false) {
+    if (!entries.length) { empty(id, 'No data', 'Load or import data.'); return; }
+    const reach = stats => stats.n >= MIN_BOX ? stats.whiskerHigh : stats.max;
+    // 15% headroom keeps the median label clear of the top edge and pinned outliers.
+    const frameParts = frame(entries, title, 1.15 * Math.max(0, ...entries.map(item => item.stats ? reach(item.stats) : 0)), integer);
+    const { svg, top, bottom, limit, slot, center } = frameParts;
+    const y = value => frameParts.y(Math.min(value, limit));
+    const boxWidth = Math.min(44, slot * .5);
+    entries.forEach((item, index) => {
+      const x = center(index), stats = item.stats;
+      if (!stats) { noSample(svg, x, bottom); return; }
+      const boxed = stats.n >= MIN_BOX;
+      if (boxed) {
+        for (const [edge, end] of [[stats.q1, stats.whiskerLow], [stats.q3, stats.whiskerHigh]]) {
+          svg.append(svgElement('line', { x1: x, y1: y(edge), x2: x, y2: y(end), class: 'whisker' }));
+          svg.append(svgElement('line', { x1: x - boxWidth / 4, y1: y(end), x2: x + boxWidth / 4, y2: y(end), class: 'whisker' }));
+        }
+        mark(svg, 'rect', { x: x - boxWidth / 2, y: y(stats.q3), width: boxWidth, height: Math.max(1, y(stats.q1) - y(stats.q3)), class: 'box' },
+          `${item.level}: median ${format(stats.median)} ${unit}, middle half ${format(stats.q1)}–${format(stats.q3)}, ${stats.n} samples, ${stats.outliers.length} outliers`);
+      }
+      svg.append(svgElement('line', { x1: x - boxWidth / 2, y1: y(stats.median), x2: x + boxWidth / 2, y2: y(stats.median), class: 'median' }));
+      // Deterministic jitter: repeated values (common for death counts) fan out sideways instead of overlapping.
+      const seen = new Map();
+      const clipped = stats.values.filter(value => value > limit);
+      for (const value of stats.values) {
+        const k = seen.get(value) || 0;
+        seen.set(value, k + 1);
+        const offset = (k % 2 ? -1 : 1) * Math.ceil(k / 2) * 5;
+        const outlier = boxed && stats.outliers.includes(value);
+        const cx = x + Math.max(-boxWidth / 2, Math.min(boxWidth / 2, offset));
+        const description = `${item.level}: ${format(value)} ${unit}${outlier ? ' (outlier)' : ''}`;
+        if (value > limit) mark(svg, 'path', { d: `M${cx} ${top - 10}l-4.5 7h9z`, class: 'point outlier clipped' }, description + ', above axis');
+        else mark(svg, 'circle', { cx, cy: y(value), r: 3.5, class: outlier ? 'point outlier' : 'point' }, description);
+      }
+      if (clipped.length) {
+        const text = clipped.length === 1 ? format(clipped[0]) : `${clipped.length} up to ${format(clipped[clipped.length - 1])}`;
+        svg.append(svgElement('text', { x: x + boxWidth / 2 + 6, y: top - 4, class: 'sample-label outlier-label' }, `↑ ${text}`));
+      }
+      svg.append(svgElement('text', { x, y: y(reach(stats)) - 10, 'text-anchor': 'middle', class: 'value-label' }, format(stats.median)));
     });
     $(id).replaceChildren(svg);
   }
@@ -94,14 +149,15 @@
   function render() {
     const summary = getSummary();
     for (const key of ['events', 'sessions', 'completed', 'skipped']) $(key).textContent = format(summary[key], 0);
-    const average = $('death-mode').value === 'mean';
-    $('death-description').textContent = average ? 'Average · completed visits' : 'Total · completed visits';
-    draw('death-chart', summary.levels.map(row => ({ level: row.level, value: row.deathSamples ? (average ? row.deathMean : row.deathTotal) : null, n: row.deathSamples })), 'Deaths by level', 'deaths');
-    draw('time-chart', summary.levels.map(row => ({ level: row.level, value: row.durationMean, n: row.timeSamples })), 'Mean completion time by level', 'seconds');
+    const total = $('death-mode').value === 'total';
+    $('death-description').textContent = total ? 'Total · completed visits' : 'Box plot · median label · completed visits';
+    if (total) draw('death-chart', summary.levels.map(row => ({ level: row.level, value: row.deathSamples ? row.deathTotal : null, n: row.deathSamples })), 'Total deaths by level', 'deaths');
+    else drawBoxes('death-chart', summary.levels.map(row => ({ level: row.level, stats: row.deathStats, n: row.deathSamples })), 'Deaths per completion by level', 'deaths', true);
+    drawBoxes('time-chart', summary.levels.map(row => ({ level: row.level, stats: row.durationStats, n: row.timeSamples })), 'Completion time by level', 'seconds');
     drawPreferences();
     const rows = summary.levels.map(row => {
       const element = document.createElement('tr');
-      for (const value of [row.level, row.visits, row.completedVisits, row.skipped, row.other, row.deathSamples, row.timeSamples, row.deathSamples ? row.deathTotal : null, row.durationMean]) {
+      for (const value of [row.level, row.visits, row.completedVisits, row.skipped, row.other, row.deathSamples, row.timeSamples, row.deathSamples ? row.deathTotal : null, row.deathMedian, row.durationMedian]) {
         const cell = document.createElement('td');
         cell.textContent = typeof value === 'string' ? value : format(value);
         element.append(cell);
@@ -111,10 +167,11 @@
     if (!rows.length) {
       const row = document.createElement('tr');
       const cell = document.createElement('td');
-      cell.colSpan = 9; cell.textContent = 'No data.'; row.append(cell); rows.push(row);
+      cell.colSpan = 10; cell.textContent = 'No data.'; row.append(cell); rows.push(row);
     }
     $('rows').replaceChildren(...rows);
-    const notes = [$('sample').value === 'all' ? 'All completed visits.' : 'First completion per session, level and version.', 'Skipped visits are excluded from both charts.'];
+    const notes = [$('sample').value === 'all' ? 'All completed visits.' : 'First completion per session, level and version.', 'Skipped visits are excluded from both charts.',
+      `Box plots: the box spans the middle half (Q1–Q3, linear interpolation), the line and label show the median, whiskers reach the furthest values within 1.5 × IQR, and red points are outliers (values above the axis are pinned to the top edge with their value). Every sample is drawn as a point; levels with fewer than ${MIN_BOX} samples show points and the median only.`];
     if (summary.excludedCompletions) notes.push(`Repeat completions excluded: ${summary.excludedCompletions}.`);
     if (summary.invalidMetrics) notes.push(`Completions with missing metrics: ${summary.invalidMetrics}.`);
     if (summary.ignored) notes.push(`Other events excluded: ${summary.ignored}.`);
