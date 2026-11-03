@@ -152,6 +152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FlashingPlatform
   warningDuration: 0.2
+  firstWarningExtraDelay: 0
   startingFlashInterval: 0.2
   fastestFlashInterval: 0.06
   collapseAtEnd: 1

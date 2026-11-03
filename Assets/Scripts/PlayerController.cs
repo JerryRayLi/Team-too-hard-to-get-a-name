@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -13,6 +14,13 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        string sceneName = SceneManager.GetActiveScene().name;
+        if (sceneName == "Level01" || sceneName == "Level02" ||
+            sceneName == "Level03" || sceneName == "Level04")
+        {
+            moveSpeed *= 1.08f;
+        }
     }
 
     private void Update()

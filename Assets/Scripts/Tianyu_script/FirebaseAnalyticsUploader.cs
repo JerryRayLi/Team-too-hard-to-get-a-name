@@ -36,6 +36,10 @@ public sealed class FirebaseAnalyticsUploader : MonoBehaviour
         public float duration_seconds;
         public int visit_number;
         public bool was_personal_best;
+        public int hint_threshold;
+        public int hint_trigger_count;
+        public int taunt_threshold;
+        public int taunt_trigger_count;
         public string game_version;
         public string client_timestamp_utc;
     }
@@ -62,7 +66,9 @@ public sealed class FirebaseAnalyticsUploader : MonoBehaviour
         int deaths,
         float durationSeconds,
         int visitNumber,
-        bool wasPersonalBest)
+        bool wasPersonalBest,
+        int hintTriggerCount,
+        int highestHintThreshold)
     {
         FirebaseAnalyticsUploader uploader = EnsureInstance();
         uploader.Enqueue(new AnalyticsEvent
@@ -75,12 +81,18 @@ public sealed class FirebaseAnalyticsUploader : MonoBehaviour
             duration_seconds = durationSeconds,
             visit_number = visitNumber,
             was_personal_best = wasPersonalBest,
+            hint_threshold = highestHintThreshold,
+            hint_trigger_count = hintTriggerCount,
             game_version = Application.version,
             client_timestamp_utc = DateTime.UtcNow.ToString("o")
         });
     }
 
-    public static void RecordLevelSkipped(string levelName, int visitNumber)
+    public static void RecordLevelSkipped(
+        string levelName,
+        int visitNumber,
+        int hintTriggerCount,
+        int highestHintThreshold)
     {
         FirebaseAnalyticsUploader uploader = EnsureInstance();
         uploader.Enqueue(new AnalyticsEvent
@@ -93,6 +105,58 @@ public sealed class FirebaseAnalyticsUploader : MonoBehaviour
             duration_seconds = -1f,
             visit_number = visitNumber,
             was_personal_best = false,
+            hint_threshold = highestHintThreshold,
+            hint_trigger_count = hintTriggerCount,
+            game_version = Application.version,
+            client_timestamp_utc = DateTime.UtcNow.ToString("o")
+        });
+    }
+
+    public static void RecordHintTriggered(
+        string levelName,
+        int deaths,
+        int threshold,
+        int hintTriggerCount)
+    {
+        FirebaseAnalyticsUploader uploader = EnsureInstance();
+        uploader.Enqueue(new AnalyticsEvent
+        {
+            session_id = uploader.sessionId,
+            event_type = "hint_triggered",
+            level_name = levelName,
+            result = "shown",
+            deaths = deaths,
+            duration_seconds = PlaySessionStats.GetCurrentLevelElapsedSeconds(),
+            visit_number = 0,
+            was_personal_best = false,
+            hint_threshold = threshold,
+            hint_trigger_count = hintTriggerCount,
+            game_version = Application.version,
+            client_timestamp_utc = DateTime.UtcNow.ToString("o")
+        });
+    }
+
+    public static void RecordTauntTriggered(
+        string levelName,
+        int deaths,
+        int threshold,
+        int tauntTriggerCount)
+    {
+        FirebaseAnalyticsUploader uploader = EnsureInstance();
+        uploader.Enqueue(new AnalyticsEvent
+        {
+            session_id = uploader.sessionId,
+            event_type = "taunt_triggered",
+            level_name = levelName,
+            result = "shown",
+            deaths = deaths,
+            duration_seconds = PlaySessionStats.GetCurrentLevelElapsedSeconds(),
+            visit_number = 0,
+            was_personal_best = false,
+            hint_threshold = 0,
+            hint_trigger_count = 0,
+            taunt_threshold = threshold,
+            taunt_trigger_count = tauntTriggerCount,
             game_version = Application.version,
             client_timestamp_utc = DateTime.UtcNow.ToString("o")
         });
