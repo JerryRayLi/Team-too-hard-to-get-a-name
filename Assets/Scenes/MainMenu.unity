@@ -287,7 +287,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MainMenuController
   gameTitle: Color Blind Troll
   worlds:
-  - worldName: DEMO
+  - worldName: INITIATION
     levels:
     - levelName: LEVEL 1
       sceneName: Level01

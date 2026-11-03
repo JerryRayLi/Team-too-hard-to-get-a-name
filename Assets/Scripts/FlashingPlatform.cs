@@ -4,6 +4,8 @@ public class FlashingPlatform : MonoBehaviour
 {
     [Header("Flashing")]
     [Min(0.1f)] public float warningDuration = 2f;
+    [Tooltip("Extra warning time before this platform's first disappearance.")]
+    [Min(0f)] public float firstWarningExtraDelay = 0f;
     [Min(0.01f)] public float startingFlashInterval = 0.35f;
     [Min(0.01f)] public float fastestFlashInterval = 0.06f;
 
@@ -17,6 +19,8 @@ public class FlashingPlatform : MonoBehaviour
     private bool hasTriggered;
     private float elapsedTime;
     private float flashTimer;
+    private float activeWarningDuration;
+    private bool hasFinishedWarning;
 
     private void Awake()
     {
@@ -39,13 +43,13 @@ public class FlashingPlatform : MonoBehaviour
 
         elapsedTime += Time.deltaTime;
 
-        if (elapsedTime >= warningDuration)
+        if (elapsedTime >= activeWarningDuration)
         {
             FinishWarning();
             return;
         }
 
-        float progress = elapsedTime / Mathf.Max(warningDuration, 0.01f);
+        float progress = elapsedTime / Mathf.Max(activeWarningDuration, 0.01f);
         float interval = Mathf.Lerp(
             startingFlashInterval,
             fastestFlashInterval,
@@ -74,6 +78,8 @@ public class FlashingPlatform : MonoBehaviour
         hasTriggered = true;
         isFlashing = true;
         elapsedTime = 0f;
+        activeWarningDuration = warningDuration +
+            (hasFinishedWarning ? 0f : firstWarningExtraDelay);
         flashTimer = Mathf.Max(startingFlashInterval, 0.01f);
     }
 
@@ -103,6 +109,7 @@ public class FlashingPlatform : MonoBehaviour
     private void FinishWarning()
     {
         isFlashing = false;
+        hasFinishedWarning = true;
         spriteRenderer.enabled = !collapseAtEnd;
         platformCollider.enabled = !collapseAtEnd;
 

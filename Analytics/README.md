@@ -40,6 +40,8 @@ Votes must be nonnegative integers. Duplicate level names are combined; the leas
 ## Calculation rules
 
 - Only `level_result` events are used. Completed results supply death and time metrics; skipped `-1` values are excluded and shown as missing samples.
+- `hint_triggered` events record the level, death count, elapsed time, and hint threshold when a staged hint first appears. Final `level_result` events also include `hint_trigger_count` and the highest `hint_threshold`, so behavior before and after hints can be compared without changing the existing completion charts.
+- `taunt_triggered` events are used outside the four INITIATION levels. They record presentation timing without claiming that the player received gameplay help; these events do not increase the final result's hint count.
 - By default, each session, level, and version contributes its first completion, ordered by visit number and then timestamp. **All completions** includes repeat completions.
 - Versions are separate by default. Select **All versions** to combine them explicitly.
 - Deaths must be nonnegative integers; durations must be nonnegative finite numbers. Zero is valid. The two metrics have separate sample counts.

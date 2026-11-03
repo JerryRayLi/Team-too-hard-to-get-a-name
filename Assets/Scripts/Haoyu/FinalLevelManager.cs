@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public sealed class FinalLevelManager : MonoBehaviour
 {
@@ -41,6 +42,12 @@ public sealed class FinalLevelManager : MonoBehaviour
     void Start() { ResetRun(); }
     void Update()
     {
+        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            ReturnToMainMenu();
+            return;
+        }
+
         if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
         {
             if (!Completed) Die("restart");
@@ -92,12 +99,30 @@ public sealed class FinalLevelManager : MonoBehaviour
         var bodyStyle = new GUIStyle(GUI.skin.label) { fontSize = 40, richText = true };
         bodyStyle.normal.textColor = Color.white;
         var deathStyle = new GUIStyle(bodyStyle) { alignment = TextAnchor.MiddleRight };
-        string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        var buttonStyle = new GUIStyle(GUI.skin.button) { fontSize = 26 };
+        string sceneName = SceneManager.GetActiveScene().name;
         GUI.Label(new Rect(20, 15, 500, 48), LevelBackgroundTitle.GetDisplayTitle(sceneName), titleStyle);
         GUI.Label(new Rect(20, 60, 940, 52), "Move: <b>A / D</b>     Jump: <b>Space</b>     Restart: <b>R</b>", bodyStyle);
         GUI.Label(new Rect(Screen.width - 300, 15, 280, 48), "Deaths: " + PlaySessionStats.TotalDeaths, deathStyle);
-        GUI.Label(new Rect(20, Screen.height - 60, 520, 52), "<b>R</b>: Restart Level", bodyStyle);
+
+        if (GUI.Button(
+            new Rect(Screen.width - 200, 68, 180, 48),
+            "MAIN MENU",
+            buttonStyle))
+        {
+            ReturnToMainMenu();
+        }
+
+        GUI.Label(new Rect(20, Screen.height - 112, 520, 52), "<b>R</b>: Restart Level", bodyStyle);
+        GUI.Label(new Rect(20, Screen.height - 60, 520, 52), "<b>Esc</b>: Main Menu", bodyStyle);
     }
+
+    private void ReturnToMainMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu");
+    }
+
     void OnDestroy() { if (Instance == this) Instance = null; }
 }
 
