@@ -4,6 +4,14 @@ using UnityEngine.SceneManagement;
 
 public class GameHUDJ : MonoBehaviour
 {
+    private void Start()
+    {
+        string extra = gameObject.scene.name == "level_j2"
+            ? GameHUD.CorpseControls + "\nSwitch Color: <b>Shift</b>"
+            : null;
+        GameHUD.CreateControls(transform, extra);
+    }
+
     private void Update()
     {
         if (Keyboard.current == null)
@@ -42,25 +50,6 @@ public class GameHUDJ : MonoBehaviour
             titleStyle
         );
 
-        // Basic controls
-        string controls = "Move: <b>A / D</b>     Jump: <b>Space</b>     Restart: <b>R</b>";
-
-        GUI.Label(
-            new Rect(20, 60, 940, 52),
-            controls,
-            bodyStyle
-        );
-
-        // Level 2 has the corpse release ability.
-        if (levelName == "level_j2")
-        {
-            GUI.Label(
-                new Rect(20, 108, 900, 52),
-                "Release Corpse: <b>E</b>     Switch Color: <b>Shift</b>",
-                bodyStyle
-            );
-        }
-
         // Death count
         GUI.Label(
             new Rect(Screen.width - 300, 15, 280, 48),
@@ -77,12 +66,6 @@ public class GameHUDJ : MonoBehaviour
             ReturnToMainMenu();
         }
 
-        // Bottom instructions
-        GUI.Label(
-            new Rect(20, Screen.height - 60, 520, 52),
-            "<b>Esc</b>: Main Menu",
-            bodyStyle
-        );
     }
 
     private void ReturnToMainMenu()
