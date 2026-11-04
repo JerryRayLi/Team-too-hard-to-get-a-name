@@ -1373,9 +1373,11 @@ MonoBehaviour:
   redColor: {r: 0.5411765, g: 0.3137255, b: 0.2901961, a: 1}
   blueColor: {r: 0.24705882, g: 0.39607844, b: 0.4392157, a: 1}
   contactTolerance: 0.02
-  showCorpseColorHint: 0
-  corpseColorHintText: A corpse can only trigger a switch in the right color!
-  hintWorldOffset: {x: 0, y: -1.7}
+  showCorpseColorHint: 1
+  delayedColorSwitchHint: 1
+  colorHintDelay: 3
+  corpseColorHintText: Press Shift to switch to BLUE.
+  hintWorldOffset: {x: 0, y: 1.2}
   hintDuration: 0
 --- !u!61 &1942540368
 BoxCollider2D:
@@ -1718,6 +1720,34 @@ PrefabInstance:
       propertyPath: door
       value: 
       objectReference: {fileID: 388235739}
+    - target: {fileID: 6518699054742467064, guid: 2e6c2df5cf11562408dbb4b9ce7de321, type: 3}
+      propertyPath: hintDuration
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518699054742467064, guid: 2e6c2df5cf11562408dbb4b9ce7de321, type: 3}
+      propertyPath: colorHintDelay
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518699054742467064, guid: 2e6c2df5cf11562408dbb4b9ce7de321, type: 3}
+      propertyPath: hintWorldOffset.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518699054742467064, guid: 2e6c2df5cf11562408dbb4b9ce7de321, type: 3}
+      propertyPath: hintWorldOffset.y
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518699054742467064, guid: 2e6c2df5cf11562408dbb4b9ce7de321, type: 3}
+      propertyPath: corpseColorHintText
+      value: Switch color to BLUE.
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518699054742467064, guid: 2e6c2df5cf11562408dbb4b9ce7de321, type: 3}
+      propertyPath: showCorpseColorHint
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518699054742467064, guid: 2e6c2df5cf11562408dbb4b9ce7de321, type: 3}
+      propertyPath: delayedColorSwitchHint
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
