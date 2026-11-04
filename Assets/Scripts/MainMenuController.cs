@@ -42,6 +42,10 @@ public class MainMenuController : MonoBehaviour
     private MenuPage currentPage = MenuPage.Main;
     private int selectedWorld = -1;
 
+    // Match the HUD reference scale so text and hit areas grow together.
+    private float MenuWidth => Screen.width / GameHUD.UiScale;
+    private float MenuHeight => Screen.height / GameHUD.UiScale;
+
     private GUIStyle titleStyle;
     private GUIStyle subtitleStyle;
     private GUIStyle buttonStyle;
@@ -58,28 +62,37 @@ public class MainMenuController : MonoBehaviour
 
     private void OnGUI()
     {
-        CreateStyles();
-
-        GUI.Label(
-            new Rect(0, Screen.height * 0.06f,
-                Screen.width, 80),
-            gameTitle,
-            titleStyle
-        );
-
-        switch (currentPage)
+        Matrix4x4 previousMatrix = GUI.matrix;
+        GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one * GameHUD.UiScale);
+        try
         {
-            case MenuPage.Main:
-                DrawMainButtons();
-                break;
+            CreateStyles();
 
-            case MenuPage.WorldSelect:
-                DrawWorldSelect();
-                break;
+            GUI.Label(
+                new Rect(0, MenuHeight * 0.06f,
+                    MenuWidth, 80),
+                gameTitle,
+                titleStyle
+            );
 
-            case MenuPage.LevelSelect:
-                DrawLevelSelect();
-                break;
+            switch (currentPage)
+            {
+                case MenuPage.Main:
+                    DrawMainButtons();
+                    break;
+
+                case MenuPage.WorldSelect:
+                    DrawWorldSelect();
+                    break;
+
+                case MenuPage.LevelSelect:
+                    DrawLevelSelect();
+                    break;
+            }
+        }
+        finally
+        {
+            GUI.matrix = previousMatrix;
         }
     }
 
@@ -110,8 +123,8 @@ public class MainMenuController : MonoBehaviour
     // Main menu
     private void DrawMainButtons()
     {
-        float x = Screen.width / 2f - 110;
-        float y = Screen.height / 2f - 80;
+        float x = MenuWidth / 2f - 110;
+        float y = MenuHeight / 2f - 80;
 
         if (GUI.Button(
             new Rect(x, y, 220, 55),
@@ -142,8 +155,8 @@ public class MainMenuController : MonoBehaviour
     private void DrawWorldSelect()
     {
         GUI.Label(
-            new Rect(0, Screen.height * 0.22f,
-                Screen.width, 50),
+            new Rect(0, MenuHeight * 0.22f,
+                MenuWidth, 50),
             "SELECT WORLD",
             subtitleStyle
         );
@@ -159,9 +172,9 @@ public class MainMenuController : MonoBehaviour
             columns * buttonWidth + (columns - 1) * gapX;
 
         float startX =
-            Screen.width / 2f - totalWidth / 2f;
+            MenuWidth / 2f - totalWidth / 2f;
 
-        float startY = Screen.height * 0.38f;
+        float startY = MenuHeight * 0.38f;
 
         if (worlds != null)
         {
@@ -221,7 +234,7 @@ public class MainMenuController : MonoBehaviour
             rows * (buttonHeight + gapY) + 15;
 
         if (GUI.Button(
-            new Rect(Screen.width / 2f - 80,
+            new Rect(MenuWidth / 2f - 80,
                 backY, 160, 50),
             "BACK",
             buttonStyle))
@@ -245,8 +258,8 @@ public class MainMenuController : MonoBehaviour
         WorldData world = worlds[selectedWorld];
 
         GUI.Label(
-            new Rect(0, Screen.height * 0.22f,
-                Screen.width, 50),
+            new Rect(0, MenuHeight * 0.22f,
+                MenuWidth, 50),
             world.worldName,
             subtitleStyle
         );
@@ -265,9 +278,9 @@ public class MainMenuController : MonoBehaviour
             columns * buttonWidth + (columns - 1) * gapX;
 
         float startX =
-            Screen.width / 2f - totalWidth / 2f;
+            MenuWidth / 2f - totalWidth / 2f;
 
-        float startY = Screen.height * 0.38f;
+        float startY = MenuHeight * 0.38f;
 
         for (int i = 0; i < world.levels.Length; i++)
         {
@@ -310,7 +323,7 @@ public class MainMenuController : MonoBehaviour
             rows * (buttonHeight + gapY) + 15;
 
         if (GUI.Button(
-            new Rect(Screen.width / 2f - 80,
+            new Rect(MenuWidth / 2f - 80,
                 backY, 160, 50),
             "BACK",
             buttonStyle))

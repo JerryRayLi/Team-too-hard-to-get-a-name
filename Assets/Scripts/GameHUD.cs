@@ -79,9 +79,9 @@ public class GameHUD : MonoBehaviour
             controls += "\n" + extra;
         }
 
-        float height = 16f + 32f * controls.Split('\n').Length;
+        float height = 16f + 35f * controls.Split('\n').Length;
         AddHint(hints.transform, "Controls", new Vector2(0, 1), new Vector2(16, -56),
-            new Vector2(510, height), 26, TextAnchor.UpperLeft, controls);
+            new Vector2(550, height), 28, TextAnchor.UpperLeft, controls);
         return hints;
     }
 
