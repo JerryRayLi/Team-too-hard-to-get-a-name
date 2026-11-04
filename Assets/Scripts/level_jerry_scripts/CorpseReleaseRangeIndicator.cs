@@ -131,7 +131,7 @@ public class CorpseReleaseRangeIndicator : MonoBehaviour
             hintStyle = new GUIStyle(GUI.skin.label);
         hintStyle.alignment = TextAnchor.MiddleCenter;
         hintStyle.fontStyle = FontStyle.Bold;
-        hintStyle.fontSize = Mathf.Clamp(Mathf.RoundToInt(Screen.height / 45f), 16, 24);
+        hintStyle.fontSize = GameHUD.ScaleFont(22);
         hintStyle.normal.textColor = Color.white;
 
         GUIContent content = new GUIContent(hintText);

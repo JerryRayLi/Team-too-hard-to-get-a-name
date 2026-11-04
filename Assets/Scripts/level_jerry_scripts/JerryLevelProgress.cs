@@ -106,14 +106,15 @@ public sealed class JerryLevelProgress : MonoBehaviour
             : "Checkpoint not reached in time. Press R to restart this level.";
         GUIStyle style = new GUIStyle(GUI.skin.label)
         {
-            fontSize = Mathf.Clamp(Screen.height / 32, 16, 30),
+            fontSize = GameHUD.ScaleFont(24),
             fontStyle = FontStyle.Bold,
             alignment = TextAnchor.MiddleCenter,
             wordWrap = true
         };
         style.normal.textColor = new Color(1f, 0.86f, 0.55f);
-        float width = Mathf.Min(900f, Screen.width - 32f);
-        Rect rect = new Rect((Screen.width - width) / 2f, Screen.height * 0.12f, width, 78f);
+        float width = Mathf.Min(820f * GameHUD.UiScale, Screen.width - 32f);
+        float height = Mathf.Max(64f * GameHUD.UiScale, style.CalcHeight(new GUIContent(text), width));
+        Rect rect = new Rect((Screen.width - width) / 2f, Screen.height * 0.12f, width, height);
         Color previous = GUI.color;
         GUI.color = new Color(0.03f, 0.05f, 0.07f, 0.85f);
         GUI.DrawTexture(rect, Texture2D.whiteTexture);

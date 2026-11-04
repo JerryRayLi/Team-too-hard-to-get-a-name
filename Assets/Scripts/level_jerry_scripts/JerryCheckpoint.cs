@@ -39,12 +39,14 @@ public sealed class JerryCheckpoint : MonoBehaviour
             return;
         GUIStyle style = new GUIStyle(GUI.skin.label)
         {
-            fontSize = Mathf.Clamp(Screen.height / 42, 14, 24),
+            fontSize = GameHUD.ScaleFont(22),
             fontStyle = FontStyle.Bold,
             alignment = TextAnchor.MiddleCenter
         };
         style.normal.textColor = IsSaved ? new Color(0.5f, 1f, 0.65f) : new Color(1f, 0.88f, 0.5f);
-        GUI.Label(new Rect(screen.x - 110f, Screen.height - screen.y - 18f, 220f, 36f),
-            IsSaved ? "CHECKPOINT SAVED" : "CHECKPOINT", style);
+        string caption = IsSaved ? "CHECKPOINT SAVED" : "CHECKPOINT";
+        Vector2 size = style.CalcSize(new GUIContent(caption)) + new Vector2(16f, 8f);
+        GUI.Label(new Rect(screen.x - size.x * 0.5f, Screen.height - screen.y - size.y * 0.5f,
+            size.x, size.y), caption, style);
     }
 }

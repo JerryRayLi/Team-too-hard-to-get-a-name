@@ -160,8 +160,8 @@ public class Button : MonoBehaviour
         if (screenPoint.z <= 0f)
             return;
 
-        float width = delayedColorSwitchHint ? Mathf.Min(640f, Screen.width - 32f) : 720f;
-        float height = delayedColorSwitchHint ? 54f : 82f;
+        float width = Mathf.Min((delayedColorSwitchHint ? 560f : 640f) * GameHUD.UiScale, Screen.width - 32f);
+        float height = (delayedColorSwitchHint ? 42f : 64f) * GameHUD.UiScale;
         Rect hintRect = new Rect(
             delayedColorSwitchHint
                 ? Mathf.Clamp(screenPoint.x - width * 0.5f, 16f, Screen.width - width - 16f)
@@ -178,7 +178,7 @@ public class Button : MonoBehaviour
 
         GUIStyle hintStyle = new GUIStyle(GUI.skin.label)
         {
-            fontSize = delayedColorSwitchHint ? Mathf.Clamp(Screen.height / 32, 18, 32) : 32,
+            fontSize = GameHUD.ScaleFont(22),
             fontStyle = FontStyle.Bold,
             alignment = TextAnchor.MiddleCenter,
             wordWrap = !delayedColorSwitchHint

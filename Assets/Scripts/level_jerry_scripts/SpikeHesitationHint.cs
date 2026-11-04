@@ -107,7 +107,7 @@ public sealed class SpikeHesitationHint : MonoBehaviour
             hintStyle.normal.textColor = new Color(1f, 0.93f, 0.73f);
         }
 
-        hintStyle.fontSize = Mathf.Clamp(Screen.height / 32, 16, 34);
+        hintStyle.fontSize = GameHUD.ScaleFont(24);
         GUIContent caption = new GUIContent(hintText);
         float availableWidth = Mathf.Max(100f, Screen.width - 64f);
         float textWidth = hintStyle.CalcSize(caption).x;
@@ -115,7 +115,7 @@ public sealed class SpikeHesitationHint : MonoBehaviour
             hintStyle.fontSize = Mathf.Max(10, Mathf.FloorToInt(hintStyle.fontSize * availableWidth / textWidth));
 
         float width = Mathf.Min(Screen.width - 32f, hintStyle.CalcSize(caption).x + 32f);
-        const float height = 52f;
+        float height = Mathf.Max(40f, 42f * GameHUD.UiScale);
         Rect rectangle = new Rect(
             Mathf.Clamp(screen.x - width / 2f, 16f, Screen.width - width - 16f),
             Mathf.Clamp(Screen.height - screen.y - height / 2f, 16f, Screen.height - height - 16f),
