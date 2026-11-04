@@ -39,7 +39,11 @@ public sealed class FinalLevelManager : MonoBehaviour
         originalPlayerColor = player.GetComponent<SpriteRenderer>().color;
         originalScale = player.transform.localScale;
     }
-    void Start() { ResetRun(); }
+    void Start()
+    {
+        ResetRun();
+        GameHUD.CreateControls(transform);
+    }
     void Update()
     {
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
@@ -102,7 +106,6 @@ public sealed class FinalLevelManager : MonoBehaviour
         var buttonStyle = new GUIStyle(GUI.skin.button) { fontSize = 26 };
         string sceneName = SceneManager.GetActiveScene().name;
         GUI.Label(new Rect(20, 15, 500, 48), LevelBackgroundTitle.GetDisplayTitle(sceneName), titleStyle);
-        GUI.Label(new Rect(20, 60, 940, 52), "Move: <b>A / D</b>     Jump: <b>Space</b>     Restart: <b>R</b>", bodyStyle);
         GUI.Label(new Rect(Screen.width - 300, 15, 280, 48), "Deaths: " + PlaySessionStats.TotalDeaths, deathStyle);
 
         if (GUI.Button(
@@ -113,8 +116,6 @@ public sealed class FinalLevelManager : MonoBehaviour
             ReturnToMainMenu();
         }
 
-        GUI.Label(new Rect(20, Screen.height - 112, 520, 52), "<b>R</b>: Restart Level", bodyStyle);
-        GUI.Label(new Rect(20, Screen.height - 60, 520, 52), "<b>Esc</b>: Main Menu", bodyStyle);
     }
 
     private void ReturnToMainMenu()

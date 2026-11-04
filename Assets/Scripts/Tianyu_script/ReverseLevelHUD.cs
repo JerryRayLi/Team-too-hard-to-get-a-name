@@ -70,12 +70,6 @@ public sealed class ReverseLevelHUD : MonoBehaviour
         );
 
         GUI.Label(
-            new Rect(20, 60, 940, 52),
-            "Move: <b>A / D</b>     Jump: <b>Space</b>     Restart: <b>R</b>",
-            bodyStyle
-        );
-
-        GUI.Label(
             new Rect(Screen.width - 300, 15, 280, 48),
             "Deaths: " + PlaySessionStats.TotalDeaths,
             deathStyle
@@ -89,17 +83,6 @@ public sealed class ReverseLevelHUD : MonoBehaviour
             ReturnToMainMenu();
         }
 
-        GUI.Label(
-            new Rect(20, Screen.height - 112, 520, 52),
-            "<b>R</b>: Restart Level",
-            bodyStyle
-        );
-
-        GUI.Label(
-            new Rect(20, Screen.height - 60, 520, 52),
-            "<b>Esc</b>: Main Menu",
-            bodyStyle
-        );
     }
 
     private static bool IsReverseScene()
