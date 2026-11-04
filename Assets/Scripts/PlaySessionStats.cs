@@ -29,8 +29,10 @@ public static class PlaySessionStats
         "Level_TIanyu1",
         "level_j1",
         "level_j2",
+        "level_j3",
         "Level_Haoyu",
         "Level_Running_Door_1",
+        "Level_Running_Door_2",
         "Level_Yulin_v1.1"
     };
 

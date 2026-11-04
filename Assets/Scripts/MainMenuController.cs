@@ -1,5 +1,8 @@
 
 using UnityEngine;
+#if UNITY_WEBGL && !UNITY_EDITOR
+using System.Runtime.InteropServices;
+#endif
 using UnityEngine.SceneManagement;
 
 [System.Serializable]
@@ -324,10 +327,19 @@ public class MainMenuController : MonoBehaviour
         SceneManager.LoadScene(sceneName);
     }
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+    [DllImport("__Internal")]
+    private static extern void ExitBrowserFullscreen();
+#endif
+
     private void QuitGame()
     {
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
+#elif UNITY_WEBGL
+        // The startup page requests fullscreen on the HTML root, so exit
+        // browser fullscreen directly instead of relying on canvas state.
+        ExitBrowserFullscreen();
 #else
         Application.Quit();
 #endif
