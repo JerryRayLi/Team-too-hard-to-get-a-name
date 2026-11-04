@@ -6,6 +6,8 @@
     <title>Unity Web Player | game_levelup</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
+    <link rel="stylesheet" href="TemplateData/fullscreen-entry.css">
+    <script src="TemplateData/fullscreen-entry.js"></script>
   </head>
   <body>
     <div id="unity-container" class="unity-desktop">
@@ -108,25 +110,31 @@
         canvas.style.height = "600px";
       }
 
-      document.querySelector("#unity-loading-bar").style.display = "block";
+      function startUnityGame() {
+        return new Promise((resolve, reject) => {
+          document.querySelector("#unity-loading-bar").style.display = "block";
 
-      var script = document.createElement("script");
-      script.src = loaderUrl;
-      script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
-              }).then((unityInstance) => {
-                document.querySelector("#unity-loading-bar").style.display = "none";
-                document.querySelector("#unity-fullscreen-button").onclick = () => {
-                  unityInstance.SetFullscreen(1);
+          var script = document.createElement("script");
+          script.src = loaderUrl;
+          script.onerror = () => reject(new Error("The Unity loader could not be downloaded."));
+          script.onload = () => {
+            createUnityInstance(canvas, config, (progress) => {
+              document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
+                  }).then((unityInstance) => {
+                    document.querySelector("#unity-loading-bar").style.display = "none";
+                    resolve(unityInstance);
+                    document.querySelector("#unity-fullscreen-button").onclick = () => {
+                      unityInstance.SetFullscreen(1);
+                    };
+
+                  }).catch(reject);
                 };
 
-              }).catch((message) => {
-                alert(message);
-              });
-            };
+          document.body.appendChild(script);
+        });
+      }
 
-      document.body.appendChild(script);
+      UnityFullscreenEntry.start({ canvas: canvas, onStart: startUnityGame });
 
     </script>
   </body>

@@ -11,8 +11,10 @@ public class GameComplete : MonoBehaviour
         "Level03",
         "Level04",
         "Level_Running_Door_1",
+        "Level_Running_Door_2",
         "level_j1",
         "level_j2",
+        "level_j3",
         "Level_Haoyu",
         "Level_Yulin_v1.1",
         "Level_TIanyu1"
@@ -25,8 +27,10 @@ public class GameComplete : MonoBehaviour
         "INITIATION03",
         "INITIATION04",
         "DOOR",
+        "DOOR02",
         "CORPSE01",
         "CORPSE02",
+        "CORPSE03",
         "SLOW",
         "REVERSE",
         "SPIKES"
@@ -75,8 +79,11 @@ public class GameComplete : MonoBehaviour
         float titleY = 12f;
         float summaryY = 67f;
         float tableY = 105f;
-        float rowHeight = Mathf.Clamp((Screen.height - 210f) / 11f, 30f, 42f);
-        float panelHeight = rowHeight * 11f + 20f;
+        int tableRows = SceneNames.Length + 1;
+        float rowHeight = Mathf.Clamp((Screen.height - 190f) / tableRows, 12f, 42f);
+        float panelHeight = rowHeight * tableRows + 20f;
+        rowStyle.fontSize = Mathf.Clamp(Mathf.FloorToInt(rowHeight * 0.65f), 10, 32);
+        headerStyle.fontSize = rowStyle.fontSize;
 
         GUI.Box(new Rect(panelX, tableY - 10f, panelWidth, panelHeight), "");
 
