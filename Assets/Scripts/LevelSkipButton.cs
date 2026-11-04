@@ -28,9 +28,14 @@ public sealed class LevelSkipButton : MonoBehaviour
         }
 
         GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
-        buttonStyle.fontSize = 26;
+        buttonStyle.fontSize = GameHUD.ScaleFont(20);
 
-        if (GUI.Button(new Rect(20f, 168f, 180f, 48f), "SKIP LEVEL", buttonStyle))
+        float scale = GameHUD.UiScale;
+        // Align below the scaled Main Menu button. Older scene-specific HUDs
+        // still end their fixed-pixel menu at y=116, so also leave them a gap.
+        Rect buttonRect = new Rect(Screen.width - 168f * scale,
+            Mathf.Max(98f * scale, 124f), 152f * scale, 36f * scale);
+        if (GUI.Button(buttonRect, "SKIP LEVEL", buttonStyle))
         {
             LoadNextLevel(activeScene.buildIndex);
         }
