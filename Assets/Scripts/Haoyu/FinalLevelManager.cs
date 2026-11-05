@@ -11,6 +11,11 @@ public sealed class FinalLevelManager : MonoBehaviour
     public FinalCollapsePlatform collapse;
     public FinalChaser chaser;
     public HaoyuTianyu.PlayerRespawn effects;
+    FinalWeightBrick[] bricks;
+    FinalCollapsePlatform[] collapses;
+    FinalChaser[] chasers;
+    FinalLandingCrack[] cracks;
+    FinalTimedSpikeTrigger[] timedTriggers;
     HaoyuTianyu.SpikeTrap[] spikeTraps;
     HaoyuTianyu.SpikeTrapTrigger[] spikeTriggers;
     FinalSpikeHazard[] spikeHazards;
@@ -33,6 +38,11 @@ public sealed class FinalLevelManager : MonoBehaviour
         collapse = FindFirstObjectByType<FinalCollapsePlatform>();
         chaser = FindFirstObjectByType<FinalChaser>();
         effects = player.GetComponent<HaoyuTianyu.PlayerRespawn>();
+        bricks = FindObjectsByType<FinalWeightBrick>(FindObjectsSortMode.None);
+        collapses = FindObjectsByType<FinalCollapsePlatform>(FindObjectsSortMode.None);
+        chasers = FindObjectsByType<FinalChaser>(FindObjectsSortMode.None);
+        cracks = FindObjectsByType<FinalLandingCrack>(FindObjectsSortMode.None);
+        timedTriggers = FindObjectsByType<FinalTimedSpikeTrigger>(FindObjectsSortMode.None);
         spikeTraps = FindObjectsByType<HaoyuTianyu.SpikeTrap>(FindObjectsSortMode.None);
         spikeTriggers = FindObjectsByType<HaoyuTianyu.SpikeTrapTrigger>(FindObjectsSortMode.None);
         spikeHazards = FindObjectsByType<FinalSpikeHazard>(FindObjectsSortMode.None);
@@ -78,7 +88,11 @@ public sealed class FinalLevelManager : MonoBehaviour
         player.transform.localScale = originalScale;
         player.GetComponent<SpriteRenderer>().color = originalPlayerColor;
         player.ResetMovementState();
-        brick.ResetState(); collapse.ResetState(); chaser.ResetState();
+        foreach (var item in bricks) item.ResetState();
+        foreach (var item in collapses) item.ResetState();
+        foreach (var item in chasers) item.ResetState();
+        foreach (var item in cracks) item.ResetState();
+        foreach (var item in timedTriggers) item.ResetState();
         foreach (var trap in spikeTraps) trap.ResetState();
         foreach (var trigger in spikeTriggers) trigger.ResetState();
         foreach (var hazard in spikeHazards) hazard.ResetState();
@@ -95,28 +109,8 @@ public sealed class FinalLevelManager : MonoBehaviour
         player.Body.linearVelocity = Vector2.zero;
         Debug.Log($"FINAL_EVENT complete run={RunNumber} seconds={RunSeconds:F3}");
     }
-    void OnGUI()
-    {
-        // Tianyu GameHUD layout, with this level's controls and completion flow.
-        var titleStyle = new GUIStyle(GUI.skin.label) { fontSize = 36, fontStyle = FontStyle.Bold };
-        titleStyle.normal.textColor = Color.white;
-        var bodyStyle = new GUIStyle(GUI.skin.label) { fontSize = 40, richText = true };
-        bodyStyle.normal.textColor = Color.white;
-        var deathStyle = new GUIStyle(bodyStyle) { alignment = TextAnchor.MiddleRight };
-        var buttonStyle = new GUIStyle(GUI.skin.button) { fontSize = 26 };
-        string sceneName = SceneManager.GetActiveScene().name;
-        GUI.Label(new Rect(20, 15, 500, 48), LevelBackgroundTitle.GetDisplayTitle(sceneName), titleStyle);
-        GUI.Label(new Rect(Screen.width - 300, 15, 280, 48), "Deaths: " + PlaySessionStats.TotalDeaths, deathStyle);
-
-        if (GUI.Button(
-            new Rect(Screen.width - 200, 68, 180, 48),
-            "MAIN MENU",
-            buttonStyle))
-        {
-            ReturnToMainMenu();
-        }
-
-    }
+    // Shared header so the title, death count and menu button scale with the other levels.
+    void OnGUI() { GameHUD.DrawHeader(ReturnToMainMenu); }
 
     private void ReturnToMainMenu()
     {

@@ -31,6 +31,7 @@ public static class PlaySessionStats
         "level_j2",
         "level_j3",
         "Level_Haoyu",
+        "Level_Haoyu_2",
         "Level_Running_Door_1",
         "Level_Running_Door_2",
         "Level_Yulin_v1.1"

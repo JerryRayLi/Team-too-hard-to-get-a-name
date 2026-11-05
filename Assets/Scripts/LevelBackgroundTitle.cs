@@ -18,7 +18,8 @@ public static class LevelBackgroundTitle
         { "level_j1", "CORPSE01" },
         { "level_j2", "CORPSE02" },
         { "level_j3", "CORPSE03" },
-        { "Level_Haoyu", "SLOW" },
+        { "Level_Haoyu", "SLOW 1" },
+        { "Level_Haoyu_2", "SLOW 2" },
         { "Level_Running_Door_1", "DOOR" },
         { "Level_Running_Door_2", "DOOR02" },
         { "Level_Yulin_v1.1", "REVERSE" }
