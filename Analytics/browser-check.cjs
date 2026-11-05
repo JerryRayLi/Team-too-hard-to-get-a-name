@@ -19,7 +19,10 @@ const example = require('./sample-data.js');
     await page.locator('#example').click();
     const original = await page.evaluate(() => PlaytestDashboard.getSummary());
     check(original.levels[0].deathTotal === 6 && original.levels[0].durationMean === 48.37, 'teammate sample produces exact chart values');
-    check(original.levels[1].durationMean === null && await page.locator('#death-chart .bar').count() === 1, 'skipped event has no negative or zero substitute bar');
+    check(original.levels[1].durationMean === null && await page.locator('#death-chart .point').count() === 1 && await page.locator('#death-chart .box').count() === 0, 'skipped event has no substitute point; one sample shows a point without a box');
+    await page.locator('#death-mode').selectOption('total');
+    check(await page.locator('#death-chart .bar').count() === 1, 'total deaths mode still renders one bar per level with samples');
+    await page.locator('#death-mode').selectOption('box');
     check(await page.locator('#source').innerText() === 'Sample data', 'example is visibly labeled');
     check(await page.locator('#favorite-chart .empty').count() === 1, 'no preference data is invented');
     await page.evaluate(() => { PlaytestDashboard.setData(TeammateExample.analytics_events); PlaytestDashboard.setData(TeammateExample.analytics_events); });
@@ -59,6 +62,16 @@ const example = require('./sample-data.js');
     check(await page.locator('#dislike-chart .bar').count() === 3 && await page.locator('#favorite-chart .bar').count() === 1, 'separate preference adapter renders top-three and favorites');
     await page.locator('#version').selectOption('0.1.0');
     check(await page.locator('#favorite-chart .empty').count() === 1, 'preference totals from another version are not mixed');
+    await page.evaluate(() => {
+      const base = TeammateExample.analytics_events['-ObA12ExamplePushId1'];
+      const rows = {};
+      [40, 42, 45, 47, 50, 600].forEach((seconds, index) => { rows['t' + index] = { ...base, session_id: 's' + index, duration_seconds: seconds, deaths: index === 5 ? 30 : 1 }; });
+      [20, 25].forEach((seconds, index) => { rows['u' + index] = { ...base, level_name: 'Level04', session_id: 'u' + index, duration_seconds: seconds, deaths: index }; });
+      PlaytestDashboard.setData(rows);
+    });
+    check(await page.locator('#time-chart .box').count() === 1 && await page.locator('#time-chart .point').count() === 8 && await page.locator('#time-chart .outlier').count() === 1 && (await page.locator('#time-chart .outlier-label').textContent()).includes('600'), 'box plot draws a box only at n >= 5, every sample as a point, and pins the labeled outlier above a whisker-scaled axis');
+    check((await page.locator('#time-chart .value-label').allTextContents()).includes('46') && (await page.locator('#rows').innerText()).includes('46'), 'median (46 s), not the outlier-inflated mean, is labeled and tabulated');
+    await page.screenshot({ path: path.join(__dirname, 'preview-boxplot.png'), fullPage: true });
     await page.evaluate(() => {
       const base = TeammateExample.analytics_events['-ObA12ExamplePushId1'];
       PlaytestDashboard.setData({ a: { ...base, level_name: '<img src=x onerror=alert(1)>' } });

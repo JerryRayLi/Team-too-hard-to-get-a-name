@@ -287,7 +287,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MainMenuController
   gameTitle: Color Blind Troll
   worlds:
-  - worldName: DEMO
+  - worldName: TUTORIAL
+    levels:
+    - levelName: SAFE START
+      sceneName: BabyTutorial
+      sceneAsset: {fileID: 102900000, guid: 55dd81d3223c4c6f988522631a60770b, type: 3}
+    isChallenge: 0
+  - worldName: INITIATION
     levels:
     - levelName: LEVEL 1
       sceneName: Level01
@@ -307,6 +313,9 @@ MonoBehaviour:
     - levelName: LEVEL 1
       sceneName: Level_Running_Door_1
       sceneAsset: {fileID: 102900000, guid: 2a526a3a083d4b94399a01e5704c5c99, type: 3}
+    - levelName: LEVEL 2
+      sceneName: Level_Running_Door_2
+      sceneAsset: {fileID: 102900000, guid: 9fd000b31cc2c704eafecf632d12e7bf, type: 3}
     isChallenge: 0
   - worldName: CORPSE
     levels:

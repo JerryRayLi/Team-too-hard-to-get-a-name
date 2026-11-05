@@ -29,8 +29,10 @@ public static class PlaySessionStats
         "Level_TIanyu1",
         "level_j1",
         "level_j2",
+        "level_j3",
         "Level_Haoyu",
         "Level_Running_Door_1",
+        "Level_Running_Door_2",
         "Level_Yulin_v1.1"
     };
 
@@ -40,6 +42,7 @@ public static class PlaySessionStats
     private static double currentLevelStartedAt;
     private static int currentLevelDeaths;
     private static bool currentResultRecorded;
+    private static readonly HashSet<int> CurrentHintThresholds = new();
 
     public static int TotalDeaths { get; private set; }
     public static int CurrentLevelDeaths => currentLevelDeaths;
@@ -86,7 +89,12 @@ public static class PlaySessionStats
             stats.WasSkipped = true;
         }
 
-        FirebaseAnalyticsUploader.RecordLevelSkipped(currentLevel, stats.Visits);
+        FirebaseAnalyticsUploader.RecordLevelSkipped(
+            currentLevel,
+            stats.Visits,
+            CurrentHintThresholds.Count,
+            GetHighestHintThreshold()
+        );
         currentResultRecorded = true;
         Debug.Log($"LEVEL_STATS level={currentLevel} deaths=N/A duration=N/A result=skipped");
     }
@@ -119,7 +127,9 @@ public static class PlaySessionStats
             currentLevelDeaths,
             duration,
             stats.Visits,
-            isBetter
+            isBetter,
+            CurrentHintThresholds.Count,
+            GetHighestHintThreshold()
         );
         currentResultRecorded = true;
         Debug.Log(
@@ -131,6 +141,27 @@ public static class PlaySessionStats
     public static int GetCurrentLevelDeaths()
     {
         return currentLevelDeaths;
+    }
+
+    public static void MarkHintTriggered(int threshold)
+    {
+        if (string.IsNullOrEmpty(currentLevel) ||
+            threshold < 1 ||
+            !CurrentHintThresholds.Add(threshold))
+        {
+            return;
+        }
+
+        FirebaseAnalyticsUploader.RecordHintTriggered(
+            currentLevel,
+            currentLevelDeaths,
+            threshold,
+            CurrentHintThresholds.Count
+        );
+        Debug.Log(
+            $"LEVEL_HINT level={currentLevel} deaths={currentLevelDeaths} " +
+            $"threshold={threshold} hints={CurrentHintThresholds.Count}"
+        );
     }
 
     public static float GetCurrentLevelElapsedSeconds()
@@ -155,6 +186,7 @@ public static class PlaySessionStats
         currentLevelStartedAt = Time.realtimeSinceStartupAsDouble;
         currentLevelDeaths = 0;
         currentResultRecorded = false;
+        CurrentHintThresholds.Clear();
         GetOrCreate(currentLevel).Visits++;
     }
 
@@ -166,6 +198,7 @@ public static class PlaySessionStats
         currentLevelStartedAt = 0d;
         currentLevelDeaths = 0;
         currentResultRecorded = false;
+        CurrentHintThresholds.Clear();
     }
 
     private static void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -181,6 +214,7 @@ public static class PlaySessionStats
             currentLevel = null;
             currentLevelDeaths = 0;
             currentResultRecorded = false;
+            CurrentHintThresholds.Clear();
             return;
         }
 
@@ -188,7 +222,18 @@ public static class PlaySessionStats
         currentLevelStartedAt = Time.realtimeSinceStartupAsDouble;
         currentLevelDeaths = 0;
         currentResultRecorded = false;
+        CurrentHintThresholds.Clear();
         GetOrCreate(scene.name).Visits++;
+    }
+
+    private static int GetHighestHintThreshold()
+    {
+        int highest = 0;
+        foreach (int threshold in CurrentHintThresholds)
+        {
+            highest = Mathf.Max(highest, threshold);
+        }
+        return highest;
     }
 
     private static LevelStats GetOrCreate(string sceneName)

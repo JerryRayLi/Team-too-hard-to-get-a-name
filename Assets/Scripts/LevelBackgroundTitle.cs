@@ -9,16 +9,18 @@ public static class LevelBackgroundTitle
 
     private static readonly Dictionary<string, string> Titles = new()
     {
-        { "Level01", "LEVEL01" },
-        { "Level02", "LEVEL02" },
-        { "Level03", "LEVEL03" },
-        { "Level04", "LEVEL04" },
+        { "BabyTutorial", "BABY" },
+        { "Level01", "INITIATION01" },
+        { "Level02", "INITIATION02" },
+        { "Level03", "INITIATION03" },
+        { "Level04", "INITIATION04" },
         { "Level_TIanyu1", "SPIKES" },
         { "level_j1", "CORPSE01" },
         { "level_j2", "CORPSE02" },
         { "level_j3", "CORPSE03" },
         { "Level_Haoyu", "SLOW" },
         { "Level_Running_Door_1", "DOOR" },
+        { "Level_Running_Door_2", "DOOR02" },
         { "Level_Yulin_v1.1", "REVERSE" }
     };
 

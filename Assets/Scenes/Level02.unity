@@ -270,6 +270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97a64b281ee30ae4486305a567f17c3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelExit
+  showCompletionScreen: 0
 --- !u!1 &221684714
 GameObject:
   m_ObjectHideFlags: 0
@@ -1296,6 +1297,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5070b6079b02b0e4eba764957c7059a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerRespawn
+  deathParticles: {fileID: 0}
+  respawnParticles: {fileID: 0}
 --- !u!1 &1419336095
 GameObject:
   m_ObjectHideFlags: 0
@@ -1621,22 +1624,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1660057539 &9223372036854775807
-SceneRoots:
-  m_ObjectHideFlags: 0
-  m_Roots:
-  - {fileID: 519420032}
-  - {fileID: 619394802}
-  - {fileID: 1838688098}
-  - {fileID: 972702568}
-  - {fileID: 1271889821}
-  - {fileID: 168100845}
-  - {fileID: 1777750078}
-  - {fileID: 883902930}
-  - {fileID: 1419336098}
-  - {fileID: 221684717}
-  - {fileID: 980967863}
-  - {fileID: 1238259957}
 --- !u!1 &8100000000000000201
 GameObject:
   m_ObjectHideFlags: 0
@@ -11425,3 +11412,19 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!1660057539 &9223372036854775807
+SceneRoots:
+  m_ObjectHideFlags: 0
+  m_Roots:
+  - {fileID: 519420032}
+  - {fileID: 619394802}
+  - {fileID: 1838688098}
+  - {fileID: 972702568}
+  - {fileID: 1271889821}
+  - {fileID: 168100845}
+  - {fileID: 1777750078}
+  - {fileID: 883902930}
+  - {fileID: 1419336098}
+  - {fileID: 221684717}
+  - {fileID: 980967863}
+  - {fileID: 1238259957}
