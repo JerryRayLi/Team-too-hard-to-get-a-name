@@ -341,10 +341,10 @@ MonoBehaviour:
   - worldName: HIDDEN
     levels:
     - levelName: LEVEL 1
-      sceneName: HIDDEN01
+      sceneName: Level_Yulin_hidden1
       sceneAsset: {fileID: 102900000, guid: 49ba96c66c928473b95656b12ff00230, type: 3}
     - levelName: LEVEL 2
-      sceneName: HIDDEN02
+      sceneName: Level_Yulin_hidden2
       sceneAsset: {fileID: 102900000, guid: b5146c8e9d93b4d68b90979a928557ba, type: 3}
     isChallenge: 0
   - worldName: SPIKES
