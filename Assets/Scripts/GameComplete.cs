@@ -16,6 +16,7 @@ public class GameComplete : MonoBehaviour
         "level_j2",
         "level_j3",
         "Level_Haoyu",
+        "Level_Haoyu_2",
         "Level_Yulin_v1.1",
         "Level_TIanyu1"
     };
@@ -31,7 +32,8 @@ public class GameComplete : MonoBehaviour
         "CORPSE01",
         "CORPSE02",
         "CORPSE03",
-        "SLOW",
+        "SLOW 1",
+        "SLOW 2",
         "REVERSE",
         "SPIKES"
     };
