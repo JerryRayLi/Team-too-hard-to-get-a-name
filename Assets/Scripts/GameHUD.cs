@@ -68,7 +68,7 @@ public class GameHUD : MonoBehaviour
         scaler.referenceResolution = new Vector2(1280, 720);
         scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
 
-        string controls = "Move: <b>A / D</b>    Jump: <b>Space</b>\nRestart: <b>R</b>";
+        string controls = "Move: <b>A / D</b>    Jump: <b>Space / W</b>\nRestart: <b>R</b>";
         if (showMenu)
         {
             controls += "    Menu: <b>Esc</b>";

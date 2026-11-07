@@ -1,13 +1,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum RequiredButtonBackground
+{
+    Orange,
+    Blue
+}
+
 public class Button : MonoBehaviour
 {
     public Door door;
     public bool useColorRules;
+    public RequiredButtonBackground requiredBackground = RequiredButtonBackground.Orange;
     public ColorLayerManager colorManager;
     public Color redColor = new Color(138f / 255f, 80f / 255f, 74f / 255f);
     public Color blueColor = new Color(63f / 255f, 101f / 255f, 112f / 255f);
+
+    [Header("Button Outline")]
+    public Color outlineColor = Color.black;
+    [Min(0f)] public float outlineThickness = 0.04f;
 
     [Min(0f)] public float contactTolerance = 0.02f;
 
@@ -25,6 +36,7 @@ public class Button : MonoBehaviour
     private readonly List<Collider2D> nearbyColliders = new List<Collider2D>();
     private Collider2D buttonCollider;
     private SpriteRenderer buttonRenderer;
+    private readonly List<SpriteRenderer> outlineRenderers = new List<SpriteRenderer>();
     private ContactFilter2D contactFilter;
     private bool isPressed;
     private bool corpseHintTriggered;
@@ -39,25 +51,106 @@ public class Button : MonoBehaviour
         buttonRenderer = GetComponent<SpriteRenderer>();
         if (useColorRules && colorManager == null)
             colorManager = FindFirstObjectByType<ColorLayerManager>();
+        if (useColorRules && buttonRenderer != null)
+            buttonRenderer.color = requiredBackground == RequiredButtonBackground.Blue
+                ? blueColor : redColor;
+        CreateOutline();
 
         contactFilter = new ContactFilter2D();
         contactFilter.SetLayerMask(Physics2D.GetLayerCollisionMask(gameObject.layer));
         contactFilter.useTriggers = false;
     }
 
-    private void LateUpdate()
+    private void CreateOutline()
     {
-        // Read after ColorLayerManager.Update so Shift also re-evaluates objects
-        // already resting on the button, without requiring another collision.
-        bool isBlue = colorManager != null && colorManager.IsBlueActive;
-        if (useColorRules && buttonRenderer != null)
-            buttonRenderer.color = isBlue ? blueColor : redColor;
+        if (buttonRenderer == null || buttonRenderer.sprite == null ||
+            outlineThickness <= 0f)
+            return;
 
-        SetPressed(HasValidContact(isBlue));
-        UpdateColorSwitchHint(isBlue);
+        Bounds spriteBounds = buttonRenderer.sprite.bounds;
+        float localThicknessX = outlineThickness /
+            Mathf.Max(0.0001f, Mathf.Abs(transform.lossyScale.x));
+        float localThicknessY = outlineThickness /
+            Mathf.Max(0.0001f, Mathf.Abs(transform.lossyScale.y));
+        int originalOrder = buttonRenderer.sortingOrder;
+
+        // Leave the bottom edge open so the switch reads as a floor button
+        // instead of a fully boxed obstacle.
+        CreateOutlinePart("Button Outline Left",
+            new Vector2(spriteBounds.min.x - localThicknessX * 0.5f,
+                spriteBounds.center.y),
+            new Vector2(localThicknessX, spriteBounds.size.y), originalOrder + 1);
+        CreateOutlinePart("Button Outline Right",
+            new Vector2(spriteBounds.max.x + localThicknessX * 0.5f,
+                spriteBounds.center.y),
+            new Vector2(localThicknessX, spriteBounds.size.y), originalOrder + 1);
+        CreateOutlinePart("Button Outline Top",
+            new Vector2(spriteBounds.center.x,
+                spriteBounds.max.y + localThicknessY * 0.5f),
+            new Vector2(spriteBounds.size.x + localThicknessX * 2f,
+                localThicknessY), originalOrder + 1);
+
+        buttonRenderer.sortingOrder = originalOrder + 2;
     }
 
-    private bool HasValidContact(bool isBlue)
+    private void CreateOutlinePart(string objectName, Vector2 targetCenter,
+        Vector2 targetSize, int sortingOrder)
+    {
+        Bounds spriteBounds = buttonRenderer.sprite.bounds;
+        Vector2 partScale = new Vector2(
+            targetSize.x / Mathf.Max(0.0001f, spriteBounds.size.x),
+            targetSize.y / Mathf.Max(0.0001f, spriteBounds.size.y));
+
+        GameObject outlineObject = new GameObject(objectName);
+        outlineObject.layer = gameObject.layer;
+        outlineObject.transform.SetParent(transform, false);
+        outlineObject.transform.localRotation = Quaternion.identity;
+        outlineObject.transform.localScale = new Vector3(partScale.x, partScale.y, 1f);
+        outlineObject.transform.localPosition = new Vector3(
+            targetCenter.x - spriteBounds.center.x * partScale.x,
+            targetCenter.y - spriteBounds.center.y * partScale.y,
+            0f);
+
+        SpriteRenderer partRenderer = outlineObject.AddComponent<SpriteRenderer>();
+        partRenderer.sprite = buttonRenderer.sprite;
+        partRenderer.sharedMaterial = buttonRenderer.sharedMaterial;
+        partRenderer.color = outlineColor;
+        partRenderer.sortingLayerID = buttonRenderer.sortingLayerID;
+        partRenderer.sortingOrder = sortingOrder;
+        partRenderer.maskInteraction = buttonRenderer.maskInteraction;
+        partRenderer.enabled = buttonRenderer.enabled;
+        outlineRenderers.Add(partRenderer);
+    }
+
+    private void LateUpdate()
+    {
+        bool outlineEnabled = buttonRenderer != null && buttonRenderer.enabled;
+        foreach (SpriteRenderer outlineRenderer in outlineRenderers)
+        {
+            if (outlineRenderer != null)
+                outlineRenderer.enabled = outlineEnabled;
+        }
+
+        // Read after ColorLayerManager.Update so Shift also re-evaluates objects
+        // already resting on the button, without requiring another collision.
+        bool backgroundMatches = IsRequiredBackgroundActive();
+        SetPressed(HasValidContact(backgroundMatches));
+        UpdateColorSwitchHint(backgroundMatches);
+    }
+
+    private bool IsRequiredBackgroundActive()
+    {
+        if (!useColorRules)
+            return true;
+        if (colorManager == null)
+            return false;
+
+        return requiredBackground == RequiredButtonBackground.Blue
+            ? colorManager.IsBlueBackground
+            : colorManager.IsOrangeBackground;
+    }
+
+    private bool HasValidContact(bool backgroundMatches)
     {
         corpseIsTouching = false;
         if (buttonCollider == null || !buttonCollider.enabled)
@@ -87,13 +180,13 @@ public class Button : MonoBehaviour
                 corpseIsTouching = true;
                 ShowCorpseColorHint();
 
-                if (!useColorRules || isBlue)
+                if (backgroundMatches)
                     return true;
             }
-            else if (useColorRules && !isBlue)
+            else
             {
                 PlayerRespawnJ player = other.GetComponentInParent<PlayerRespawnJ>();
-                if (player != null && !player.IsRespawning &&
+                if (backgroundMatches && player != null && !player.IsRespawning &&
                     other.bounds.center.y > buttonBounds.max.y &&
                     other.bounds.min.y >= buttonBounds.max.y - contactTolerance)
                     return true;
@@ -114,16 +207,16 @@ public class Button : MonoBehaviour
             : float.PositiveInfinity;
     }
 
-    private void UpdateColorSwitchHint(bool isBlue)
+    private void UpdateColorSwitchHint(bool backgroundMatches)
     {
         if (!delayedColorSwitchHint)
             return;
 
-        if (corpseIsTouching && isBlue && isPressed)
+        if (corpseIsTouching && backgroundMatches && isPressed)
             colorSwitchUnderstood = true;
 
         bool needsColorSwitch = showCorpseColorHint && useColorRules &&
-            colorManager != null && corpseIsTouching && !isBlue && !isPressed &&
+            colorManager != null && corpseIsTouching && !backgroundMatches && !isPressed &&
             !colorSwitchUnderstood;
         if (!needsColorSwitch)
         {
