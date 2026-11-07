@@ -12,7 +12,8 @@ public sealed class FinalLevelPlayerController : MonoBehaviour
     public float CurrentSpeed => normalMoveSpeed * (IsWeighted ? 0.5f : 1f);
     public Rigidbody2D Body { get; private set; }
     public bool Grounded { get; private set; }
-    float direction, jumpUntil = -1f;
+    public bool InSlowFall => Time.fixedTime - slowFallMarkedAt <= Time.fixedDeltaTime * 1.5f;
+    float direction, jumpUntil = -1f, slowFallMarkedAt = -1f, slowFallGravity = 1f, slowFallMaxSpeed = float.PositiveInfinity;
     BoxCollider2D shape;
     void Awake() { Body = GetComponent<Rigidbody2D>(); shape = GetComponent<BoxCollider2D>(); ResetMovementState(); }
     void Update()
@@ -29,7 +30,16 @@ public sealed class FinalLevelPlayerController : MonoBehaviour
         Grounded = hit.collider && hit.normal.y > 0.65f && Body.linearVelocity.y <= 0.1f;
         float vy = Body.linearVelocity.y;
         if (Time.time <= jumpUntil && Grounded) { vy = normalJumpForce; jumpUntil = -1; Grounded = false; }
+        // Slow-fall only softens the descent; the jump itself keeps its normal height.
+        bool slowFalling = InSlowFall && vy < 0;
+        Body.gravityScale = normalGravityScale * (IsWeighted ? 1.5f : 1f) * (slowFalling ? slowFallGravity : 1f);
+        if (slowFalling) vy = Mathf.Max(vy, -slowFallMaxSpeed);
         Body.linearVelocity = new Vector2(direction * CurrentSpeed, vy);
+    }
+    // Called every physics step by a FinalSlowFallZone the player is inside.
+    public void MarkSlowFall(float gravityMultiplier, float maxFallSpeed)
+    {
+        slowFallMarkedAt = Time.fixedTime; slowFallGravity = gravityMultiplier; slowFallMaxSpeed = maxFallSpeed;
     }
     public void ApplyWeightedState(float speedMultiplier = 0.5f, float gravityMultiplier = 1.5f)
     {
@@ -39,7 +49,7 @@ public sealed class FinalLevelPlayerController : MonoBehaviour
     }
     public void ResetMovementState()
     {
-        IsWeighted = false;
+        IsWeighted = false; slowFallMarkedAt = -1f;
         if (!Body) Body = GetComponent<Rigidbody2D>();
         Body.gravityScale = normalGravityScale;
         ResetVelocity();

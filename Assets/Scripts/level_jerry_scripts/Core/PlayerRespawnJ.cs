@@ -252,6 +252,10 @@ public class PlayerRespawnJ : MonoBehaviour
 
     private void RestartLevel()
     {
+        JerryLevelProgress progress = FindFirstObjectByType<JerryLevelProgress>();
+        if (progress != null)
+            progress.PrepareRestart(this);
+
         DeathCount++;
         PlaySessionStats.RecordDeath();
 

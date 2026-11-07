@@ -13,6 +13,9 @@ public class Button : MonoBehaviour
 
     [Header("Optional Corpse Color Hint")]
     public bool showCorpseColorHint;
+    [Tooltip("Show a contextual reminder only while a corpse is blocked by the red state.")]
+    public bool delayedColorSwitchHint;
+    [Min(0f)] public float colorHintDelay = 3f;
     public string corpseColorHintText =
         "A corpse can only trigger a switch in the right color!";
     public Vector2 hintWorldOffset = new Vector2(0f, -1.7f);
@@ -26,6 +29,9 @@ public class Button : MonoBehaviour
     private bool isPressed;
     private bool corpseHintTriggered;
     private float corpseHintEndsAt;
+    private bool corpseIsTouching;
+    private float blockedByColorTime;
+    private bool colorSwitchUnderstood;
 
     private void Awake()
     {
@@ -48,10 +54,12 @@ public class Button : MonoBehaviour
             buttonRenderer.color = isBlue ? blueColor : redColor;
 
         SetPressed(HasValidContact(isBlue));
+        UpdateColorSwitchHint(isBlue);
     }
 
     private bool HasValidContact(bool isBlue)
     {
+        corpseIsTouching = false;
         if (buttonCollider == null || !buttonCollider.enabled)
             return false;
         if (useColorRules && colorManager == null)
@@ -76,6 +84,7 @@ public class Button : MonoBehaviour
             Corpse corpse = other.GetComponentInParent<Corpse>();
             if (corpse != null)
             {
+                corpseIsTouching = true;
                 ShowCorpseColorHint();
 
                 if (!useColorRules || isBlue)
@@ -96,7 +105,7 @@ public class Button : MonoBehaviour
 
     private void ShowCorpseColorHint()
     {
-        if (!showCorpseColorHint || corpseHintTriggered)
+        if (!showCorpseColorHint || delayedColorSwitchHint || corpseHintTriggered)
             return;
 
         corpseHintTriggered = true;
@@ -105,22 +114,58 @@ public class Button : MonoBehaviour
             : float.PositiveInfinity;
     }
 
+    private void UpdateColorSwitchHint(bool isBlue)
+    {
+        if (!delayedColorSwitchHint)
+            return;
+
+        if (corpseIsTouching && isBlue && isPressed)
+            colorSwitchUnderstood = true;
+
+        bool needsColorSwitch = showCorpseColorHint && useColorRules &&
+            colorManager != null && corpseIsTouching && !isBlue && !isPressed &&
+            !colorSwitchUnderstood;
+        if (!needsColorSwitch)
+        {
+            blockedByColorTime = 0f;
+            corpseHintTriggered = false;
+            return;
+        }
+
+        if (Time.timeScale <= 0f)
+            return;
+
+        blockedByColorTime += Time.deltaTime;
+        if (!corpseHintTriggered && blockedByColorTime >= colorHintDelay)
+        {
+            corpseHintTriggered = true;
+            corpseHintEndsAt = hintDuration > 0f
+                ? Time.unscaledTime + hintDuration
+                : float.PositiveInfinity;
+        }
+    }
+
     private void OnGUI()
     {
         if (!showCorpseColorHint || !corpseHintTriggered ||
-            Time.unscaledTime > corpseHintEndsAt || Camera.main == null)
+            Time.unscaledTime > corpseHintEndsAt || Camera.main == null ||
+            (delayedColorSwitchHint && Time.timeScale <= 0f))
             return;
 
-        Vector3 screenPoint = Camera.main.WorldToScreenPoint(
-            transform.position + (Vector3)hintWorldOffset
-        );
+        Vector3 hintPosition = transform.position + (Vector3)hintWorldOffset;
+        if (delayedColorSwitchHint && buttonCollider != null)
+            hintPosition = new Vector3(buttonCollider.bounds.center.x + hintWorldOffset.x,
+                buttonCollider.bounds.max.y + hintWorldOffset.y, transform.position.z);
+        Vector3 screenPoint = Camera.main.WorldToScreenPoint(hintPosition);
         if (screenPoint.z <= 0f)
             return;
 
-        const float width = 720f;
-        const float height = 82f;
+        float width = Mathf.Min((delayedColorSwitchHint ? 560f : 640f) * GameHUD.UiScale, Screen.width - 32f);
+        float height = (delayedColorSwitchHint ? 42f : 64f) * GameHUD.UiScale;
         Rect hintRect = new Rect(
-            screenPoint.x - width * 0.5f,
+            delayedColorSwitchHint
+                ? Mathf.Clamp(screenPoint.x - width * 0.5f, 16f, Screen.width - width - 16f)
+                : screenPoint.x - width * 0.5f,
             Screen.height - screenPoint.y - height * 0.5f,
             width,
             height
@@ -133,11 +178,17 @@ public class Button : MonoBehaviour
 
         GUIStyle hintStyle = new GUIStyle(GUI.skin.label)
         {
-            fontSize = 32,
+            fontSize = GameHUD.ScaleFont(22),
             fontStyle = FontStyle.Bold,
             alignment = TextAnchor.MiddleCenter,
-            wordWrap = true
+            wordWrap = !delayedColorSwitchHint
         };
+        if (delayedColorSwitchHint)
+        {
+            float captionWidth = hintStyle.CalcSize(new GUIContent(corpseColorHintText)).x;
+            if (captionWidth > width - 24f)
+                hintStyle.fontSize = Mathf.Max(10, Mathf.FloorToInt(hintStyle.fontSize * (width - 24f) / captionWidth));
+        }
         hintStyle.normal.textColor = Color.white;
         GUI.Label(hintRect, corpseColorHintText, hintStyle);
     }

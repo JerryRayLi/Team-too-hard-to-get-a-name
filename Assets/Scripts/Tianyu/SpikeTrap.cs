@@ -30,6 +30,16 @@ public class SpikeTrap : MonoBehaviour
     [Min(0f)]
     public float exposedDuration = 1.5f;
 
+    [Min(0f)]
+    [Tooltip("Shake for this long before an automatic retract so the player notices it.")]
+    public float retractWarning;
+
+    public float retractShake = 0.05f;
+
+    [Min(0f)]
+    [Tooltip("Duration of the automatic retract; 0 uses Move Duration.")]
+    public float retractDuration;
+
     [Header("Optional Upward Flight")]
     [Min(0f)]
     public float upwardFlightDistance = 4f;
@@ -138,15 +148,19 @@ public class SpikeTrap : MonoBehaviour
         movementRoutine = StartCoroutine(MoveTo(targetPosition, retractAfterDelay));
     }
 
-    private IEnumerator MoveTo(Vector3 targetPosition, bool retractAfterDelay)
+    private IEnumerator MoveTo(Vector3 targetPosition, bool retractAfterDelay, float duration = 0f)
     {
         Vector3 startPosition = transform.localPosition;
         float elapsed = 0f;
+        if (duration <= 0f)
+        {
+            duration = moveDuration;
+        }
 
-        while (elapsed < moveDuration)
+        while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            float progress = Mathf.Clamp01(elapsed / moveDuration);
+            float progress = Mathf.Clamp01(elapsed / duration);
             transform.localPosition = Vector3.LerpUnclamped(
                 startPosition,
                 targetPosition,
@@ -161,7 +175,15 @@ public class SpikeTrap : MonoBehaviour
         if (retractAfterDelay)
         {
             yield return new WaitForSeconds(exposedDuration);
-            movementRoutine = StartCoroutine(MoveTo(hiddenLocalPosition, false));
+
+            for (float shaken = 0f; shaken < retractWarning; shaken += Time.deltaTime)
+            {
+                transform.localPosition = targetPosition + Vector3.right * (Mathf.Sin(shaken * 70f) * retractShake);
+                yield return null;
+            }
+
+            transform.localPosition = targetPosition;
+            movementRoutine = StartCoroutine(MoveTo(hiddenLocalPosition, false, retractDuration));
             yield break;
         }
 
