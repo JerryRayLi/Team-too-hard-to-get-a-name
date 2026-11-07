@@ -8,6 +8,8 @@ public class ColorLayerManager : MonoBehaviour
 
     private bool redLayerActive = true;
     public bool IsBlueActive => !redLayerActive;
+    public bool IsBlueBackground => redLayerActive;
+    public bool IsOrangeBackground => !redLayerActive;
     private void Start()
     {
         ApplyLayer();

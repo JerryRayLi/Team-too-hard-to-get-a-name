@@ -19,7 +19,8 @@ public sealed class FinalLevelPlayerController : MonoBehaviour
     {
         var k = Keyboard.current;
         direction = k == null ? 0 : ((k.dKey.isPressed || k.rightArrowKey.isPressed ? 1 : 0) - (k.aKey.isPressed || k.leftArrowKey.isPressed ? 1 : 0));
-        if (k != null && k.spaceKey.wasPressedThisFrame) jumpUntil = Time.time + 0.12f;
+        if (k != null && (k.spaceKey.wasPressedThisFrame || k.wKey.wasPressedThisFrame))
+            jumpUntil = Time.time + 0.12f;
     }
     void FixedUpdate()
     {
