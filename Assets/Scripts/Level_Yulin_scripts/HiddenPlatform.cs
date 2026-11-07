@@ -47,6 +47,12 @@ public class HiddenPlatform : MonoBehaviour
                 revealed = true;
                 spriteRenderer.enabled = true;
 
+                // Notify the hint manager when this platform is revealed.
+            if (HiddenPlatformHint.Instance != null)
+                {
+                    HiddenPlatformHint.Instance.NotifyPlatformFound(this);
+                }
+
                 if (gameObject.name.Contains("change_direction"))
                 {
                     // Toggle controls once per tile; revealed prevents repeat triggers.
