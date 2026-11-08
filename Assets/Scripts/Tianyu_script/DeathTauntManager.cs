@@ -69,8 +69,8 @@ public sealed class DeathTauntManager : MonoBehaviour
     {
         "Level01", "Level02", "Level03", "Level04", "Level_TIanyu1",
         "level_j1", "level_j2", "level_j3", "Level_Haoyu", "Level_Haoyu_2",
-        "Level_Running_Door_1", "Level_Running_Door_2",
-        "Level_Yulin_hidden1", "Level_Yulin_hidden2"
+        "Level_Running_Door_1", "Level_Running_Door_2", 
+        "Level_Yulin_hidden2" //"Level_Yulin_hidden1"
     };
 
     private static readonly HashSet<string> InitiationScenes = new()
