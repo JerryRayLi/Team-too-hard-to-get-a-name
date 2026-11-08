@@ -289,7 +289,7 @@ MonoBehaviour:
   worlds:
   - worldName: TUTORIAL
     levels:
-    - levelName: SAFE START
+    - levelName: LEVEL 1
       sceneName: BabyTutorial
       sceneAsset: {fileID: 102900000, guid: 55dd81d3223c4c6f988522631a60770b, type: 3}
     isChallenge: 0
