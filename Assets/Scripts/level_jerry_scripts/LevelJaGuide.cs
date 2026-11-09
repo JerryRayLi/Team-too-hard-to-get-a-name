@@ -91,7 +91,7 @@ public sealed class LevelJaGuide : MonoBehaviour
         Panel(new Rect(0, 0, Screen.width, 92));
         GUI.Label(new Rect(22, 12, 650, 38), "LEVEL_JA  /  BORROWED STEPS", title);
         GUI.Label(new Rect(22, 51, Screen.width - 40, 33),
-            "A / D  move     Space  jump     E  release nearest corpse     Shift  red / blue     R  reset     Esc  menu", text);
+            "A / D  move     Space / W  jump     E  release nearest corpse     Shift  red / blue     R  reset     Esc  menu", text);
         GUI.Label(new Rect(Screen.width - 275, 15, 260, 32),
             "CHECKPOINT " + checkpoint + "/2   |   DEATHS " + PlayerRespawnJ.DeathCount, label);
 
