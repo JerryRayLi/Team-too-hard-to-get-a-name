@@ -8,6 +8,8 @@
   <script src="analytics.js" defer></script>
   <script src="sample-data.js" defer></script>
   <script src="firebase-reader.js" defer></script>
+  <script src="survey-pipeline.js" defer></script>
+  <script src="survey-data.js" defer></script>
   <script src="dashboard.js" defer></script>
 </head>
 <body>
@@ -19,8 +21,8 @@
         <label class="button primary" for="file">Import JSON</label>
         <input id="file" class="file-input" type="file" accept=".json,application/json">
         <button id="example" type="button">Sample data</button>
-        <button id="votes" type="button">Import votes</button>
-        <input id="votes-file" class="file-input" type="file" accept=".json,application/json">
+        <button id="votes" type="button">Import survey CSV</button>
+        <input id="votes-file" class="file-input" type="file" accept=".csv,text/csv,.json,application/json">
         <button id="clear" type="button" class="quiet">Clear</button>
       </div>
       <p id="message" role="status" aria-live="polite">Load or import data.</p>
@@ -41,7 +43,7 @@
     <section class="charts" aria-label="Four playtest charts">
       <article class="chart-panel"><div class="chart-title"><span class="number">01</span><h2>Deaths</h2></div><p id="death-description">Box plot · median label · completed visits</p><div id="death-chart" class="chart"></div></article>
       <article class="chart-panel"><div class="chart-title"><span class="number">02</span><h2>Completion time</h2></div><p>Box plot · median label · seconds</p><div id="time-chart" class="chart"></div></article>
-      <article class="chart-panel"><div class="chart-title"><span class="number">03</span><h2>Least liked (top 3)</h2></div><p>Votes</p><div id="dislike-chart" class="chart"></div></article>
+      <article class="chart-panel"><div class="chart-title"><span class="number">03</span><h2>Improvement priority</h2></div><p>Weighted score · #1 = 5 points · #2 = 3 points · #3 = 1 point</p><div id="dislike-chart" class="chart"></div></article>
       <article class="chart-panel"><div class="chart-title"><span class="number">04</span><h2>Most liked</h2></div><p>Votes</p><div id="favorite-chart" class="chart"></div></article>
     </section>
 
