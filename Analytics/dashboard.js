@@ -3,6 +3,25 @@
   const metrics = window.PlaytestMetrics;
   const $ = id => document.getElementById(id);
   const ns = 'http://www.w3.org/2000/svg';
+  const levelDisplayNames = Object.freeze({
+    BabyTutorial: 'SAFE START',
+    Level01: 'INITIATION01',
+    Level02: 'INITIATION02',
+    Level03: 'INITIATION03',
+    Level04: 'INITIATION04',
+    Level_Running_Door_1: 'DOOR01',
+    Level_Running_Door_2: 'DOOR02',
+    level_j1: 'CORPSE01',
+    level_j2: 'CORPSE02',
+    level_j3: 'CORPSE03',
+    Level_Haoyu: 'SLOW 1',
+    Level_Haoyu_2: 'SLOW 2',
+    Level_Yulin_hidden1: 'HIDDEN01',
+    Level_Yulin_hidden2: 'HIDDEN02',
+    'Level_Yulin_v1.1': 'REVERSE',
+    Level_TIanyu1: 'SPIKES'
+  });
+  const displayLevelName = level => levelDisplayNames[level] || level;
   let data = metrics.normalize(null);
   let preferences = null;
   let isExample = false;
@@ -53,8 +72,10 @@
     const slot = plot / entries.length;
     const center = index => left + slot * (index + .5);
     entries.forEach((item, index) => {
-      const label = svgElement('text', { x: center(index), y: 208, 'text-anchor': 'middle', class: 'level-label' }, item.level.length > 16 ? item.level.slice(0, 14) + '…' : item.level);
-      label.append(svgElement('title', {}, item.level));
+      const displayName = displayLevelName(item.level);
+      const labelText = displayName.length > 16 ? displayName.slice(0, 14) + '…' : displayName;
+      const label = svgElement('text', { x: center(index), y: 208, 'text-anchor': 'middle', class: 'level-label' }, labelText);
+      label.append(svgElement('title', {}, displayName === item.level ? item.level : `${displayName} (${item.level})`));
       svg.append(label);
       if (item.n !== undefined) svg.append(svgElement('text', { x: center(index), y: 228, 'text-anchor': 'middle', class: 'sample-label' }, `n=${item.n}`));
     });
@@ -75,7 +96,7 @@
     entries.forEach((item, index) => {
       const x = center(index);
       if (item.value === null) { noSample(svg, x, bottom); return; }
-      const description = `${item.level}: ${format(item.value)} ${unit}${item.n === undefined ? '' : ', ' + item.n + ' samples'}`;
+      const description = `${displayLevelName(item.level)}: ${format(item.value)} ${unit}${item.n === undefined ? '' : ', ' + item.n + ' samples'}`;
       if (item.value === 0) mark(svg, 'circle', { cx: x, cy: bottom, r: 3, class: 'bar' }, description);
       else mark(svg, 'rect', { x: x - barWidth / 2, y: y(item.value), width: barWidth, height: bottom - y(item.value), rx: 3, class: 'bar' }, description);
       svg.append(svgElement('text', { x, y: y(item.value) - 10, 'text-anchor': 'middle', class: 'value-label' }, format(item.value)));
@@ -104,7 +125,7 @@
           svg.append(svgElement('line', { x1: x - boxWidth / 4, y1: y(end), x2: x + boxWidth / 4, y2: y(end), class: 'whisker' }));
         }
         mark(svg, 'rect', { x: x - boxWidth / 2, y: y(stats.q3), width: boxWidth, height: Math.max(1, y(stats.q1) - y(stats.q3)), class: 'box' },
-          `${item.level}: median ${format(stats.median)} ${unit}, middle half ${format(stats.q1)}–${format(stats.q3)}, ${stats.n} samples, ${stats.outliers.length} outliers`);
+          `${displayLevelName(item.level)}: median ${format(stats.median)} ${unit}, middle half ${format(stats.q1)}–${format(stats.q3)}, ${stats.n} samples, ${stats.outliers.length} outliers`);
       }
       svg.append(svgElement('line', { x1: x - boxWidth / 2, y1: y(stats.median), x2: x + boxWidth / 2, y2: y(stats.median), class: 'median' }));
       // Deterministic jitter: repeated values (common for death counts) fan out sideways instead of overlapping.
@@ -116,7 +137,7 @@
         const offset = (k % 2 ? -1 : 1) * Math.ceil(k / 2) * 5;
         const outlier = boxed && stats.outliers.includes(value);
         const cx = x + Math.max(-boxWidth / 2, Math.min(boxWidth / 2, offset));
-        const description = `${item.level}: ${format(value)} ${unit}${outlier ? ' (outlier)' : ''}`;
+        const description = `${displayLevelName(item.level)}: ${format(value)} ${unit}${outlier ? ' (outlier)' : ''}`;
         if (value > limit) mark(svg, 'path', { d: `M${cx} ${top - 10}l-4.5 7h9z`, class: 'point outlier clipped' }, description + ', above axis');
         else mark(svg, 'circle', { cx, cy: y(value), r: 3.5, class: outlier ? 'point outlier' : 'point' }, description);
       }
@@ -135,15 +156,17 @@
     const version = $('version').value;
     let reason = null;
     if (!preferences) reason = 'Import vote totals.';
-    else if (version && preferences.version !== version) reason = preferences.version
-      ? `Votes are for version ${preferences.version}. Select that version.`
-      : 'Vote data has no version.';
-    for (const [id, field, title] of [['dislike-chart', 'dislikes', 'Least liked (top 3)'], ['favorite-chart', 'favorites', 'Most liked']]) {
-      if (reason) { empty(id, 'No vote data', reason); continue; }
-      const ranked = preferences[field].filter(row => row.votes > 0);
-      const rows = field === 'dislikes' ? ranked.slice(0, 3) : ranked;
-      if (!rows.length) empty(id, 'No votes', 'No votes in this dataset.');
-      else draw(id, rows.map(row => ({ level: row.level, value: row.votes })), title, 'votes');
+    else if (version && preferences.version && preferences.version !== version) reason =
+      `Survey responses are for version ${preferences.version}. Select that version.`;
+    const charts = [
+      ['dislike-chart', 'dislikes', 'Improvement priority score', 'points'],
+      ['favorite-chart', 'favorites', 'Most liked', 'votes']
+    ];
+    for (const [id, field, title, unit] of charts) {
+      if (reason) { empty(id, 'No survey data', reason); continue; }
+      const rows = preferences[field];
+      if (!rows.some(row => row.votes > 0)) empty(id, 'No votes', 'No votes in this dataset.');
+      else draw(id, rows.map(row => ({ level: row.level, value: row.votes })), title, unit);
     }
   }
   function render() {
@@ -157,7 +180,7 @@
     drawPreferences();
     const rows = summary.levels.map(row => {
       const element = document.createElement('tr');
-      for (const value of [row.level, row.visits, row.completedVisits, row.skipped, row.other, row.deathSamples, row.timeSamples, row.deathSamples ? row.deathTotal : null, row.deathMedian, row.durationMedian]) {
+      for (const value of [displayLevelName(row.level), row.visits, row.completedVisits, row.skipped, row.other, row.deathSamples, row.timeSamples, row.deathSamples ? row.deathTotal : null, row.deathMedian, row.durationMedian]) {
         const cell = document.createElement('td');
         cell.textContent = typeof value === 'string' ? value : format(value);
         element.append(cell);
@@ -207,9 +230,11 @@
   }
   function setPreferences(payload) {
     const next = metrics.normalizeVotes(payload);
+    next.responseCount = Number.isInteger(payload.response_count) ? payload.response_count : null;
+    next.rankWeights = payload.rank_weights || null;
     preferences = next;
     drawPreferences();
-    message('Vote totals loaded.');
+    message(next.responseCount === null ? 'Survey totals loaded.' : `${next.responseCount} survey responses loaded.`);
     return next;
   }
   function clear() {
@@ -239,7 +264,7 @@
     try {
       const payload = await window.FirebaseAnalyticsReader.readEvents({ signal: controller.signal });
       if (controller.signal.aborted) return null;
-      const summary = setData(payload, { source: 'Database', resetPreferences: true });
+      const summary = setData(payload, { source: 'Database', resetPreferences: false });
       message(summary.events ? `${summary.events} results loaded.` : 'No results in database.');
       return summary;
     } catch (error) {
@@ -252,7 +277,19 @@
     }
   }
   $('file').addEventListener('change', () => importFile($('file'), (payload, name) => setData(payload, { source: `Imported: ${name}`, resetPreferences: true })));
-  $('votes-file').addEventListener('change', () => importFile($('votes-file'), setPreferences));
+  $('votes-file').addEventListener('change', async () => {
+    const input = $('votes-file'), file = input.files[0];
+    if (!file) return;
+    try {
+      const contents = await file.text();
+      const payload = file.name.toLowerCase().endsWith('.json')
+        ? JSON.parse(contents)
+        : window.SurveyPipeline.parseCsv(contents);
+      setPreferences(payload);
+    } catch (error) {
+      message(`Survey import failed: ${error instanceof SyntaxError ? 'Invalid JSON' : error.message}. Previous data kept.`, true);
+    } finally { input.value = ''; }
+  });
   $('votes').addEventListener('click', () => $('votes-file').click());
   $('example').addEventListener('click', () => setData(window.TeammateExample, { example: true, resetPreferences: true }));
   $('clear').addEventListener('click', clear);
@@ -260,5 +297,6 @@
   for (const id of ['version', 'sample', 'death-mode']) $(id).addEventListener('change', render);
   window.PlaytestDashboard = Object.freeze({ setData, setPreferences, clear, getSummary, readDatabase });
   render();
+  if (window.SurveyVoteData) setPreferences(window.SurveyVoteData);
   window.dispatchEvent(new Event('playtest-dashboard-ready'));
 })();

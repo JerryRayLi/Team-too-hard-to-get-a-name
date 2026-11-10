@@ -6,10 +6,10 @@ The dashboard reads the team's `analytics_events` format and provides four chart
 
 1. Deaths per completion by level, as a box plot, with a total-deaths bar view.
 2. Completion time by level, in seconds, as a box plot.
-3. The three least-liked levels, from imported vote totals.
-4. Favorite levels, from imported vote totals.
+3. Improvement priority by level, using survey ranks weighted #1 = 5, #2 = 3 and #3 = 1.
+4. Most-liked level vote totals.
 
-Use **Load database** to read the configured Firebase event collection, **Import JSON** for an exported snapshot, and **Import votes** for preference totals. **Sample data** loads the two records supplied by the team: Level03 has 6 deaths and a 48.37-second completion; Level04 was skipped. Samples are labeled on the page.
+Use **Load database** to read the configured Firebase event collection, **Import JSON** for an exported snapshot, and **Import survey CSV** for a Google Forms response export. The checked-in `survey-data.js` snapshot loads automatically. **Sample data** loads the two records supplied by the team: Level03 has 6 deaths and a 48.37-second completion; Level04 was skipped. Samples are labeled on the page.
 
 ## Connect data
 
@@ -36,6 +36,12 @@ PlaytestDashboard.setPreferences({
 ```
 
 Votes must be nonnegative integers. Duplicate level names are combined; the least-liked chart shows the three highest totals, with level-name ordering for ties. Preference versions must match the selected game version. Survey collection, ranking-to-score conversion, and duplicate-response handling belong to the data source.
+
+### Survey pipeline
+
+The survey chart pipeline expects the Google Forms response columns `[#1]`, `[#2]`, `[#3]`, and `Top 1 Favorite Level`. It assigns 5, 3, and 1 point respectively to the three improvement rankings, normalizes the survey's level labels to player-facing names, and counts one vote per favorite response. Download the linked response sheet as CSV and use **Import survey CSV** to refresh both survey charts. The import happens locally in the browser; open-text responses are not displayed or uploaded.
+
+`survey-data.js` is the reviewed 12-response snapshot exported on 2026-11-10. Replace that snapshot when publishing a newer fixed dashboard, or import a newer CSV during analysis.
 
 ## Calculation rules
 
