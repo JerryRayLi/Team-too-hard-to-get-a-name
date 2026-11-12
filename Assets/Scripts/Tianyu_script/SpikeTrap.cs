@@ -63,6 +63,7 @@ public class SpikeTrap : MonoBehaviour
     private Vector3 extendedLocalPosition;
     private Vector3 hiddenLocalPosition;
     private Coroutine movementRoutine;
+    private bool hasStartedUpwardFlight;
 
     private void Awake()
     {
@@ -74,6 +75,14 @@ public class SpikeTrap : MonoBehaviour
 
     public void Extend()
     {
+        // A player can enter the flight trigger before the extend trigger when
+        // jumping. Once flight has begun, an older Extend request must not pull
+        // the spike back down to its original raised position.
+        if (hasStartedUpwardFlight)
+        {
+            return;
+        }
+
         StartMovement(extendedLocalPosition, retractAutomatically);
     }
 
@@ -99,12 +108,15 @@ public class SpikeTrap : MonoBehaviour
 
     public void FlyUpward()
     {
+        bool isFirstUpwardFlight = !hasStartedUpwardFlight;
+        hasStartedUpwardFlight = true;
+
         if (movementRoutine != null)
         {
             StopCoroutine(movementRoutine);
         }
 
-        movementRoutine = StartCoroutine(FlyUpwardRoutine());
+        movementRoutine = StartCoroutine(FlyUpwardRoutine(isFirstUpwardFlight));
     }
 
     public void MoveHorizontally()
@@ -157,11 +169,13 @@ public class SpikeTrap : MonoBehaviour
         movementRoutine = null;
     }
 
-    private IEnumerator FlyUpwardRoutine()
+    private IEnumerator FlyUpwardRoutine(bool useCanonicalEndHeight)
     {
         Vector3 flightStartPosition = transform.localPosition;
-        Vector3 flightEndPosition = flightStartPosition + Vector3.up * upwardFlightDistance;
-        float flightDuration = Mathf.Abs(upwardFlightDistance) /
+        Vector3 flightEndPosition = useCanonicalEndHeight
+            ? extendedLocalPosition + Vector3.up * upwardFlightDistance
+            : flightStartPosition + Vector3.up * upwardFlightDistance;
+        float flightDuration = Vector3.Distance(flightStartPosition, flightEndPosition) /
             Mathf.Max(0.01f, upwardFlightSpeed);
 
         yield return MoveOverTime(

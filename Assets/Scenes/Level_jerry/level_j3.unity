@@ -167,7 +167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Button
   door: {fileID: 246665699}
   useColorRules: 1
-  requiredBackground: 0
+  requiredBackground: 1
   colorManager: {fileID: 1228115854}
   redColor: {r: 0.5411765, g: 0.3137255, b: 0.2901961, a: 1}
   blueColor: {r: 0.24705882, g: 0.39607844, b: 0.4392157, a: 1}
@@ -276,7 +276,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.54, g: 0.31, b: 0.29, a: 1}
+  m_Color: {r: 0.24705882, g: 0.39607844, b: 0.4392157, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1655,7 +1655,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Button
   door: {fileID: 1531337462}
   useColorRules: 1
-  requiredBackground: 1
+  requiredBackground: 0
   colorManager: {fileID: 1228115854}
   redColor: {r: 0.5411765, g: 0.3137255, b: 0.2901961, a: 1}
   blueColor: {r: 0.24705882, g: 0.39607844, b: 0.4392157, a: 1}
@@ -1764,7 +1764,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.24705882, g: 0.39607844, b: 0.4392157, a: 1}
+  m_Color: {r: 0.5411765, g: 0.3137255, b: 0.2901961, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
