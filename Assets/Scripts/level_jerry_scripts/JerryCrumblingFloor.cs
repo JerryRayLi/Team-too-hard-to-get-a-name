@@ -20,7 +20,6 @@ public sealed class JerryCrumblingFloor : MonoBehaviour
     private SpriteRenderer floorRenderer;
     private SpriteRenderer receiverRenderer;
     private ContactFilter2D filter;
-    private Color normalColor;
     private bool triggered;
     private bool collapsed;
     private float elapsed;
@@ -29,7 +28,6 @@ public sealed class JerryCrumblingFloor : MonoBehaviour
     {
         floorCollider = GetComponent<Collider2D>();
         floorRenderer = GetComponent<SpriteRenderer>();
-        normalColor = floorRenderer.color;
         if (receiver != null)
         {
             receiverCollider = receiver.GetComponent<Collider2D>();
@@ -57,8 +55,10 @@ public sealed class JerryCrumblingFloor : MonoBehaviour
         elapsed += Time.fixedDeltaTime;
         float interval = Mathf.Lerp(flashInterval, flashInterval * 0.4f,
             Mathf.Clamp01(elapsed / collapseDelay));
-        floorRenderer.color = ((int)(elapsed / interval) % 2 == 0)
-            ? normalColor : new Color(1f, 0.48f, 0.25f, 0.35f);
+        bool flashVisible = (int)(elapsed / interval) % 2 == 0;
+        floorRenderer.enabled = flashVisible;
+        if (receiverRenderer != null)
+            receiverRenderer.enabled = flashVisible;
         if (elapsed >= collapseDelay)
             Collapse();
     }

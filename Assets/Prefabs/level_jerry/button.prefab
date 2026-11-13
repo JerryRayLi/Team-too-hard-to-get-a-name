@@ -154,9 +154,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Button
   door: {fileID: 0}
   useColorRules: 1
+  requiredBackground: 0
   colorManager: {fileID: 7012955015383367228}
   redColor: {r: 0.5411765, g: 0.3137255, b: 0.2901961, a: 1}
   blueColor: {r: 0.24705882, g: 0.39607844, b: 0.4392157, a: 1}
+  outlineColor: {r: 0, g: 0, b: 0, a: 1}
+  outlineThickness: 0.04
   contactTolerance: 0.02
   showCorpseColorHint: 1
   corpseColorHintText: A corpse can only trigger a switch in the right color!

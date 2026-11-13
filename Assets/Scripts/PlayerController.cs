@@ -48,7 +48,8 @@ public class PlayerController : MonoBehaviour
             rb.linearVelocity.y
         );
 
-        if (Keyboard.current.spaceKey.wasPressedThisFrame && isGrounded)
+        if ((Keyboard.current.spaceKey.wasPressedThisFrame ||
+             Keyboard.current.wKey.wasPressedThisFrame) && isGrounded)
         {
             rb.linearVelocity = new Vector2(
                 rb.linearVelocity.x,

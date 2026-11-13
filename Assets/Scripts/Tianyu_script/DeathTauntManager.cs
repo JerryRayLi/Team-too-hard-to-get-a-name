@@ -69,7 +69,8 @@ public sealed class DeathTauntManager : MonoBehaviour
     {
         "Level01", "Level02", "Level03", "Level04", "Level_TIanyu1",
         "level_j1", "level_j2", "level_j3", "Level_Haoyu", "Level_Haoyu_2",
-        "Level_Running_Door_1", "Level_Yulin_v1.1"
+        "Level_Running_Door_1", "Level_Running_Door_2", 
+        "Level_Yulin_hidden2" //"Level_Yulin_hidden1"
     };
 
     private static readonly HashSet<string> InitiationScenes = new()
@@ -84,12 +85,14 @@ public sealed class DeathTauntManager : MonoBehaviour
         { "Level03", new TauntSchedule(3, 6, 10, 4) },
         { "Level04", new TauntSchedule(4, 7, 11, 4) },
         { "Level_Running_Door_1", new TauntSchedule(4, 7, 11, 4) },
+        { "Level_Running_Door_2", new TauntSchedule(5, 9, 14, 5) },
         { "level_j1", new TauntSchedule(4, 8, 12, 5) },
         { "level_j2", new TauntSchedule(6, 11, 16, 5) },
         { "level_j3", new TauntSchedule(6, 11, 16, 5) },
         { "Level_Haoyu", new TauntSchedule(5, 9, 14, 5) },
         { "Level_Haoyu_2", new TauntSchedule(5, 9, 14, 5) },
-        { "Level_Yulin_v1.1", new TauntSchedule(5, 10, 15, 5) },
+        { "Level_Yulin_hidden1", new TauntSchedule(5, 10, 15, 5) },
+        { "Level_Yulin_hidden2", new TauntSchedule(5, 10, 15, 5) },
         { "Level_TIanyu1", new TauntSchedule(8, 14, 20, 6) }
     };
 
