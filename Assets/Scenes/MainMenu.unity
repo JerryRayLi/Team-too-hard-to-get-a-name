@@ -316,6 +316,9 @@ MonoBehaviour:
     - levelName: LEVEL 2
       sceneName: Level_Running_Door_2
       sceneAsset: {fileID: 102900000, guid: 9fd000b31cc2c704eafecf632d12e7bf, type: 3}
+    - levelName: LEVEL 3
+      sceneName: Level_Running_Door_3
+      sceneAsset: {fileID: 102900000, guid: ba5778661edd1844f8dc7a9e3c9e54bb, type: 3}
     isChallenge: 0
   - worldName: CORPSE
     levels:
