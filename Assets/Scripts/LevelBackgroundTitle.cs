@@ -9,7 +9,7 @@ public static class LevelBackgroundTitle
 
     private static readonly Dictionary<string, string> Titles = new()
     {
-        { "BabyTutorial", "BABY" },
+        { "BabyTutorial", "TUTORIAL" },
         { "Level01", "INITIATION01" },
         { "Level02", "INITIATION02" },
         { "Level03", "INITIATION03" },

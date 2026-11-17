@@ -114,6 +114,11 @@ public class HiddenPlatformHint : MonoBehaviour
         );
         textStyle.normal.textColor = Color.white;
 
+        if (!firstPlatformFound && Event.current.type == EventType.Repaint)
+        {
+            DrawPlatformOutline(scale);
+        }
+
         float width = Mathf.Min(560f * scale, Screen.width - 32f);
         float height = Mathf.Max(48f, 64f * scale);
 
@@ -136,6 +141,50 @@ public class HiddenPlatformHint : MonoBehaviour
         {
             hintWasShown = true;
         }
+    }
+
+    private void DrawPlatformOutline(float scale)
+    {
+        Camera camera = Camera.main;
+        if (firstPlatform == null || camera == null)
+        {
+            return;
+        }
+
+        Bounds bounds = firstPlatform.GetComponent<BoxCollider2D>().bounds;
+        Vector3 bottomLeft = camera.WorldToScreenPoint(bounds.min);
+        Vector3 topRight = camera.WorldToScreenPoint(bounds.max);
+        if (bottomLeft.z <= 0f || topRight.z <= 0f)
+        {
+            return;
+        }
+
+        float padding = Mathf.Max(2f, 5f * scale);
+        float left = bottomLeft.x - padding;
+        float right = topRight.x + padding;
+        float top = Screen.height - topRight.y - padding;
+        float bottom = Screen.height - bottomLeft.y + padding;
+        float thickness = Mathf.Max(2f, 3f * scale);
+        float dash = Mathf.Max(6f, 12f * scale);
+        float gap = Mathf.Max(3f, 7f * scale);
+
+        Color previousColor = GUI.color;
+        GUI.color = Color.white;
+        for (float x = left; x < right; x += dash + gap)
+        {
+            float length = Mathf.Min(dash, right - x);
+            GUI.DrawTexture(new Rect(x, top, length, thickness), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(x, bottom - thickness, length, thickness), Texture2D.whiteTexture);
+        }
+
+        for (float y = top; y < bottom; y += dash + gap)
+        {
+            float length = Mathf.Min(dash, bottom - y);
+            GUI.DrawTexture(new Rect(left, y, thickness, length), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(right - thickness, y, thickness, length), Texture2D.whiteTexture);
+        }
+
+        GUI.color = previousColor;
     }
 
     private void OnDestroy()
