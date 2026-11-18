@@ -269,6 +269,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 460a2fcb723a5a6f96accc4ba3644939, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FinalFixedCamera
+  orthographicSize: 9
 --- !u!1 &4000007
 GameObject:
   m_ObjectHideFlags: 0
@@ -368,6 +369,7 @@ GameObject:
   - component: {fileID: 4000015}
   - component: {fileID: 7000034}
   - component: {fileID: 8200000000000000001}
+  - component: {fileID: 8200000000000000003}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -390,6 +392,7 @@ Transform:
   m_Children:
   - {fileID: 7000027}
   - {fileID: 7000031}
+  - {fileID: 827020157}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4000012
@@ -539,6 +542,9 @@ MonoBehaviour:
   normalMoveSpeed: 4
   normalJumpForce: 8
   normalGravityScale: 1.5
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!1 &4000016
 GameObject:
   m_ObjectHideFlags: 0
@@ -1257,6 +1263,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42c588ddab42497b9858782d8d1fc653, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FinalWeightBrick
+  triggeredColor: {r: 0.95, g: 0.55, b: 0.08, a: 1}
 --- !u!1 &4000043
 GameObject:
   m_ObjectHideFlags: 0
@@ -1684,6 +1691,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6857e211d8dc4544bbd0c39561096005, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FinalLevelManager
+  playerSpawn: {x: -12, y: -2.4, z: 0}
+  player: {fileID: 0}
+  brick: {fileID: 0}
+  collapse: {fileID: 0}
+  chaser: {fileID: 0}
+  effects: {fileID: 0}
 --- !u!1 &5000000
 GameObject:
   m_ObjectHideFlags: 0
@@ -1743,7 +1756,7 @@ Transform:
   m_GameObject: {fileID: 7000001}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.4287014, y: -2.8199874, z: 0}
+  m_LocalPosition: {x: 1.4287014, y: -2.8199873, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2066,6 +2079,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cce6d77ee802469f896db6d2eed57618, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FinalSpikeHazard
+  deathReason: spike
+  revealTogether: []
 --- !u!114 &7000013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2107,6 +2122,9 @@ MonoBehaviour:
   startHidden: 1
   retractAutomatically: 0
   exposedDuration: 1.5
+  retractWarning: 0
+  retractShake: 0.05
+  retractDuration: 0
   upwardFlightDistance: 4
   upwardFlightSpeed: 8
   upwardFlightCurve:
@@ -2320,6 +2338,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cce6d77ee802469f896db6d2eed57618, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FinalSpikeHazard
+  deathReason: spike
+  revealTogether: []
 --- !u!114 &7000019
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2361,6 +2381,9 @@ MonoBehaviour:
   startHidden: 1
   retractAutomatically: 0
   exposedDuration: 1.5
+  retractWarning: 0
+  retractShake: 0.05
+  retractDuration: 0
   upwardFlightDistance: 4
   upwardFlightSpeed: 8
   upwardFlightCurve:
@@ -2574,6 +2597,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cce6d77ee802469f896db6d2eed57618, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FinalSpikeHazard
+  deathReason: spike
+  revealTogether: []
 --- !u!114 &7000025
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2615,6 +2640,9 @@ MonoBehaviour:
   startHidden: 1
   retractAutomatically: 0
   exposedDuration: 1.5
+  retractWarning: 0
+  retractShake: 0.05
+  retractDuration: 0
   upwardFlightDistance: 4
   upwardFlightSpeed: 8
   upwardFlightCurve:
@@ -12502,7 +12530,7 @@ Transform:
   m_GameObject: {fileID: 8000000}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.521299 , y: 0, z: 0}
+  m_LocalPosition: {x: -0.521299, y: 0, z: 0}
   m_LocalScale: {x: 0.6516, y: 0.6236, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12662,7 +12690,7 @@ Transform:
   m_GameObject: {fileID: 8000020}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.0 , y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.6516, y: 0.6236, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12822,7 +12850,7 @@ Transform:
   m_GameObject: {fileID: 8000040}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.521299 , y: 0, z: 0}
+  m_LocalPosition: {x: 0.521299, y: 0, z: 0}
   m_LocalScale: {x: 0.6516, y: 0.6236, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12979,7 +13007,7 @@ Transform:
   m_GameObject: {fileID: 9000000}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 18.8287014, y: -2.8199874, z: 0}
+  m_LocalPosition: {x: 18.828701, y: -2.8199873, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -13017,7 +13045,7 @@ Transform:
   m_GameObject: {fileID: 9000002}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -9.5787014, y: 1.3199874, z: 0}
+  m_LocalPosition: {x: -9.578701, y: 1.3199874, z: 0}
   m_LocalScale: {x: 1.7, y: 4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13303,6 +13331,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FinalSpikeHazard
   deathReason: final_spike
+  revealTogether: []
 --- !u!114 &9000012
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13344,6 +13373,9 @@ MonoBehaviour:
   startHidden: 1
   retractAutomatically: 0
   exposedDuration: 1.5
+  retractWarning: 0
+  retractShake: 0.05
+  retractDuration: 0
   upwardFlightDistance: 4
   upwardFlightSpeed: 8
   upwardFlightCurve:
@@ -13558,6 +13590,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FinalSpikeHazard
   deathReason: final_spike
+  revealTogether: []
 --- !u!114 &9000018
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13599,6 +13632,9 @@ MonoBehaviour:
   startHidden: 1
   retractAutomatically: 0
   exposedDuration: 1.5
+  retractWarning: 0
+  retractShake: 0.05
+  retractDuration: 0
   upwardFlightDistance: 4
   upwardFlightSpeed: 8
   upwardFlightCurve:
@@ -13813,6 +13849,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FinalSpikeHazard
   deathReason: final_spike
+  revealTogether: []
 --- !u!114 &9000024
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13854,6 +13891,9 @@ MonoBehaviour:
   startHidden: 1
   retractAutomatically: 0
   exposedDuration: 1.5
+  retractWarning: 0
+  retractShake: 0.05
+  retractDuration: 0
   upwardFlightDistance: 4
   upwardFlightSpeed: 8
   upwardFlightCurve:
@@ -13911,6 +13951,138 @@ MonoBehaviour:
     m_RotationOrder: 4
   moveHorizontallyBackAndForth: 1
   horizontalEndPause: 0.2
+--- !u!1001 &827020152
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4000011}
+    m_Modifications:
+    - target: {fileID: 6864569944854697081, guid: 5ddff22d4ce43417d98af5ec698cddd4, type: 3}
+      propertyPath: m_Name
+      value: GeometricVisual
+      objectReference: {fileID: 0}
+    - target: {fileID: 8107418677948207132, guid: 5ddff22d4ce43417d98af5ec698cddd4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8107418677948207132, guid: 5ddff22d4ce43417d98af5ec698cddd4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8107418677948207132, guid: 5ddff22d4ce43417d98af5ec698cddd4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8107418677948207132, guid: 5ddff22d4ce43417d98af5ec698cddd4, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8107418677948207132, guid: 5ddff22d4ce43417d98af5ec698cddd4, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8107418677948207132, guid: 5ddff22d4ce43417d98af5ec698cddd4, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8107418677948207132, guid: 5ddff22d4ce43417d98af5ec698cddd4, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8107418677948207132, guid: 5ddff22d4ce43417d98af5ec698cddd4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8107418677948207132, guid: 5ddff22d4ce43417d98af5ec698cddd4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8107418677948207132, guid: 5ddff22d4ce43417d98af5ec698cddd4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5ddff22d4ce43417d98af5ec698cddd4, type: 3}
+--- !u!4 &827020153 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 940681465739400321, guid: 5ddff22d4ce43417d98af5ec698cddd4, type: 3}
+  m_PrefabInstance: {fileID: 827020152}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &827020154 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8700557472433569039, guid: 5ddff22d4ce43417d98af5ec698cddd4, type: 3}
+  m_PrefabInstance: {fileID: 827020152}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &827020155 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6448388933532089920, guid: 5ddff22d4ce43417d98af5ec698cddd4, type: 3}
+  m_PrefabInstance: {fileID: 827020152}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &827020156 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3574931855168699147, guid: 5ddff22d4ce43417d98af5ec698cddd4, type: 3}
+  m_PrefabInstance: {fileID: 827020152}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &827020157 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8107418677948207132, guid: 5ddff22d4ce43417d98af5ec698cddd4, type: 3}
+  m_PrefabInstance: {fileID: 827020152}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8200000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4000010}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 937c3fa8a92650d4e812610458034f64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  moveSpeed: 6
+  jumpForce: 12
+--- !u!114 &8200000000000000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4000048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97a64b281ee30ae4486305a567f17c3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LevelExit
+  showCompletionScreen: 0
+--- !u!114 &8200000000000000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4000010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01d1c3ff519c14fa0a9bba7b2510be99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SharedGeometricPlayerVisual
+  sourceRenderer: {fileID: 4000012}
+  visual: {fileID: 827020157}
+  leftLeg: {fileID: 827020156}
+  rightLeg: {fileID: 827020155}
+  leftArm: {fileID: 827020154}
+  rightArm: {fileID: 827020153}
+  legSwing: 13.54
+  walkFrequency: 11
+  jumpStretch: 0.055
+  landingSquash: 0.1
+  landingDuration: 0.16
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -13930,29 +14102,3 @@ SceneRoots:
   - {fileID: 5000001}
   - {fileID: 7000002}
   - {fileID: 9000001}
---- !u!114 &8200000000000000001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4000010}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 937c3fa8a92650d4e812610458034f64, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  moveSpeed: 6
-  jumpForce: 12
---- !u!114 &8200000000000000002
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4000048}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97a64b281ee30ae4486305a567f17c3f, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::LevelExit
