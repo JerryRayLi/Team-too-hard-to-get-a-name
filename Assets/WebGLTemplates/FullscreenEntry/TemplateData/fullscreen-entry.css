@@ -2,6 +2,11 @@
 #fullscreen-entry[hidden], #entry-return-fullscreen[hidden], #entry-windowed[hidden] { display: none !important; }
 .fullscreen-entry-pending { overflow: hidden; }
 .fullscreen-entry-pending #unity-container { visibility: hidden; }
+body:not(.fullscreen-entry-active) #unity-container {
+  position: fixed; left: 50%; transform: translate(-50%, -50%);
+}
+#unity-canvas { display: block; }
+#unity-footer { display: flow-root; height: 38px; }
 #fullscreen-entry {
   position: fixed; inset: 0; z-index: 10000; display: grid; place-items: center;
   padding: 32px 24px; overflow-y: auto; color: #f7f4e9;
