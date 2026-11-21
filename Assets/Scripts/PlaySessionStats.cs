@@ -28,6 +28,7 @@ public static class PlaySessionStats
         "Level04",
         "Level_TIanyu1",
         "level_j1",
+        "level_j1.5",
         "level_j2",
         "level_j3",
         "Level_Haoyu",

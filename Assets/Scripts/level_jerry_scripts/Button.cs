@@ -33,12 +33,14 @@ public class Button : MonoBehaviour
     [Tooltip("Set to 0 to keep the hint visible until the level ends.")]
     [Min(0f)] public float hintDuration;
 
-    private readonly List<Collider2D> nearbyColliders = new List<Collider2D>();
+    private readonly Collider2D[] nearbyColliders = new Collider2D[128];
     private Collider2D buttonCollider;
     private SpriteRenderer buttonRenderer;
     private readonly List<SpriteRenderer> outlineRenderers = new List<SpriteRenderer>();
     private ContactFilter2D contactFilter;
     private bool isPressed;
+    public bool IsPressed => isPressed;
+    private JerryPressurePlate pressurePlate;
     private bool corpseHintTriggered;
     private float corpseHintEndsAt;
     private bool corpseIsTouching;
@@ -48,13 +50,15 @@ public class Button : MonoBehaviour
     private void Awake()
     {
         buttonCollider = GetComponent<Collider2D>();
+        pressurePlate = GetComponent<JerryPressurePlate>();
         buttonRenderer = GetComponent<SpriteRenderer>();
         if (useColorRules && colorManager == null)
             colorManager = FindFirstObjectByType<ColorLayerManager>();
         if (useColorRules && buttonRenderer != null)
             buttonRenderer.color = requiredBackground == RequiredButtonBackground.Blue
                 ? blueColor : redColor;
-        CreateOutline();
+        if (pressurePlate == null)
+            CreateOutline();
 
         contactFilter = new ContactFilter2D();
         contactFilter.SetLayerMask(Physics2D.GetLayerCollisionMask(gameObject.layer));
@@ -161,12 +165,13 @@ public class Button : MonoBehaviour
         Bounds buttonBounds = buttonCollider.bounds;
         // Static corpses do not generate collision callbacks against a static
         // button. Query touching shapes directly, including resting corpses.
-        Physics2D.OverlapBox(buttonBounds.center,
+        int count = gameObject.scene.GetPhysicsScene2D().OverlapBox(buttonBounds.center,
             (Vector2)buttonBounds.size + Vector2.one * (contactTolerance * 2f),
             0f, contactFilter, nearbyColliders);
 
-        foreach (Collider2D other in nearbyColliders)
+        for (int i = 0; i < count; i++)
         {
+            Collider2D other = nearbyColliders[i];
             if (other == buttonCollider)
                 continue;
 
@@ -186,9 +191,10 @@ public class Button : MonoBehaviour
             else
             {
                 PlayerRespawnJ player = other.GetComponentInParent<PlayerRespawnJ>();
+                float surfaceTop = pressurePlate != null ? pressurePlate.SurfaceTop : buttonBounds.max.y;
                 if (backgroundMatches && player != null && !player.IsRespawning &&
-                    other.bounds.center.y > buttonBounds.max.y &&
-                    other.bounds.min.y >= buttonBounds.max.y - contactTolerance)
+                    other.bounds.center.y > surfaceTop &&
+                    other.bounds.min.y >= surfaceTop - contactTolerance)
                     return true;
             }
         }
