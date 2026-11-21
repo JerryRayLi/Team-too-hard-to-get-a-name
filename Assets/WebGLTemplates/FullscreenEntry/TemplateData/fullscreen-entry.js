@@ -47,8 +47,7 @@
       var canvas = options.canvas;
       var container = document.getElementById("unity-container");
       var aspect = canvas.width / canvas.height;
-      var originalWidth = canvas.style.width;
-      var originalHeight = canvas.style.height;
+      var originalWidth = parseFloat(canvas.style.width) || canvas.width;
       var started = false;
       var ready = false;
       container.inert = true;
@@ -85,15 +84,30 @@
       function resize() {
         var fullscreen = isFullscreen();
         document.body.classList.toggle("fullscreen-entry-active", fullscreen);
-        if (fullscreen) {
-          var width = Math.min(window.innerWidth, window.innerHeight * aspect);
-          canvas.style.width = Math.floor(width) + "px";
-          canvas.style.height = Math.floor(width / aspect) + "px";
-        } else {
-          canvas.style.width = originalWidth;
-          canvas.style.height = originalHeight;
-        }
         returnButton.hidden = !ready || fullscreen;
+        var footer = document.getElementById("unity-footer");
+        var footerHeight = !fullscreen && footer && window.getComputedStyle(footer).display !== "none"
+          ? Math.max(38, footer.getBoundingClientRect().height) : 0;
+        // Keep the HTML fullscreen control outside the Unity HUD in windowed mode.
+        var toolbarHeight = !fullscreen && ready ? 64 : 0;
+        var margin = fullscreen ? 0 : Math.min(12, window.innerWidth * 0.02, window.innerHeight * 0.02);
+        var availableWidth = Math.max(1, window.innerWidth - margin * 2);
+        var availableHeight = Math.max(1, window.innerHeight - toolbarHeight - footerHeight - margin * 2);
+        var width = Math.min(availableWidth, availableHeight * aspect, fullscreen ? Infinity : originalWidth);
+        var height = width / aspect;
+        // Preserve the design aspect ratio in both modes. Fixed 1280x720 CSS
+        // dimensions cropped the game whenever the browser viewport was smaller.
+        canvas.style.width = width + "px";
+        canvas.style.height = height + "px";
+        if (fullscreen) {
+          container.style.width = "";
+          container.style.height = "";
+          container.style.top = "";
+        } else {
+          container.style.width = width + "px";
+          container.style.height = (height + footerHeight) + "px";
+          container.style.top = (toolbarHeight + (window.innerHeight - toolbarHeight) / 2) + "px";
+        }
       }
 
       function failedToLoad() {

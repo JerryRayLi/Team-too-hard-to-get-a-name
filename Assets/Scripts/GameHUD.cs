@@ -45,7 +45,7 @@ public class GameHUD : MonoBehaviour
     {
         if (level == "Level01" || level == "level_j1")
             return null;
-        return level == "level_j2" || level == "level_j3"
+        return level == "level_j1.5" || level == "level_j2" || level == "level_j3"
             ? CorpseControls + "\n" + ColorControls : ColorControls;
     }
 
