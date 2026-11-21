@@ -1307,6 +1307,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6832710058268149082, guid: c369e8a88af924043821282d80133729, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3197656679946359441}
+    - targetCorrespondingSourceObject: {fileID: 6832710058268149082, guid: c369e8a88af924043821282d80133729, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3197656679946359448}
   m_SourcePrefab: {fileID: 100100000, guid: c369e8a88af924043821282d80133729, type: 3}
 --- !u!4 &3197656679946359427 stripped
 Transform:
@@ -1331,6 +1334,26 @@ MonoBehaviour:
   blindRunTime: 0.5
   leftLimit: -6
   rightLimit: 6
+--- !u!114 &3197656679946359448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1298754029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99aae21dea4ed2545be554b8fbedd759, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Door03VisualFeedback
+  route: {fileID: 0}
+  cameraVision: {fileID: 27146232}
+  player: {fileID: 733642253}
+  capturePad: {fileID: 350950801}
+  liftPlate: {fileID: 0}
+  scanAngle: 12
+  scanSpeed: 2
+  liftShake: 0.025
 --- !u!1001 &3359859327037275453
 PrefabInstance:
   m_ObjectHideFlags: 0
