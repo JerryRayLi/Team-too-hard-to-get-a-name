@@ -7,6 +7,8 @@ public sealed class FinalLandingCrack : MonoBehaviour
     [Min(0)] public float breakDelay = .05f;
     public SpriteRenderer[] crackLines = new SpriteRenderer[0];
     public bool Broken { get; private set; }
+    // True when the player must not jump off this brick: it is breaking, or a fall this fast will break it.
+    public bool BlocksJump(float playerVelocityY) => Broken || !float.IsPositiveInfinity(breakAt) || -playerVelocityY >= breakSpeed;
     float breakAt = float.PositiveInfinity;
     SpriteRenderer visual;
     Collider2D surface;
