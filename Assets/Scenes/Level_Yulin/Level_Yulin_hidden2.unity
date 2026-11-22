@@ -348,8 +348,12 @@ PrefabInstance:
       value: HiddenPlatform_horizontal_change_direction (1)
       objectReference: {fileID: 0}
     - target: {fileID: 8015963781137958693, guid: af62b92f04f1d40baa7f65a505eba0d4, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8015963781137958693, guid: af62b92f04f1d40baa7f65a505eba0d4, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 12
+      value: 12.25
       objectReference: {fileID: 0}
     - target: {fileID: 8015963781137958693, guid: af62b92f04f1d40baa7f65a505eba0d4, type: 3}
       propertyPath: m_LocalPosition.y
