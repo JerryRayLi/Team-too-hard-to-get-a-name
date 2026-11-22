@@ -35,6 +35,10 @@ The camera is zoomed out (`FinalFixedCamera.orthographicSize` 11; SLOW 1 keeps 9
 
 New scripts: `FinalLandingCrack`, `FinalSlowFallZone`, `FinalTimedSpikeTrigger`, `FinalDustMotes`. `FinalLevelPlayerController.MarkSlowFall` softens only the descent, so jumps keep their height. `FinalLevelManager` resets every mechanic of each type in the scene, and both SLOW levels now draw their header with the shared `GameHUD.DrawHeader`. `HaoyuTianyu.SpikeTrap` gains optional `retractWarning`, `retractShake` and `retractDuration` for automatic retracts; their defaults keep SLOW 1 unchanged.
 
+## Colour switch
+
+Both SLOW levels use the team `ColorLayerManager` (Shift / K / right click) and each uses it twice. In SLOW 1, switching to blue shows the collapsing ground and the weight brick in the blue-layer colour (`FinalColorReveal`); the chaser wall is yellow so it stays visible on both backgrounds. In SLOW 2, the slow-fall zone and its dust exist only on the blue layer, so the pit is crossed in blue, and the exit exists only on the red layer, so the player switches back to finish. A jump buffered just before landing no longer fires off the cracked floor when the fall breaks it.
+
 ## Verification
 
 Automated Unity Play Mode runs with simulated Input System keyboard input passed: walking into the first spikes dies; jumping over them breaks the crack; baiting, waiting and walking survives; walking under the spike slab dies and a jump passes 0.14 units under the tips; landing at the pit edge and hopping in place dies on the edge spikes; walking off the pit and a short hop both fall, while a held jump straight off the landing glides from x 2.7 to x 11.3 in 2.2 s (the far edge is x 10.8); rushing to the exit hits the exit spikes; the intended route reaches the exit with no deaths in 13 s and loads the next scene; no runtime errors. A Level Haoyu smoke run (death, reset) also passed. This is automated validation, not teammate playtesting.
