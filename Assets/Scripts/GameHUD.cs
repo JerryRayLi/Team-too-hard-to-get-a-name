@@ -14,12 +14,6 @@ public class GameHUD : MonoBehaviour
             string level = gameObject.scene.name;
             string extra = GetExtraControls(level);
             hints = CreateControls(transform, extra, showMenu: true);
-            if (level == "Level01")
-            {
-                AddHint(hints.transform, "Introduction", new Vector2(0.5f, 0),
-                    new Vector2(0, 28), new Vector2(930, 140), 46, TextAnchor.MiddleCenter,
-                    "This game teaches through failure.\nObserve, die, adapt.");
-            }
         }
 
         hints.SetActive(true);

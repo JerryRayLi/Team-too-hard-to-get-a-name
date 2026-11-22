@@ -251,11 +251,16 @@ public sealed class DeathTauntManager : MonoBehaviour
         };
         tauntStyle.normal.textColor = new Color(1f, 1f, 1f, 0.88f);
 
-        string message = GetTaunt(sceneName, deaths, schedule);
-        GUI.Box(new Rect(Screen.width * 0.25f, Screen.height * 0.77f,
-            Screen.width * 0.5f, 72f), GUIContent.none);
-        GUI.Label(new Rect(Screen.width * 0.25f, Screen.height * 0.77f,
-            Screen.width * 0.5f, 72f), message, tauntStyle);
+        // The scoped narration trial owns the spoken text in its five rooms.
+        // Existing mechanism arrows, memes, thresholds and other levels remain.
+        if (!JerryTrialNarrator.OwnsTauntText(sceneName))
+        {
+            string message = GetTaunt(sceneName, deaths, schedule);
+            GUI.Box(new Rect(Screen.width * 0.25f, Screen.height * 0.77f,
+                Screen.width * 0.5f, 72f), GUIContent.none);
+            GUI.Label(new Rect(Screen.width * 0.25f, Screen.height * 0.77f,
+                Screen.width * 0.5f, 72f), message, tauntStyle);
+        }
 
         if (sceneName == "Level03" && deaths >= schedule.Strong)
         {
