@@ -43,7 +43,7 @@ public class GameHUD : MonoBehaviour
 
     internal static string GetExtraControls(string level)
     {
-        if (level == "Level01" || level == "level_j1")
+        if (level == "Level01")
             return null;
         return level == "level_j1.5" || level == "level_j2" || level == "level_j3"
             ? CorpseControls + "\n" + ColorControls : ColorControls;
