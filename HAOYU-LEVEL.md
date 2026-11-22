@@ -6,7 +6,7 @@ Controls: A/D move, Space jump, R restart. Reach the green exit. The level inclu
 
 ## Build for the browser
 
-Install the matching WebGL Build Support module. Select **Build > Haoyu WebGL** in the Editor, or run Unity in batch mode with `-buildTarget WebGL -executeMethod BuildHaoyuWeb.Build`. The script builds only this scene into `Builds/HaoyuWeb`; set the `HAOYU_WEB_OUTPUT` environment variable to change the output folder. It uses Gzip compression with decompression fallback for static hosting.
+The level ships in the team build: use **Build > Gold WebGL for GitHub Pages** (`BuildGoldPages`). The old Haoyu-only build script was removed because it renamed the whole project.
 
 ## Credits
 
