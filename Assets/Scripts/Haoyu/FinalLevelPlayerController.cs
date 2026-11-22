@@ -29,6 +29,9 @@ public sealed class FinalLevelPlayerController : MonoBehaviour
         var b = shape.bounds;
         var hit = Physics2D.BoxCast(new Vector2(b.center.x, b.min.y + 0.025f), new Vector2(b.size.x * 0.8f, 0.02f), 0, Vector2.down, 0.08f, groundMask);
         Grounded = hit.collider && hit.normal.y > 0.65f && Body.linearVelocity.y <= 0.1f;
+        // A landing crack that this fall will break (or is already breaking) is never solid ground,
+        // so a buffered jump cannot fire off it in the moment before it shatters.
+        if (Grounded && hit.collider.TryGetComponent(out FinalLandingCrack crack) && crack.BlocksJump(Body.linearVelocity.y)) Grounded = false;
         float vy = Body.linearVelocity.y;
         if (Time.time <= jumpUntil && Grounded) { vy = normalJumpForce; jumpUntil = -1; Grounded = false; }
         // Slow-fall only softens the descent; the jump itself keeps its normal height.

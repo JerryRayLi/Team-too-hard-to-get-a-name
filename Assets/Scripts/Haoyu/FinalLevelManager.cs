@@ -52,7 +52,7 @@ public sealed class FinalLevelManager : MonoBehaviour
     void Start()
     {
         ResetRun();
-        GameHUD.CreateControls(transform);
+        GameHUD.CreateControls(transform, FindFirstObjectByType<ColorLayerManager>() ? GameHUD.ColorControls : null);
     }
     void Update()
     {
