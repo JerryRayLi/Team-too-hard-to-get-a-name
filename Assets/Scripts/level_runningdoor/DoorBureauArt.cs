@@ -25,6 +25,12 @@ public sealed class DoorBureauArt : MonoBehaviour
     private ColorLayerManager colors;
     private Font labelFont;
     private bool built;
+    private SpriteRenderer upperWall, lowerWall, wallDivider, fascia;
+    [Header("Background color modes")]
+    public Color blueWallColor = new Color(.75f, .86f, .92f, 1f);
+    public Color redWallColor = new Color(.94f, .78f, .71f, 1f);
+    public Color blueLowerWallColor = new Color(.58f, .73f, .80f, 1f);
+    public Color redLowerWallColor = new Color(.80f, .60f, .53f, 1f);
     // Flat painted surfaces and paper notices, not the Jerry steel-room palette.
     private static readonly Color Metal = new Color(.24f, .39f, .33f, 1f);
     private static readonly Color Edge = new Color(.73f, .81f, .68f, 1f);
@@ -40,9 +46,7 @@ public sealed class DoorBureauArt : MonoBehaviour
     {
         if (!built) Build();
         if (!built) return;
-        Color mode = colors == null || colors.IsBlueBackground ? Blue : Red;
-        foreach (SpriteRenderer lamp in modeLamps)
-            if (lamp != null) lamp.color = mode;
+        ApplyRoomMode();
         foreach (Surface surface in surfaces)
         {
             if (surface.source == null || surface.art == null) continue;
@@ -68,6 +72,24 @@ public sealed class DoorBureauArt : MonoBehaviour
                     if (indicator != null)
                         indicator.color = surface.source.color;
         }
+    }
+
+    private void ApplyRoomMode()
+    {
+        bool isBlue = colors == null || colors.IsBlueBackground;
+        Color mode = isBlue ? Blue : Red;
+        if (upperWall != null)
+            upperWall.color = isBlue ? blueWallColor : redWallColor;
+        if (lowerWall != null)
+            lowerWall.color = isBlue ? blueLowerWallColor : redLowerWallColor;
+        if (wallDivider != null)
+            wallDivider.color = isBlue ?
+                new Color(.34f,.52f,.60f,1f) : new Color(.60f,.37f,.30f,1f);
+        if (fascia != null)
+            fascia.color = isBlue ?
+                new Color(.12f,.24f,.30f,1f) : new Color(.31f,.17f,.14f,1f);
+        foreach (SpriteRenderer lamp in modeLamps)
+            if (lamp != null) lamp.color = mode;
     }
 
     [ContextMenu("Rebuild Bureau Art")]
@@ -116,17 +138,17 @@ public sealed class DoorBureauArt : MonoBehaviour
             }
         }
 
-        SpritePart(generated.transform, "Plain warm office wall",
+        upperWall = SpritePart(generated.transform, "Color-mode office wall",
             center, new Vector2(halfW * 2f + 12f, halfH * 2f + 10f),
             new Color(.91f, .9f, .84f, 1f), -220, square);
-        Part(generated.transform, "Office wall lower paint", center.x,
+        lowerWall = Part(generated.transform, "Office wall lower paint", center.x,
             floorTop - halfH * .55f, halfW * 2f + 12f, halfH + .8f,
             new Color(.79f,.83f,.75f,1f), -215);
-        Part(generated.transform, "Office wall dado", center.x,
+        wallDivider = Part(generated.transform, "Office wall dado", center.x,
             floorTop - .75f, halfW * 2f + 12f, .06f,
             new Color(.54f,.64f,.54f,1f), -210);
         // Dark fascia keeps the existing white HUD legible on the light wall.
-        Part(generated.transform, "Office fascia", center.x, top - .48f,
+        fascia = Part(generated.transform, "Office fascia", center.x, top - .48f,
             halfW * 2f + 12f, 1.2f, Dark, -205);
         Frame(generated.transform, "Unstaffed service window", left + halfW * .52f,
             floorTop + 5.8f, 4.6f, 1.55f, -190);
@@ -235,6 +257,7 @@ public sealed class DoorBureauArt : MonoBehaviour
             }
         }
         built = true;
+        ApplyRoomMode();
     }
 
     private void DressPlatform(SpriteRenderer source, bool colored)
@@ -474,6 +497,7 @@ public sealed class DoorBureauArt : MonoBehaviour
         modeLamps.Clear();
         if (generated != null) Remove(generated);
         generated = null;
+        upperWall = lowerWall = wallDivider = fascia = null;
         built = false;
         colors = null;
     }
