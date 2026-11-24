@@ -28,6 +28,13 @@ public sealed class FinalLevelManager : MonoBehaviour
     public bool CanMove => !Completed && Time.time >= contactReadyAt && (!effects || !effects.IsRespawning);
     public bool AcceptContact => CanMove;
     float contactReadyAt, startedAt, weightedAt = -1;
+    // A quiet nudge toward the colour switch for players who keep dying without ever using it.
+    [TextArea] public string colorHint = "Isn't there a key you haven't pressed in a while?";
+    [Min(1)] public int colorHintDeaths = 3;
+    public float fallKillY = -7.5f;
+    ColorLayerManager colors;
+    bool usedColorSwitch;
+    public bool ShowingColorHint => colors && !usedColorSwitch && Deaths >= colorHintDeaths && !Completed;
     Color originalPlayerColor;
     Vector3 originalScale;
     void Awake()
@@ -52,7 +59,8 @@ public sealed class FinalLevelManager : MonoBehaviour
     void Start()
     {
         ResetRun();
-        GameHUD.CreateControls(transform, FindFirstObjectByType<ColorLayerManager>() ? GameHUD.ColorControls : null);
+        colors = FindFirstObjectByType<ColorLayerManager>();
+        GameHUD.CreateControls(transform, colors ? GameHUD.ColorControls : null);
     }
     void Update()
     {
@@ -67,6 +75,9 @@ public sealed class FinalLevelManager : MonoBehaviour
             if (!Completed) Die("restart");
         }
         if (CanMove) RunSeconds = Time.time - startedAt;
+        // Backstop for falls that miss the death zone (e.g. running off the far left edge).
+        if (CanMove && player.transform.position.y < fallKillY) Die("fall");
+        if (colors && colors.IsBlueActive) usedColorSwitch = true;
     }
     public void Weighted() { if (weightedAt < 0) weightedAt = Time.time; }
     public void RequestRespawn() { Die("hazard"); }
@@ -110,7 +121,15 @@ public sealed class FinalLevelManager : MonoBehaviour
         Debug.Log($"FINAL_EVENT complete run={RunNumber} seconds={RunSeconds:F3}");
     }
     // Shared header so the title, death count and menu button scale with the other levels.
-    void OnGUI() { GameHUD.DrawHeader(ReturnToMainMenu); }
+    void OnGUI()
+    {
+        GameHUD.DrawHeader(ReturnToMainMenu);
+        if (!ShowingColorHint) return;
+        // Small, faint and above the taunt line, so it reads as a passing thought rather than a tutorial.
+        var style = new GUIStyle(GUI.skin.label) { fontSize = GameHUD.ScaleFont(22), fontStyle = FontStyle.Italic, alignment = TextAnchor.MiddleCenter, wordWrap = true };
+        style.normal.textColor = new Color(1f, 1f, 1f, 0.55f);
+        GUI.Label(new Rect(Screen.width * 0.2f, Screen.height * 0.68f, Screen.width * 0.6f, 48f), colorHint, style);
+    }
 
     private void ReturnToMainMenu()
     {
