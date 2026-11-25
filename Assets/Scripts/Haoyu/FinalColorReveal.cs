@@ -8,6 +8,7 @@ public sealed class FinalColorReveal : MonoBehaviour
     public Color gapColor = new Color(.13f, .12f, .12f, 1f);
     [Min(.1f)] public float stripeWidth = .25f;
     SpriteRenderer source, overlay;
+    Sprite stripes;
     ColorLayerManager colors;
     FinalWeightBrick brick;
     void Awake()
@@ -21,13 +22,20 @@ public sealed class FinalColorReveal : MonoBehaviour
         child.transform.localScale = new Vector3(1f / s.x, 1f / s.y, 1f);
         child.transform.localPosition = new Vector3(0, 0, -.05f);
         overlay = child.AddComponent<SpriteRenderer>();
-        overlay.sprite = Stripes(size.x, size.y);
+        overlay.sprite = stripes = Stripes(size.x, size.y);
         overlay.sharedMaterial = source.sharedMaterial;
         overlay.sortingLayerID = source.sortingLayerID;
         overlay.sortingOrder = source.sortingOrder + 1;
         overlay.enabled = false;
     }
     void Start() { colors = FindFirstObjectByType<ColorLayerManager>(); }
+    // The stripe texture is made per tile, so free it with the tile instead of leaking it on every level load.
+    void OnDestroy()
+    {
+        if (!stripes) return;
+        Destroy(stripes.texture);
+        Destroy(stripes);
+    }
     // A collapsed tile stays hidden, and a triggered weight brick keeps its own warning colour.
     void LateUpdate() => overlay.enabled = colors && colors.IsBlueActive && source.enabled && !(brick && brick.Triggered);
 
