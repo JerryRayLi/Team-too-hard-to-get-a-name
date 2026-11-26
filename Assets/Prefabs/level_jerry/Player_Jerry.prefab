@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3149476143426209892}
   - component: {fileID: 4019938010037610381}
   m_Layer: 0
-  m_Name: Player
+  m_Name: Player_Jerry
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -194,3 +194,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5070b6079b02b0e4eba764957c7059a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerRespawn
+  deathParticles: {fileID: 0}
+  respawnParticles: {fileID: 0}

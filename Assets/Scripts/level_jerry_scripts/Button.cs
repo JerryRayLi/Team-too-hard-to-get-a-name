@@ -246,6 +246,7 @@ public class Button : MonoBehaviour
 
     private void OnGUI()
     {
+        if (JerryLevelHelp.IsShowingIn(gameObject.scene)) return;
         if (!showCorpseColorHint || !corpseHintTriggered ||
             Time.unscaledTime > corpseHintEndsAt || Camera.main == null ||
             (delayedColorSwitchHint && Time.timeScale <= 0f))
