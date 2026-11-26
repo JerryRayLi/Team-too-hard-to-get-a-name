@@ -11,7 +11,10 @@ public class CorpseReleaseRangeIndicator : MonoBehaviour
     [Tooltip("Set to 0 to keep the hint visible for the entire level.")]
     [Min(0f)] public float hintDuration = 4f;
     [Min(0f)] public float hintOffset = 0.4f;
-    public string hintText = "Releasing Range";
+    public string hintText = "Release ALL Corpses (E)";
+    [Header("Release feedback")]
+    [Min(.05f)] public float releasePulseDuration = .28f;
+    public Color releasePulseColor = new Color(1f,.91f,.62f,.96f);
 
     private CorpseReleaseAbility ability;
     private PlayerRespawnJ respawn;
@@ -21,6 +24,13 @@ public class CorpseReleaseRangeIndicator : MonoBehaviour
     private float meshRadius = -1f;
     private float hintStartTime;
     private GUIStyle hintStyle;
+    private float pulseRemaining, pulseStrength, meshWidth = -1f;
+    private MaterialPropertyBlock ringProperties;
+    private Color restRingColor;
+    private Vector3[] ringVertices;
+    private int[] ringTriangles;
+    private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+    private static readonly int ColorId = Shader.PropertyToID("_Color");
 
     private bool IsVisible => ability != null && ability.isActiveAndEnabled &&
         (respawn == null || !respawn.IsRespawning) && ability.releaseRange > 0f;
@@ -49,6 +59,8 @@ public class CorpseReleaseRangeIndicator : MonoBehaviour
         ringRenderer.receiveShadows = false;
         ringRenderer.sortingOrder = 20;
         ringRenderer.enabled = false;
+        ringProperties = new MaterialPropertyBlock();
+        restRingColor = ringMaterial.HasProperty(BaseColorId) ? ringMaterial.GetColor(BaseColorId) : ringMaterial.GetColor(ColorId);
     }
 
     private void Start()
@@ -56,8 +68,17 @@ public class CorpseReleaseRangeIndicator : MonoBehaviour
         hintStartTime = Time.unscaledTime;
     }
 
-    private void LateUpdate()
+    public void PulseRelease(int releasedCount)
     {
+        pulseRemaining = Mathf.Max(.05f,releasePulseDuration);
+        pulseStrength = releasedCount > 0 ? 1f : .35f;
+        RefreshVisuals(0f);
+    }
+
+    private void LateUpdate() => RefreshVisuals(Time.deltaTime);
+    private void RefreshVisuals(float seconds)
+    {
+        pulseRemaining = Mathf.Max(0f,pulseRemaining-Mathf.Max(0f,seconds));
         if (ringRenderer == null)
             return;
 
@@ -65,20 +86,28 @@ public class CorpseReleaseRangeIndicator : MonoBehaviour
         if (!IsVisible)
             return;
 
-        if (!Mathf.Approximately(meshRadius, ability.releaseRange))
-            RebuildRing(ability.releaseRange);
+        float pulse = Mathf.SmoothStep(0,1,pulseRemaining/Mathf.Max(.05f,releasePulseDuration))*pulseStrength;
+        Color tint = Color.Lerp(restRingColor,releasePulseColor,pulse);
+        ringProperties.SetColor(BaseColorId,tint);
+        ringProperties.SetColor(ColorId,tint);
+        ringRenderer.SetPropertyBlock(ringProperties);
+        float width = lineWidth*Mathf.Lerp(1f,2f,pulse);
+        if (!Mathf.Approximately(meshRadius, ability.releaseRange) || !Mathf.Approximately(meshWidth,width))
+            RebuildRing(ability.releaseRange,width);
 
         ringObject.transform.position = transform.position;
     }
 
-    private void RebuildRing(float radius)
+    private void RebuildRing(float radius,float width)
     {
         const int segmentsPerDash = 4;
         int count = Mathf.Clamp(dashCount, 8, 256);
         int segmentCount = count * segmentsPerDash;
-        Vector3[] vertices = new Vector3[segmentCount * 4];
-        int[] triangles = new int[segmentCount * 6];
-        float innerRadius = Mathf.Max(0f, radius - Mathf.Max(0.01f, lineWidth));
+        bool resize = ringVertices == null || ringVertices.Length != segmentCount*4;
+        if (resize) { ringVertices = new Vector3[segmentCount*4]; ringTriangles = new int[segmentCount*6]; }
+        Vector3[] vertices = ringVertices;
+        int[] triangles = ringTriangles;
+        float innerRadius = Mathf.Max(0f, radius - Mathf.Max(0.01f, width));
         float dashAngle = Mathf.PI * 2f / count;
 
         for (int dash = 0; dash < count; dash++)
@@ -105,11 +134,12 @@ public class CorpseReleaseRangeIndicator : MonoBehaviour
             }
         }
 
-        ringMesh.Clear();
+        if (resize) ringMesh.Clear();
         ringMesh.vertices = vertices;
-        ringMesh.triangles = triangles;
+        if (resize) ringMesh.triangles = triangles;
         ringMesh.RecalculateBounds();
         meshRadius = radius;
+        meshWidth = width;
     }
 
     private void OnGUI()
@@ -156,6 +186,7 @@ public class CorpseReleaseRangeIndicator : MonoBehaviour
 
     private void OnDisable()
     {
+        pulseRemaining = 0f;
         if (ringRenderer != null)
             ringRenderer.enabled = false;
     }

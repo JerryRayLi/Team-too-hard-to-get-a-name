@@ -1483,7 +1483,9 @@ MonoBehaviour:
   lineWidth: 0.04
   hintDuration: 4
   hintOffset: 0.4
-  hintText: Releasing Range
+  hintText: Release ALL Corpses (E)
+  releasePulseDuration: 0.28
+  releasePulseColor: {r: 1, g: 0.91, b: 0.62, a: 0.96}
 --- !u!114 &3489832550114921670
 MonoBehaviour:
   m_ObjectHideFlags: 0

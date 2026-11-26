@@ -68,6 +68,7 @@ public sealed class JerryFirstButtonColorHint : MonoBehaviour
 
     private void OnGUI()
     {
+        if (JerryLevelHelp.IsShowingIn(gameObject.scene) || JerryCorpseReleaseHint.IsShowingIn(gameObject.scene)) return;
         if (!IsVisible || Time.timeScale <= 0f || Camera.main == null)
             return;
         Vector3 world = plate.sensor.bounds.center;
