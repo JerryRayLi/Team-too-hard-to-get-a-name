@@ -28,7 +28,7 @@ public class GameHUD : MonoBehaviour
     }
 
     internal const string ColorControls = "Switch color: <b>Shift / K / Right Click</b>";
-    internal const string CorpseControls = "Release Corpse: <b>E</b>";
+    internal const string CorpseControls = "Release ALL corpses in range: <b>E</b>";
 
     // Use the same reference size for Canvas text and IMGUI headers/labels.
     internal static float UiScale => Mathf.Max(0.1f,

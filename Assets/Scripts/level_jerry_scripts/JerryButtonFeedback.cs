@@ -2,7 +2,7 @@ using UnityEngine;
 
 // Visual feedback only: the existing pressure plate still owns its collider
 // and the Button still decides whether the gate opens.
-[DefaultExecutionOrder(1250)]
+[ExecuteAlways, DefaultExecutionOrder(1250)]
 public sealed class JerryButtonFeedback : MonoBehaviour
 {
     public Button source;
@@ -20,6 +20,7 @@ public sealed class JerryButtonFeedback : MonoBehaviour
     private float glowAlpha;
 
     private void Awake() => Initialize();
+    private void OnEnable() => Refresh(0f);
     private void LateUpdate() => Refresh(Time.deltaTime);
 
     private void Initialize()
@@ -50,9 +51,11 @@ public sealed class JerryButtonFeedback : MonoBehaviour
         float flash = flashRemaining / .45f;
         float brightness = active ? .48f + .20f * flash : Mathf.Lerp(.08f, .28f, weight);
         Color baseColor = source.useColorRules
-            ? source.requiredBackground == RequiredButtonBackground.Blue ? source.blueColor : source.redColor
+            ? JerryGateButtonLight.SignalColor(source)
             : plate.colorSource.color;
         indicator.color = Color.Lerp(baseColor, Color.white, brightness);
+        if (plate.cap != null)
+            plate.cap.color = Color.Lerp(baseColor, Color.white, active ? .38f : .08f);
         indicator.enabled = visible;
 
         float physicalTravel = plate.sensor.size.y * Mathf.Abs(plate.transform.lossyScale.y) * plate.travelFraction;

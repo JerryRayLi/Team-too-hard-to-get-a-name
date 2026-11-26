@@ -86,6 +86,7 @@ public sealed class SpikeHesitationHint : MonoBehaviour
 
     private void OnGUI()
     {
+        if (JerryLevelHelp.IsShowingIn(gameObject.scene)) return;
         if (dismissed || waitingTime < hesitationDelay || player == null ||
             player.IsRespawning || Time.timeScale <= 0f || Camera.main == null ||
             !TryGetSpikesBounds(out Bounds bounds))

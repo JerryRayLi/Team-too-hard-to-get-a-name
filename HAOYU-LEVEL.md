@@ -37,7 +37,11 @@ New scripts: `FinalLandingCrack`, `FinalSlowFallZone`, `FinalTimedSpikeTrigger`,
 
 ## Colour switch
 
-Both SLOW levels use the team `ColorLayerManager` (Shift / K / right click) and each uses it twice. In SLOW 1, switching to blue shows the collapsing ground and the weight brick in the blue-layer colour (`FinalColorReveal`); the chaser wall is yellow so it stays visible on both backgrounds. In SLOW 2, the slow-fall zone and its dust exist only on the blue layer, so the pit is crossed in blue, and the exit exists only on the red layer, so the player switches back to finish. A jump buffered just before landing no longer fires off the cracked floor when the fall breaks it.
+Both SLOW levels use the team `ColorLayerManager` (Shift / K / right click) and each uses it twice. In SLOW 1, switching to the red background marks the collapsing ground and the weight brick with yellow-and-black hazard stripes (`FinalColorReveal`); the chaser wall is yellow so it stays visible on both backgrounds. In SLOW 2, the slow-fall zone and its dust exist only on the blue layer, so the pit is crossed in blue, and the exit exists only on the red layer, so the player switches back to finish. A jump buffered just before landing no longer fires off the cracked floor when the fall breaks it.
+
+## Art
+
+Both SLOW levels use a clockwork-workshop look from `SlowLevelArt` and `SlowWorkshopBackdrop`, which `FinalLevelManager` adds at runtime. Solid ground gets wooden planks with a brass top edge. The exit becomes a wooden door with a green window and a clock above it. The backdrop (`SlowWorkshopBackdrop`) is a workshop wall: striped wallpaper in a darker, greyer version of the team blue or red, three ceiling lamps whose light takes the active colour, brass pipes, a shelf, a pendulum clock, turning gears, wooden wainscoting down to the floor and a dark gear pit below it. The wall and lamp light change with the colour switch; wood and brass stay the same. The art is decorative only. Every ground tile, the trap tiles included, gets the same planks on a shared world grid, so the traps still only show once the background turns red. A collapsed or broken tile takes its planks with it, and a triggered weight brick shows its own colour.
 
 ## Verification
 
