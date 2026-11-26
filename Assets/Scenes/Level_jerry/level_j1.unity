@@ -1753,6 +1753,96 @@ SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 7042940892638643813, guid: 05821a66f03fb874392c8a8cda4f577d, type: 3}
   m_PrefabInstance: {fileID: 1352277612}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1436757993
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1436757995}
+  - component: {fileID: 1436757994}
+  m_Layer: 0
+  m_Name: Jerry Optional Walkthrough
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1436757994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436757993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c93c67fb600cec54084b8c85bd7d2db7, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::JerryLevelHelp
+  stalledSeconds: 20
+  deathsBeforeHelp: 5
+  player: {fileID: 672185172}
+  puzzleButtons: []
+  checkpoint: {fileID: 0}
+  progressLandings:
+  - {fileID: 328873664}
+  - {fileID: 1536382120}
+  steps:
+  - title: A corpse can be a platform
+    instructions: 'Jump across the small platforms toward the spikes. Touch a spike
+      deliberately: your corpse stays where you died, while you respawn.'
+    targets:
+    - target: {fileID: 6047926738319304567}
+      localOffset: {x: -0.00000037252903, y: 0.14434576, z: 0}
+      caption: Leave a corpse here
+      color: {r: 1, g: 0.83, b: 0.4, a: 1}
+  - title: Return to your corpse
+    instructions: After respawning, follow the platforms back. Jump onto the corpse
+      instead of touching the spikes again. The corpse is solid and stays in the
+      air.
+    targets:
+    - target: {fileID: 6047926738319304567}
+      localOffset: {x: -0.00000037252903, y: 0.14434576, z: 0}
+      caption: Use the corpse as a step
+      color: {r: 1, g: 0.83, b: 0.4, a: 1}
+  - title: Jump over the remaining spikes
+    instructions: Use the corpse as extra height to clear the spikes and land on
+      the exit platform. If it is too low, leave another corpse higher up.
+    targets:
+    - target: {fileID: 1245577740}
+      localOffset: {x: 0.00000013149365, y: 0.14434594, z: 0}
+      caption: Clear these spikes
+      color: {r: 1, g: 0.83, b: 0.4, a: 1}
+    - target: {fileID: 1845347501}
+      localOffset: {x: 0, y: 0.79999995, z: 0}
+      caption: Land here
+      color: {r: 1, g: 0.83, b: 0.4, a: 1}
+  - title: Reach the exit
+    instructions: Move into the green exit door. You do not need to release a corpse
+      or switch color in this level.
+    targets:
+    - target: {fileID: 756701002}
+      localOffset: {x: 0, y: 0.000000014901161, z: 0}
+      caption: Exit
+      color: {r: 1, g: 0.83, b: 0.4, a: 1}
+--- !u!4 &1436757995
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436757993}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1440787148
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2709,3 +2799,4 @@ SceneRoots:
   - {fileID: 862785277}
   - {fileID: 7470160218350755009}
   - {fileID: 191912380}
+  - {fileID: 1436757995}
