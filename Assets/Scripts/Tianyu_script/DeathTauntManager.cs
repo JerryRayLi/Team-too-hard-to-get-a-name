@@ -253,7 +253,8 @@ public sealed class DeathTauntManager : MonoBehaviour
 
         // The scoped narration trial owns the spoken text in its five rooms.
         // Existing mechanism arrows, memes, thresholds and other levels remain.
-        if (!JerryTrialNarrator.OwnsTauntText(sceneName))
+        if (!JerryTrialNarrator.OwnsTauntText(sceneName) &&
+            !DoorSubtitleNarrator.OwnsTauntText(sceneName))
         {
             string message = GetTaunt(sceneName, deaths, schedule);
             GUI.Box(new Rect(Screen.width * 0.25f, Screen.height * 0.77f,
