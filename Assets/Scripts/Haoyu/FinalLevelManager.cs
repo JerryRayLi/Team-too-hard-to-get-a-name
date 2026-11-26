@@ -55,6 +55,7 @@ public sealed class FinalLevelManager : MonoBehaviour
         spikeHazards = FindObjectsByType<FinalSpikeHazard>(FindObjectsSortMode.None);
         originalPlayerColor = player.GetComponent<SpriteRenderer>().color;
         originalScale = player.transform.localScale;
+        if (!GetComponent<SlowLevelArt>()) gameObject.AddComponent<SlowLevelArt>();
     }
     void Start()
     {
